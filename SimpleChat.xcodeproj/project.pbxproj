@@ -18,6 +18,7 @@
 		5ABC3210294C842E00559B90 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC320F294C842E00559B90 /* View.swift */; };
 		5ABC3212294C847000559B90 /* DialogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC3211294C847000559B90 /* DialogViewModel.swift */; };
 		5ABC3214294C850F00559B90 /* DialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC3213294C850F00559B90 /* DialogView.swift */; };
+		5ABC3217294C992800559B90 /* OnDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC3216294C992800559B90 /* OnDelete.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 		5ABC320F294C842E00559B90 /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		5ABC3211294C847000559B90 /* DialogViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogViewModel.swift; sourceTree = "<group>"; };
 		5ABC3213294C850F00559B90 /* DialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogView.swift; sourceTree = "<group>"; };
+		5ABC3216294C992800559B90 /* OnDelete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnDelete.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +67,7 @@
 		5ABC31F3294C838700559B90 /* SimpleChat */ = {
 			isa = PBXGroup;
 			children = (
+				5ABC3215294C991300559B90 /* ViewModifiers */,
 				5ABC3205294C83A500559B90 /* Model */,
 				5ABC3204294C83A100559B90 /* ViewModel */,
 				5ABC3203294C839D00559B90 /* View */,
@@ -126,6 +129,14 @@
 				5ABC320F294C842E00559B90 /* View.swift */,
 			);
 			path = Extansions;
+			sourceTree = "<group>";
+		};
+		5ABC3215294C991300559B90 /* ViewModifiers */ = {
+			isa = PBXGroup;
+			children = (
+				5ABC3216294C992800559B90 /* OnDelete.swift */,
+			);
+			path = ViewModifiers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -205,6 +216,7 @@
 				5ABC3214294C850F00559B90 /* DialogView.swift in Sources */,
 				5ABC3212294C847000559B90 /* DialogViewModel.swift in Sources */,
 				5ABC31F7294C838700559B90 /* ContentView.swift in Sources */,
+				5ABC3217294C992800559B90 /* OnDelete.swift in Sources */,
 				5ABC3210294C842E00559B90 /* View.swift in Sources */,
 				5ABC31F5294C838700559B90 /* SimpleChatApp.swift in Sources */,
 			);

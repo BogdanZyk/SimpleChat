@@ -8,15 +8,25 @@
 import SwiftUI
 
 struct DialogView: View {
-    @StateObject private var dialodVM = DialodViewModel()
+    @StateObject private var dialodVM = DialogViewModel()
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
+                pinMessageSection
                 ScrollViewReader { scrollView in
                     ReversedScrollView(.vertical, showsIndicators: true, contentSpacing: 4) {
                         
                         ForEach(dialodVM.messages) { message in
-                            MessageView(message: message, isSelected: dialodVM.isSelected(message), dialogMode: $dialodVM.dialogMode, onSelected: dialodVM.selectMessage)
+                            
+                            MessageView(
+                                message: message,
+                                isSelected: dialodVM.isSelected(message),
+                                dialogMode: $dialodVM.dialogMode,
+                                onSelected: dialodVM.selectMessage,
+                                onPin: dialodVM.pinMessage,
+                                onSetMessage: dialodVM.onSetActionMessage
+                            )
+                            
                                 .padding(.bottom, dialodVM.messages.last?.id == message.id ? 10 : 0)
                                 .onAppear{
                                     dialodVM.loadNextPageMessages(scrollView, message: message)
@@ -40,6 +50,7 @@ struct DialogView: View {
                 }
                 bottomBarView
             }
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     navTitle
@@ -102,7 +113,8 @@ extension DialogView{
             Divider().padding(.horizontal, -16)
             if dialodVM.dialogMode != .messageSelecting{
                 
-              
+                replaySection
+                
                     HStack {
                         TextField("Message", text: $dialodVM.text)
                             .frame(height: 44)
@@ -149,6 +161,66 @@ extension DialogView{
             }
             .font(.title3)
             .padding(.top, 10)
+        }
+    }
+    
+    @ViewBuilder
+    private var replaySection: some View{
+        if let messageForAction = dialodVM.messageForAction{
+            HStack(spacing: 10){
+                Image(systemName: messageForAction.mode.image)
+                Rectangle().frame(width: 1, height: 25)
+                VStack(alignment: .leading){
+                    Text(messageForAction.mode.title)
+                        .font(.subheadline).bold()
+                    Text(messageForAction.message?.text ?? "")
+                        .font(.footnote)
+                        .lineLimit(1)
+                }
+                Spacer()
+                Button {
+                    withAnimation(.easeInOut(duration: 0.1)) {
+                        dialodVM.messageForAction = nil
+                    }
+                } label: {
+                    Image(systemName: "xmark")
+                }
+            }
+            .transition(.move(edge: .bottom))
+            .zIndex(0)
+        }
+    }
+}
+
+//MARK: - Pin message section view
+
+extension DialogView{
+    
+    @ViewBuilder
+    private var pinMessageSection: some View{
+        if let pinnedMessage = dialodVM.pinnedMessage{
+            VStack(spacing: 5) {
+                Divider().padding(.horizontal, -16)
+                HStack{
+                    Rectangle().frame(width: 1, height: 30)
+                    VStack(alignment: .leading) {
+                        Text("Pin message")
+                            .font(.subheadline.weight(.medium))
+                        Text(pinnedMessage.text)
+                    }
+                    Spacer()
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.1)) {
+                            dialodVM.pinnedMessage = nil
+                        }
+                    } label: {
+                        Image(systemName: "xmark")
+                    }
+                }
+                .padding(.horizontal)
+                Divider().padding(.horizontal, -16)
+            }
+            .background(Material.bar)
         }
     }
 }

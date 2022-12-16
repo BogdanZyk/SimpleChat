@@ -8,11 +8,13 @@
 import Foundation
 import SwiftUI
 
-final class DialodViewModel: ObservableObject{
+final class DialogViewModel: ObservableObject{
     
     @Published var messages: [Message] = []
     @Published var selectedMessages = [Message]()
     @Published var text: String = ""
+    @Published var pinnedMessage: Message?
+    @Published var messageForAction: SelectedMessage?
     @Published var targetMessage: Message?
     @Published var isLoad: Bool = false
     @Published var isShowFirstMessage: Bool = false
@@ -28,7 +30,7 @@ enum DialogMode: Int{
     case messageSelecting, dialog, loading
 }
 
-extension DialodViewModel{
+extension DialogViewModel{
     
     func fetchMessages(){
         messages.append(contentsOf: mockMassage)
@@ -72,7 +74,7 @@ extension DialodViewModel{
 
 //MARK: - Selecting message login
 
-extension DialodViewModel{
+extension DialogViewModel{
     
     func isSelected(_ message: Message) -> Bool{
         selectedMessages.contains(message)
@@ -84,6 +86,52 @@ extension DialodViewModel{
                 selectedMessages.removeAll(where: {$0.id == message.id})
             }else{
                 selectedMessages.append(message)
+            }
+        }
+    }
+    
+}
+
+//MARK: - Replay and edit action
+extension DialogViewModel{
+    
+    func onSetActionMessage(_ message: SelectedMessage){
+        withAnimation(.easeInOut(duration: 0.15)) {
+            messageForAction = message
+        }
+    }
+}
+
+//MARK: - Pin messsage
+
+extension DialogViewModel{
+    
+    func pinMessage(_ message: Message){
+        withAnimation(.easeInOut(duration: 0.15)) {
+            pinnedMessage = message
+        }
+    }
+}
+
+struct SelectedMessage{
+    
+    var message: Message?
+    var mode: MessageMode = .reply
+    
+    enum MessageMode{
+        case reply, edit
+        
+        var image: String{
+            switch self{
+            case .reply: return "arrowshape.turn.up.right"
+            case .edit: return "pencil"
+            }
+        }
+        
+        var title: String{
+            switch self{
+            case .reply: return "Reply user"
+            case .edit: return  "Edit"
             }
         }
     }
