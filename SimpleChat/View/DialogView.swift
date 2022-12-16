@@ -9,10 +9,12 @@ import SwiftUI
 
 struct DialogView: View {
     @StateObject private var dialodVM = DialogViewModel()
+    @State private var pinMessageTrigger: Int = 0
+    @State private var showBottomScrollButton: Bool = false
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                pinMessageSection
+                
                 ScrollViewReader { scrollView in
                     ReversedScrollView(.vertical, showsIndicators: true, contentSpacing: 4) {
                         
@@ -27,12 +29,19 @@ struct DialogView: View {
                                 onSetMessage: dialodVM.onSetActionMessage
                             )
                             
-                                .padding(.bottom, dialodVM.messages.last?.id == message.id ? 10 : 0)
-                                .onAppear{
-                                    dialodVM.loadNextPageMessages(scrollView, message: message)
-                                }
+                            .padding(.bottom, dialodVM.messages.last?.id == message.id ? 10 : 0)
+                            .onAppear{
+                                dialodVM.loadNextPageMessages(scrollView, message: message)
+                                onAppearForScrollButton(message)
+                            }
+                            .onDisappear{
+                                onDisapearForScrollButton(message)
+                            }
                         }
                         .padding(.horizontal)
+                    }
+                    .overlay(alignment: .bottomTrailing){
+                        bottomScrollButton(scrollView)
                     }
                     .onAppear{
                         if let id = dialodVM.messages.last?.id {
@@ -47,8 +56,18 @@ struct DialogView: View {
                             }
                         }
                     }
+                    .onChange(of: pinMessageTrigger) { _ in
+                        if let message = dialodVM.pinnedMessage {
+                            withAnimation(.default) {
+                                scrollView.scrollTo(message.id, anchor: .center)
+                            }
+                        }
+                    }
                 }
                 bottomBarView
+            }
+            .overlay(alignment: .top) {
+                pinMessageSection
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -112,27 +131,25 @@ extension DialogView{
         VStack(spacing: 10) {
             Divider().padding(.horizontal, -16)
             if dialodVM.dialogMode != .messageSelecting{
+                activeBarMessageSection
                 
-                replaySection
-                
-                    HStack {
-                        TextField("Message", text: $dialodVM.text)
-                            .frame(height: 44)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                        Button(action: {
-                            dialodVM.send()
-                        }) {
-                            Text("Send")
-                        }
-                        .buttonStyle(.bordered)
+                HStack {
+                    TextField("Message", text: $dialodVM.text)
+                        .frame(height: 44)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    Button(action: {
+                        dialodVM.send()
+                    }) {
+                        Text("Send")
                     }
-                
-                
+                    .buttonStyle(.bordered)
+                }
             }else{
                 selectedBottomBarView
             }
         }
         .padding(.horizontal)
+       
 
     }
     
@@ -165,7 +182,7 @@ extension DialogView{
     }
     
     @ViewBuilder
-    private var replaySection: some View{
+    private var activeBarMessageSection: some View{
         if let messageForAction = dialodVM.messageForAction{
             HStack(spacing: 10){
                 Image(systemName: messageForAction.mode.image)
@@ -203,12 +220,19 @@ extension DialogView{
                 Divider().padding(.horizontal, -16)
                 HStack{
                     Rectangle().frame(width: 1, height: 30)
-                    VStack(alignment: .leading) {
-                        Text("Pin message")
-                            .font(.subheadline.weight(.medium))
-                        Text(pinnedMessage.text)
+                    Button {
+                        pinMessageTrigger += 1
+                    } label: {
+                        HStack{
+                            VStack(alignment: .leading) {
+                                Text("Pin message")
+                                    .font(.subheadline.weight(.medium))
+                                Text(pinnedMessage.text)
+                                
+                            }
+                            Spacer()
+                        }
                     }
-                    Spacer()
                     Button {
                         withAnimation(.easeInOut(duration: 0.1)) {
                             dialodVM.pinnedMessage = nil
@@ -220,7 +244,53 @@ extension DialogView{
                 .padding(.horizontal)
                 Divider().padding(.horizontal, -16)
             }
+            .foregroundColor(.black)
             .background(Material.bar)
+            .zIndex(0)
+            .transition(.move(edge: .top))
+        }
+    }
+    
+
+}
+
+extension DialogView{
+    
+    private func bottomScrollButton(_ scrollView: ScrollViewProxy) -> some View{
+        
+        Button {
+            if let lastMessageId = dialodVM.messages.last?.id{
+                withAnimation(.easeOut){
+                    scrollView.scrollTo(lastMessageId, anchor: .bottom)
+                }
+            }
+        } label: {
+            ZStack{
+                Image(systemName: "chevron.down")
+                    .foregroundColor(.secondary)
+                    .padding(12)
+            }
+            .background(Material.bar)
+            .clipShape(Circle())
+            .padding(10)
+            .opacity(showBottomScrollButton ? 1 : 0)
+            .scaleEffect(showBottomScrollButton ? 1 : 0.001)
+        }
+    }
+    
+    private func onAppearForScrollButton(_ message: Message){
+        if dialodVM.messages.last?.id == message.id{
+            withAnimation {
+                showBottomScrollButton = false
+            }
+        }
+    }
+    
+    private func onDisapearForScrollButton(_ message: Message){
+        if dialodVM.messages.last?.id == message.id{
+            withAnimation {
+                showBottomScrollButton = true
+            }
         }
     }
 }
