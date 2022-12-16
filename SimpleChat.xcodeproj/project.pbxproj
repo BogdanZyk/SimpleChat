@@ -11,6 +11,13 @@
 		5ABC31F7294C838700559B90 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC31F6294C838700559B90 /* ContentView.swift */; };
 		5ABC31F9294C838900559B90 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5ABC31F8294C838900559B90 /* Assets.xcassets */; };
 		5ABC31FC294C838900559B90 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5ABC31FB294C838900559B90 /* Preview Assets.xcassets */; };
+		5ABC3207294C83BA00559B90 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC3206294C83BA00559B90 /* Message.swift */; };
+		5ABC3209294C83CE00559B90 /* MessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC3208294C83CE00559B90 /* MessageView.swift */; };
+		5ABC320C294C83F100559B90 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC320B294C83F100559B90 /* Date.swift */; };
+		5ABC320E294C841400559B90 /* ReversedScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC320D294C841400559B90 /* ReversedScrollView.swift */; };
+		5ABC3210294C842E00559B90 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC320F294C842E00559B90 /* View.swift */; };
+		5ABC3212294C847000559B90 /* DialogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC3211294C847000559B90 /* DialogViewModel.swift */; };
+		5ABC3214294C850F00559B90 /* DialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC3213294C850F00559B90 /* DialogView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +26,13 @@
 		5ABC31F6294C838700559B90 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		5ABC31F8294C838900559B90 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5ABC31FB294C838900559B90 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		5ABC3206294C83BA00559B90 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		5ABC3208294C83CE00559B90 /* MessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageView.swift; sourceTree = "<group>"; };
+		5ABC320B294C83F100559B90 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
+		5ABC320D294C841400559B90 /* ReversedScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReversedScrollView.swift; sourceTree = "<group>"; };
+		5ABC320F294C842E00559B90 /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
+		5ABC3211294C847000559B90 /* DialogViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogViewModel.swift; sourceTree = "<group>"; };
+		5ABC3213294C850F00559B90 /* DialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +65,10 @@
 		5ABC31F3294C838700559B90 /* SimpleChat */ = {
 			isa = PBXGroup;
 			children = (
+				5ABC3205294C83A500559B90 /* Model */,
+				5ABC3204294C83A100559B90 /* ViewModel */,
+				5ABC3203294C839D00559B90 /* View */,
+				5ABC3202294C839800559B90 /* Utils */,
 				5ABC31F4294C838700559B90 /* SimpleChatApp.swift */,
 				5ABC31F6294C838700559B90 /* ContentView.swift */,
 				5ABC31F8294C838900559B90 /* Assets.xcassets */,
@@ -65,6 +83,49 @@
 				5ABC31FB294C838900559B90 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		5ABC3202294C839800559B90 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				5ABC320A294C83E700559B90 /* Extansions */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		5ABC3203294C839D00559B90 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				5ABC3208294C83CE00559B90 /* MessageView.swift */,
+				5ABC320D294C841400559B90 /* ReversedScrollView.swift */,
+				5ABC3213294C850F00559B90 /* DialogView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		5ABC3204294C83A100559B90 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				5ABC3211294C847000559B90 /* DialogViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		5ABC3205294C83A500559B90 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				5ABC3206294C83BA00559B90 /* Message.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		5ABC320A294C83E700559B90 /* Extansions */ = {
+			isa = PBXGroup;
+			children = (
+				5ABC320B294C83F100559B90 /* Date.swift */,
+				5ABC320F294C842E00559B90 /* View.swift */,
+			);
+			path = Extansions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,7 +198,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5ABC3209294C83CE00559B90 /* MessageView.swift in Sources */,
+				5ABC320C294C83F100559B90 /* Date.swift in Sources */,
+				5ABC3207294C83BA00559B90 /* Message.swift in Sources */,
+				5ABC320E294C841400559B90 /* ReversedScrollView.swift in Sources */,
+				5ABC3214294C850F00559B90 /* DialogView.swift in Sources */,
+				5ABC3212294C847000559B90 /* DialogViewModel.swift in Sources */,
 				5ABC31F7294C838700559B90 /* ContentView.swift in Sources */,
+				5ABC3210294C842E00559B90 /* View.swift in Sources */,
 				5ABC31F5294C838700559B90 /* SimpleChatApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -195,7 +263,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -249,7 +317,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -275,6 +343,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -304,6 +373,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
