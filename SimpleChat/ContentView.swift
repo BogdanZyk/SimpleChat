@@ -9,7 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        DialogView()
+        VoceViewTabComponent()
+        //AudioPreviewView(audio: "https://muzati.net/music/0-0-1-20146-20")
             .preferredColorScheme(.light)
     }
 }

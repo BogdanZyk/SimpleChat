@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5A5FA6CE294E0D61008DD4A2 /* VoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6CD294E0D61008DD4A2 /* VoiceView.swift */; };
+		5A5FA6D0294E0D81008DD4A2 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6CF294E0D81008DD4A2 /* AudioManager.swift */; };
+		5A5FA6D3294E106E008DD4A2 /* VoceViewTabComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6D2294E106D008DD4A2 /* VoceViewTabComponent.swift */; };
+		5A5FA6D5294E26A5008DD4A2 /* AudioPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6D4294E26A5008DD4A2 /* AudioPreview.swift */; };
+		5A5FA6D7294E27ED008DD4A2 /* AudioPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6D6294E27ED008DD4A2 /* AudioPreviewView.swift */; };
+		5A5FA6D9294E3BD3008DD4A2 /* AudioBufferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6D8294E3BD3008DD4A2 /* AudioBufferService.swift */; };
 		5ABC31F5294C838700559B90 /* SimpleChatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC31F4294C838700559B90 /* SimpleChatApp.swift */; };
 		5ABC31F7294C838700559B90 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC31F6294C838700559B90 /* ContentView.swift */; };
 		5ABC31F9294C838900559B90 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5ABC31F8294C838900559B90 /* Assets.xcassets */; };
@@ -22,6 +28,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5A5FA6CD294E0D61008DD4A2 /* VoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceView.swift; sourceTree = "<group>"; };
+		5A5FA6CF294E0D81008DD4A2 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
+		5A5FA6D2294E106D008DD4A2 /* VoceViewTabComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoceViewTabComponent.swift; sourceTree = "<group>"; };
+		5A5FA6D4294E26A5008DD4A2 /* AudioPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPreview.swift; sourceTree = "<group>"; };
+		5A5FA6D6294E27ED008DD4A2 /* AudioPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPreviewView.swift; sourceTree = "<group>"; };
+		5A5FA6D8294E3BD3008DD4A2 /* AudioBufferService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioBufferService.swift; sourceTree = "<group>"; };
 		5ABC31F1294C838700559B90 /* SimpleChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5ABC31F4294C838700559B90 /* SimpleChatApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleChatApp.swift; sourceTree = "<group>"; };
 		5ABC31F6294C838700559B90 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -48,6 +60,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5A5FA6CC294E09C8008DD4A2 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				5A5FA6CD294E0D61008DD4A2 /* VoiceView.swift */,
+				5A5FA6CF294E0D81008DD4A2 /* AudioManager.swift */,
+				5A5FA6D4294E26A5008DD4A2 /* AudioPreview.swift */,
+				5A5FA6D8294E3BD3008DD4A2 /* AudioBufferService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		5A5FA6D1294E104C008DD4A2 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				5ABC320D294C841400559B90 /* ReversedScrollView.swift */,
+				5ABC3208294C83CE00559B90 /* MessageView.swift */,
+				5A5FA6D2294E106D008DD4A2 /* VoceViewTabComponent.swift */,
+				5A5FA6D6294E27ED008DD4A2 /* AudioPreviewView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 		5ABC31E8294C838700559B90 = {
 			isa = PBXGroup;
 			children = (
@@ -67,6 +101,7 @@
 		5ABC31F3294C838700559B90 /* SimpleChat */ = {
 			isa = PBXGroup;
 			children = (
+				5A5FA6CC294E09C8008DD4A2 /* Services */,
 				5ABC3215294C991300559B90 /* ViewModifiers */,
 				5ABC3205294C83A500559B90 /* Model */,
 				5ABC3204294C83A100559B90 /* ViewModel */,
@@ -99,8 +134,7 @@
 		5ABC3203294C839D00559B90 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				5ABC3208294C83CE00559B90 /* MessageView.swift */,
-				5ABC320D294C841400559B90 /* ReversedScrollView.swift */,
+				5A5FA6D1294E104C008DD4A2 /* Components */,
 				5ABC3213294C850F00559B90 /* DialogView.swift */,
 			);
 			path = View;
@@ -209,11 +243,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A5FA6D9294E3BD3008DD4A2 /* AudioBufferService.swift in Sources */,
 				5ABC3209294C83CE00559B90 /* MessageView.swift in Sources */,
+				5A5FA6D5294E26A5008DD4A2 /* AudioPreview.swift in Sources */,
 				5ABC320C294C83F100559B90 /* Date.swift in Sources */,
 				5ABC3207294C83BA00559B90 /* Message.swift in Sources */,
+				5A5FA6D3294E106E008DD4A2 /* VoceViewTabComponent.swift in Sources */,
 				5ABC320E294C841400559B90 /* ReversedScrollView.swift in Sources */,
+				5A5FA6CE294E0D61008DD4A2 /* VoiceView.swift in Sources */,
 				5ABC3214294C850F00559B90 /* DialogView.swift in Sources */,
+				5A5FA6D0294E0D81008DD4A2 /* AudioManager.swift in Sources */,
+				5A5FA6D7294E27ED008DD4A2 /* AudioPreviewView.swift in Sources */,
 				5ABC3212294C847000559B90 /* DialogViewModel.swift in Sources */,
 				5ABC31F7294C838700559B90 /* ContentView.swift in Sources */,
 				5ABC3217294C992800559B90 /* OnDelete.swift in Sources */,
@@ -350,6 +390,7 @@
 				DEVELOPMENT_TEAM = 92PU6D6MCQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Mic usege";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -380,6 +421,7 @@
 				DEVELOPMENT_TEAM = 92PU6D6MCQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Mic usege";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

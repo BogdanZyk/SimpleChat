@@ -99,6 +99,8 @@ extension DialogView{
                 Text("User name")
             }
         }
+        .lineLimit(1)
+        .fixedSize(horizontal: true, vertical: false)
         .withoutAnimation()
         .font(.headline)
     }
