@@ -94,7 +94,7 @@ class VoiceViewModel : NSObject , ObservableObject, AVAudioPlayerDelegate {
         let url = audioRecorder.url
         bufferService.buffer(url: url, samplesCount: 30) {[weak self] decibles in
             guard let self = self else {return}
-            self.returnedAudio  = .init(url: url, duration: self.countSec, decibles: decibles)
+            self.returnedAudio  = .init(id: UUID().uuidString, url: url, duration: self.countSec, decibles: decibles)
                 self.recordState = .recordered
                 self.countSec = 0
         }

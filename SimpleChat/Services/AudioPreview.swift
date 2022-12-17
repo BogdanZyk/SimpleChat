@@ -20,7 +20,7 @@ struct AudioPreviewModel: Hashable {
 
 struct Audio: Identifiable{
     
-    var id: UUID
+    var id: String
     var url: URL
     var duration: Int
     var decibles: [Float]
@@ -29,7 +29,7 @@ struct Audio: Identifiable{
     
     var soundSamples = [AudioPreviewModel]()
     
-    init(id: UUID = UUID(), url: URL, duration: Int, decibles: [Float], soundSamples: [AudioPreviewModel] = [AudioPreviewModel]()) {
+    init(id: String, url: URL, duration: Int, decibles: [Float], soundSamples: [AudioPreviewModel] = [AudioPreviewModel]()) {
         self.id = id
         self.url = url
         self.duration = duration
@@ -126,6 +126,7 @@ class AudioManager: ObservableObject {
     }
 
     func setAudio(_ audio: Audio){
+        guard currentAudio?.id != audio.id else {return}
         self.currentAudio = audio
         player = AVPlayer(url: audio.url)
     }
@@ -161,9 +162,19 @@ class AudioManager: ObservableObject {
         currentAudio?.setDefaultColor()
     }
     
+    
+    
+    func audioAction(_ audio: Audio){
+        if isPlaying {
+            pauseAudio()
+        } else {
+            setAudio(audio)
+            playAudio(audio)
+        }
+    }
+    
+    
     func playAudio(_ audio: Audio) {
-        
-        setAudio(audio)
         
         if isPlaying{
             pauseAudio()

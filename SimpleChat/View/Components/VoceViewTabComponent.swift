@@ -11,14 +11,28 @@ struct VoceViewTabComponent: View {
     @StateObject private var audioManager = AudioManager()
     @StateObject private var voiceVM = VoiceViewModel()
     var body: some View {
+        
+
         VStack{
             VStack{
-                AudioPreviewView(audioVM: audioManager, audio: .init(url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
+                AudioPreviewView(
+                    audio: .init(id: "1", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)),
+                    currentAudioPlayedAudio: audioManager.currentAudio,
+                    isPlaying: audioManager.isPlaying,
+                    audioAction: audioManager.audioAction
+                )
               
-                AudioPreviewView(audioVM: audioManager, audio: .init(url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
+                AudioPreviewView(
+                    audio: .init(id: "2", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)),
+                    currentAudioPlayedAudio: audioManager.currentAudio,
+                    isPlaying: audioManager.isPlaying,
+                    audioAction: audioManager.audioAction
+                )
+              
+                
+                
             }
             .background(Color.blue)
-
             
             switch voiceVM.recordState {
             case .recording:
@@ -28,9 +42,26 @@ struct VoceViewTabComponent: View {
             case .empty:
                 activeMicButton
             }
-            //Text("\(voiceVM.recordState.rawValue)")
+            
         }
 
+         
+
+        
+        
+//        VStack{
+//            VStack{
+//                AudioPreviewView(audio: .init(url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
+//
+//                AudioPreviewView(audio: .init(url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
+//            }
+//            .background(Color.blue)
+//
+//
+
+//            //Text("\(voiceVM.recordState.rawValue)")
+//        }
+//        .environmentObject(audioManager)
     }
 }
 
@@ -38,12 +69,13 @@ struct VoceViewTabComponent_Previews: PreviewProvider {
     static var previews: some View {
         VoceViewTabComponent()
             .padding(.horizontal)
+            .environmentObject(AudioManager())
     }
 }
 
 extension VoceViewTabComponent{
-    
-    
+
+
     private var playButton: some View{
         Button {
             voiceVM.stopRecording()
@@ -62,7 +94,7 @@ extension VoceViewTabComponent{
 
 
     }
-    
+
     private var activeMicButton: some View{
         Button {
             voiceVM.startRecording()
@@ -73,8 +105,8 @@ extension VoceViewTabComponent{
                 .padding()
         }
     }
-    
-    
+
+
     private var recordingAudio: some View{
         HStack{
             Text(voiceVM.timer)
@@ -84,7 +116,7 @@ extension VoceViewTabComponent{
             playButton
         }
     }
-    
+
     private var recordedAudioSection: some View{
         HStack(spacing: 10){
             Button {
@@ -94,24 +126,29 @@ extension VoceViewTabComponent{
                 Image(systemName: "trash")
             }
             audioView
-        
+
             VStack{
                 Image(systemName: "arrow.up")
                     .imageScale(.medium)
                     .foregroundColor(.white)
-                    
+
             }
             .frame(width: 30, height: 30)
             .background(Color.blue, in: Circle())
         }
     }
-    
+
     private var audioView: some View{
         HStack{
             if let audio = voiceVM.returnedAudio{
-                AudioPreviewView(audioVM: audioManager, audio: audio)
+                AudioPreviewView(
+                    audio: audio,
+                    currentAudioPlayedAudio: audioManager.currentAudio,
+                    isPlaying: audioManager.isPlaying,
+                    audioAction: audioManager.audioAction
+                )
             }
-            
+
         }
         .padding(.horizontal, 10)
         .foregroundColor(.white)

@@ -8,38 +8,43 @@
 import SwiftUI
 
 struct AudioPreviewView: View {
-    @ObservedObject var audioVM: AudioManager
-    let audio: Audio
     
-    var soundSamples: [AudioPreviewModel] {
-        if let audio = audioVM.currentAudio, audio.id == audio.id{
+    let audio: Audio
+    var currentAudioPlayedAudio: Audio?
+    var isPlaying: Bool
+    let audioAction: (Audio) -> Void
+    private var soundSamples: [AudioPreviewModel] {
+        if let audio = currentAudioPlayedAudio, audio.id == self.audio.id{
             return audio.soundSamples
         }else{
            return audio.soundSamples
         }
     }
     
-    var isPlaying: Bool{
-        if let audio = audioVM.currentAudio, audio.id == audio.id, audioVM.isPlaying{
-            return true
+    private var isPlayCurrentAudio: Bool{
+        (currentAudioPlayedAudio?.id == audio.id) && isPlaying
+    }
+    
+    private var remainingDuration: String{
+        if let audio = currentAudioPlayedAudio, audio.id == self.audio.id{
+            return "\(Int(audio.remainingDuration).secondsToTime())"
         }else{
-           return false
+            return "\(Int(self.audio.remainingDuration).secondsToTime())"
         }
     }
     
     var body: some View {
         VStack( alignment: .leading ) {
-            Text(audioVM.currentAudio?.id.uuidString ?? "")
+        
             HStack(alignment: .center, spacing: 10) {
                 
                 Button {
-                    if isPlaying {
-                        audioVM.pauseAudio()
-                    } else {
-                        audioVM.playAudio(audio)
-                    }
+                    
+                    audioAction(audio)
+                    
+                    
                 } label: {
-                    Image(systemName: !isPlaying ? "play.fill" : "pause.fill" )
+                    Image(systemName: isPlayCurrentAudio ? "pause.fill" : "play.fill")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 20, height: 20)
@@ -57,7 +62,7 @@ struct AudioPreviewView: View {
                     }
                 }
                 
-                Text("\(Int(audioVM.currentAudio?.remainingDuration ?? 0).secondsToTime())")
+                Text(remainingDuration)
                     .font(.caption2)
             }
             .frame(height: 30)
@@ -78,9 +83,9 @@ struct AudioPreviewView_Previews: PreviewProvider {
         ZStack{
             Color.blue
             VStack{
-                AudioPreviewView(audioVM: AudioManager(), audio: .init(url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
+                AudioPreviewView(audio: .init(id: "1", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)), isPlaying: false, audioAction: {_ in})
               
-                AudioPreviewView(audioVM: AudioManager(), audio: .init( url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
+                AudioPreviewView(audio: .init( id: "2", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)), isPlaying: false, audioAction: {_ in})
               
                 
                 
@@ -88,6 +93,7 @@ struct AudioPreviewView_Previews: PreviewProvider {
           
                 .padding(.horizontal)
         }
+       
 
     }
 }
