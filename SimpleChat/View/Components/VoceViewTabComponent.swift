@@ -8,9 +8,18 @@
 import SwiftUI
 
 struct VoceViewTabComponent: View {
+    @StateObject private var audioManager = AudioManager()
     @StateObject private var voiceVM = VoiceViewModel()
     var body: some View {
         VStack{
+            VStack{
+                AudioPreviewView(audioVM: audioManager, audio: .init(url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
+              
+                AudioPreviewView(audioVM: audioManager, audio: .init(url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
+            }
+            .background(Color.blue)
+
+            
             switch voiceVM.recordState {
             case .recording:
                 recordingAudio
@@ -100,8 +109,9 @@ extension VoceViewTabComponent{
     private var audioView: some View{
         HStack{
             if let audio = voiceVM.returnedAudio{
-                AudioPreviewView(audioVM: AudioPlayerManager(audio: audio))
+                AudioPreviewView(audioVM: audioManager, audio: audio)
             }
+            
         }
         .padding(.horizontal, 10)
         .foregroundColor(.white)

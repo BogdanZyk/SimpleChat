@@ -18,27 +18,86 @@ struct AudioPreviewModel: Hashable {
 }
 
 
-struct Audio{
+struct Audio: Identifiable{
+    
+    var id: UUID
     var url: URL
     var duration: Int
     var decibles: [Float]
+    
+    var remainingDuration: Int
+    
+    var soundSamples = [AudioPreviewModel]()
+    
+    init(id: UUID = UUID(), url: URL, duration: Int, decibles: [Float], soundSamples: [AudioPreviewModel] = [AudioPreviewModel]()) {
+        self.id = id
+        self.url = url
+        self.duration = duration
+        self.remainingDuration = duration
+        self.decibles = decibles
+        self.soundSamples = decibles.map({.init(magnitude: $0)})
+    }
+    
+
+}
+
+extension Audio{
+    mutating func setDefaultColor(){
+        self.soundSamples = self.soundSamples.map { tmp -> AudioPreviewModel in
+            var cur = tmp
+            cur.color = Color.white.opacity(0.5)
+            return cur
+        }
+    }
+    mutating func updateRemainingDuration(_ currentTime: Int){
+        if self.remainingDuration > 0{
+            self.remainingDuration = duration - currentTime
+        }
+    }
+    
+    mutating func resetRemainingDuration(){
+        remainingDuration = duration
+    }
 }
 
 
-class AudioPlayerManager: ObservableObject {
+//class AudioManager: ObservableObject{
+//
+//    @Published var session: AVAudioSession!
+//    @Published var player: AVPlayer?
+//    private var timeObserver: Any?
+//    private var currentTime: Double = .zero
+//
+//
+//    init(){
+//        do {
+//            session = AVAudioSession.sharedInstance()
+//            try session.setCategory(.playAndRecord)
+//
+//            try session.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
+//
+//        } catch {
+//            print(error.localizedDescription)
+//        }
+//    }
+//
+//    deinit {
+//        if let timeObserver = timeObserver {
+//            player?.removeTimeObserver(timeObserver)
+//        }
+//    }
+//
+//}
+
+class AudioManager: ObservableObject {
     
     private var sumplesTimer: Timer?
     
     private var currentTime: Double = .zero
 
-    @Published var timeDifferense: Int = 0
-    @Published var isPlaying: Bool = false
-    
-    @Published public var soundSamples = [AudioPreviewModel]()
-
     var index = 0
-    let audio: Audio
-    
+    @Published var currentAudio: Audio?
+    @Published var isPlaying: Bool = false
     @Published var player: AVPlayer!
     @Published var session: AVAudioSession!
     
@@ -51,10 +110,8 @@ class AudioPlayerManager: ObservableObject {
         }
     }
     
-    init(audio: Audio) {
-        self.audio = audio
-        visualizeAudio()
-        
+    init() {
+
         do {
             session = AVAudioSession.sharedInstance()
             try session.setCategory(.playAndRecord)
@@ -65,17 +122,22 @@ class AudioPlayerManager: ObservableObject {
             print(error.localizedDescription)
         }
         
-        player = AVPlayer(url: audio.url)
-        timeDifferense = audio.duration
+        
     }
 
+    func setAudio(_ audio: Audio){
+        self.currentAudio = audio
+        player = AVPlayer(url: audio.url)
+    }
+    
     func startTimer() {
+        guard let audio = currentAudio else {return}
         let duration = audio.duration
         let time_interval = Double(duration) / Double(audio.decibles.count)
             self.sumplesTimer = Timer.scheduledTimer(withTimeInterval: time_interval, repeats: true, block: { (timer) in
-                if self.index < self.soundSamples.count {
+                if self.index < audio.soundSamples.count {
                     withAnimation(Animation.linear) {
-                        self.soundSamples[self.index].color = Color.white
+                        self.currentAudio?.soundSamples[0].color = Color.white
                     }
                     self.index += 1
                 }
@@ -85,9 +147,7 @@ class AudioPlayerManager: ObservableObject {
         
         timeObserver = player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1, preferredTimescale: 600), queue: .main) { [weak self] time in
             guard let self = self else { return }
-            if self.timeDifferense > 0{
-                self.timeDifferense = (self.audio.duration - Int(time.seconds))
-            }
+            self.currentAudio?.updateRemainingDuration(Int(time.seconds))
         }
     }
     
@@ -95,19 +155,17 @@ class AudioPlayerManager: ObservableObject {
         self.player.pause()
         self.player.seek(to: .zero)
         self.sumplesTimer?.invalidate()
-        timeDifferense = audio.duration
         self.isPlaying = false
         self.index = 0
-        self.soundSamples = self.soundSamples.map { tmp -> AudioPreviewModel in
-            var cur = tmp
-            cur.color = Color.white.opacity(0.5)
-            return cur
-        }
+        currentAudio?.resetRemainingDuration()
+        currentAudio?.setDefaultColor()
     }
     
-    func playAudio() {
+    func playAudio(_ audio: Audio) {
         
-        if isPlaying {
+        setAudio(audio)
+        
+        if isPlaying{
             pauseAudio()
         } else {
             
@@ -123,19 +181,19 @@ class AudioPlayerManager: ObservableObject {
     func pauseAudio() {
         player.pause()
         sumplesTimer?.invalidate()
-        self.isPlaying = false
+        isPlaying = false
     }
 
     
-    func visualizeAudio() {
-        soundSamples = audio.decibles.map({.init(magnitude: $0)})
-    }
+
     
     func removeAudio() {
-        do {
-            try FileManager.default.removeItem(at: audio.url)
-        } catch {
-            print(error)
+        if let url = currentAudio?.url{
+            do {
+                try FileManager.default.removeItem(at: url)
+            } catch {
+                print(error)
+            }
         }
     }
 

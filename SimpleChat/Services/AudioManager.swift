@@ -97,7 +97,6 @@ class VoiceViewModel : NSObject , ObservableObject, AVAudioPlayerDelegate {
             self.returnedAudio  = .init(url: url, duration: self.countSec, decibles: decibles)
                 self.recordState = .recordered
                 self.countSec = 0
-            print(self.returnedAudio)
         }
     }
 
