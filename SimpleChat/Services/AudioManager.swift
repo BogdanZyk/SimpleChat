@@ -22,7 +22,7 @@ class AudioManager: ObservableObject {
     private var currentTime: Double = .zero
 
     var index = 0
-    @Published var currentAudio: Audio?
+    @Published var currentAudio: VoiceAudioModel?
     @Published var isPlaying: Bool = false
     @Published var player: AVPlayer!
     @Published var session: AVAudioSession!
@@ -49,7 +49,7 @@ class AudioManager: ObservableObject {
         
     }
 
-    func setAudio(_ audio: Audio){
+    func setAudio(_ audio: VoiceAudioModel){
         guard currentAudio?.id != audio.id else {return}
             sumplesTimer?.invalidate()
         removeTimeObserver()
@@ -94,7 +94,7 @@ class AudioManager: ObservableObject {
     
     
     
-    func audioAction(_ audio: Audio){
+    func audioAction(_ audio: VoiceAudioModel){
         setAudio(audio)
         if isPlaying {
             pauseAudio()
@@ -104,7 +104,7 @@ class AudioManager: ObservableObject {
     }
     
     
-   private func playAudio(_ audio: Audio) {
+   private func playAudio(_ audio: VoiceAudioModel) {
         if isPlaying{
             pauseAudio()
         } else {

@@ -39,7 +39,7 @@ extension DialogViewModel{
     
     func send() {
          guard !text.isEmpty else { return }
-         let message = Message(id: UUID(), text: self.text, userId: "1", type: .random)
+         let message = Message(id: UUID(), text: self.text, userId: "1", reciepType: .random)
          self.messages.append(message)
          self.text = ""
          self.targetMessage = message
@@ -77,7 +77,7 @@ extension DialogViewModel{
 extension DialogViewModel{
     
     func isSelected(_ message: Message) -> Bool{
-        selectedMessages.contains(message)
+        selectedMessages.contains(where: {message.id == $0.id})
     }
     
     func selectMessage(_ message: Message){

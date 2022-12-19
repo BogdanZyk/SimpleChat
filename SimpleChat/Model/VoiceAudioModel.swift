@@ -1,5 +1,5 @@
 //
-//  Audio.swift
+//  VoiceAudioModel.swift
 //  SimpleChat
 //
 //  Created by Богдан Зыков on 19.12.2022.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Audio: Identifiable{
+struct VoiceAudioModel: Identifiable{
     
     var id: String
     var url: URL
@@ -16,9 +16,9 @@ struct Audio: Identifiable{
     
     var remainingDuration: Int
     
-    var soundSamples = [AudioPreviewModel]()
+    var soundSamples = [AudioSimpleModel]()
     
-    init(id: String, url: URL, duration: Int, decibles: [Float], soundSamples: [AudioPreviewModel] = [AudioPreviewModel]()) {
+    init(id: String, url: URL, duration: Int, decibles: [Float], soundSamples: [AudioSimpleModel] = [AudioSimpleModel]()) {
         self.id = id
         self.url = url
         self.duration = duration
@@ -30,9 +30,9 @@ struct Audio: Identifiable{
 
 }
 
-extension Audio{
+extension VoiceAudioModel{
     mutating func setDefaultColor(){
-        self.soundSamples = self.soundSamples.map { tmp -> AudioPreviewModel in
+        self.soundSamples = self.soundSamples.map { tmp -> AudioSimpleModel in
             var cur = tmp
             cur.color = Color.white.opacity(0.5)
             return cur
@@ -50,7 +50,7 @@ extension Audio{
 }
 
 
-struct AudioPreviewModel: Hashable {
+struct AudioSimpleModel: Hashable {
     var magnitude: Float
     var color: Color = .white.opacity(0.5)
 }

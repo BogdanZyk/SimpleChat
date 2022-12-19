@@ -8,22 +8,41 @@
 import SwiftUI
 
 
-struct Message: Codable, Hashable, Identifiable {
+struct Message: Codable, Identifiable, Equatable {
+
     var id: UUID
     var text: String
     var userId: String
-    var type: RecieptType
+    var reciepType: RecieptType
     var date: Date = Date()
+    var contentType: MessageContentType = .onlyText
+    var audio: MessageAudio?
 }
 
+extension Message{
+    static func == (lhs: Message, rhs: Message) -> Bool {
+        lhs.id == rhs.id
+    }
+}
 
+enum MessageContentType: String, Codable{
+    case voice = "VOICE"
+    case onlyText = "ONLY_TEXT"
+    case textAndImage = "TEXT_IMAGE"
+    case image = "IMAGE"
+    case video = "VIDEO"
+}
 
 enum RecieptType: Int, Codable, Equatable {
     case sent
     case received
 }
 
+
+
+
 extension RecieptType {
+
     var backgroundColor: Color {
         switch self {
         case .sent:
@@ -54,8 +73,11 @@ var mockMassage: [Message] {
     var array = [Message]()
     
     (1...20).forEach { int in
-        array.append(.init(id: UUID(), text: "\((1...1000).randomElement() ?? 1)", userId: "\((1...2).randomElement() ?? 1)", type: .random))
+        array.append(.init(id: UUID(), text: "\((1...1000).randomElement() ?? 1)", userId: "\((1...2).randomElement() ?? 1)", reciepType: .random))
     }
     
     return array
 }
+
+
+

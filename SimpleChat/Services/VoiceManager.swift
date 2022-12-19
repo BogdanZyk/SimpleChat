@@ -26,8 +26,8 @@ class VoiceManager : NSObject , ObservableObject, AVAudioPlayerDelegate {
     @Published var blinkingCount : Timer?
     @Published var timer : String = "00:00"
     
-    @Published var returnedAudio: Audio?
-    @Published var updloadedAudio: Audio?
+    @Published var returnedAudio: VoiceAudioModel?
+    @Published var updloadedAudio: VoiceAudioModel?
    
     
     override init(){
