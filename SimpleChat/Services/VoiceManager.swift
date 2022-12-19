@@ -26,7 +26,7 @@ class VoiceManager : NSObject , ObservableObject, AVAudioPlayerDelegate {
     @Published var remainingDuration: Int = 0
     
     @Published var returnedAudio: VoiceAudioModel?
-    @Published var updloadedAudio: VoiceAudioModel?
+
    
     
     override init(){
@@ -36,13 +36,7 @@ class VoiceManager : NSObject , ObservableObject, AVAudioPlayerDelegate {
  
     func startRecording(){
         
-        let recordingSession = AVAudioSession.sharedInstance()
-        do {
-            try recordingSession.setCategory(.record, mode: .default)
-            try recordingSession.setActive(true)
-        } catch {
-            print("Can not setup the Recording")
-        }
+        AVAudioSessionManager.share.configureRecordAudioSessionCategory()
         
         let path = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
         let audioCachURL = path.appendingPathComponent("CO-Voice : \(Date()).m4a")
@@ -99,13 +93,14 @@ class VoiceManager : NSObject , ObservableObject, AVAudioPlayerDelegate {
         }
     }
 
-     func uploadAudio(){
+    func uploadAudio(completion: @escaping (MessageAudio) -> Void){
          guard let returnedAudio = returnedAudio else {return}
          let url = returnedAudio.url
          bufferService.buffer(url: url, samplesCount: 30) {[weak self] decibles in
              guard let self = self else {return}
-             self.updloadedAudio = .init(id: UUID().uuidString, url: url, duration: returnedAudio.duration, decibles: decibles)
+             let updloadedAudio: MessageAudio = .init(id: UUID().uuidString, url: url, duration: returnedAudio.duration, decibles: decibles)
              self.recordState = .empty
+             completion(updloadedAudio)
          }
          
 //         isLoading = true

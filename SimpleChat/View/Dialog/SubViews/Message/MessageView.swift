@@ -31,6 +31,14 @@ struct MessageView: View {
             .padding(8)
             .background(message.reciepType.backgroundColor, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
             .foregroundColor(message.reciepType.textColor)
+            .overlay(alignment: .bottomTrailing){
+                if message.contentType == .voice{
+                    Text("\(message.date, formatter: Date.formatter)")
+                        .font(.system(size: 10))
+                        .foregroundColor(.white)
+                        .padding(5)
+                }
+            }
             .contextMenu{
                 contextMenuView
             }
@@ -147,7 +155,7 @@ extension MessageView{
         HStack(alignment: .firstTextBaseline, spacing: 5) {
             Text(message.text)
             Text("\(message.date, formatter: Date.formatter)")
-                .font(.caption2)
+                .font(.system(size: 10))
 
         }
     }

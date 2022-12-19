@@ -11,10 +11,6 @@ import SwiftUI
 import AVKit
 import Combine
 
-
-
-
-
 class AudioManager: ObservableObject {
     
     private var sumplesTimer: Timer?
@@ -34,24 +30,11 @@ class AudioManager: ObservableObject {
         removeTimeObserver()
     }
     
-    init() {
-
-        do {
-            session = AVAudioSession.sharedInstance()
-            try session.setCategory(.playback, mode: .default)
-            try session.overrideOutputAudioPort(.none)
-            try session.setActive(true)
-            
-        } catch {
-            print(error.localizedDescription)
-        }
-        
-        
-    }
-
+    
     func setAudio(_ audio: VoiceAudioModel){
         guard currentAudio?.id != audio.id else {return}
-            sumplesTimer?.invalidate()
+        AVAudioSessionManager.share.configurePlaybackSession()
+        sumplesTimer?.invalidate()
         removeTimeObserver()
         index = 0
         currentAudio = nil
@@ -108,12 +91,7 @@ class AudioManager: ObservableObject {
         if isPlaying{
             pauseAudio()
         } else {
-//            print("NotificationCenter")
-//            NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main, using: {[weak self]  (notification) in
-//                print("NotificationCenter 2")
-//                self?.playerDidFinishPlaying(note: notification)
-//                  })
-            
+
             NotificationCenter.default.addObserver(self, selector:#selector(self.playerDidFinishPlaying(note:)),name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player.currentItem)
 
             isPlaying.toggle()
@@ -157,27 +135,4 @@ class AudioManager: ObservableObject {
 
 
 
-extension View {
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape( RoundedCorner(radius: radius, corners: corners) )
-    }
-}
 
-struct RoundedCorner: Shape {
-    
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-    
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-        return Path(path.cgPath)
-    }
-}
-
-extension Array {
-    func chunked(into size: Int) -> [[Element]] {
-        return stride(from: 0, to: count, by: size).map {
-            Array(self[$0 ..< Swift.min($0 + size, count)])
-        }
-    }
-}

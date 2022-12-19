@@ -10,7 +10,7 @@ import SwiftUI
 struct DialogView: View {
     @EnvironmentObject var voiceManager: VoiceManager
     @EnvironmentObject var audioManager: AudioManager
-    @StateObject private var dialodVM = DialogViewModel()
+    @StateObject private var dialogVM = DialogViewModel()
     @State private var pinMessageTrigger: Int = 0
     @State private var showBottomScrollButton: Bool = false
     var body: some View {
@@ -20,20 +20,20 @@ struct DialogView: View {
                 ScrollViewReader { scrollView in
                     ReversedScrollView(.vertical, showsIndicators: true, contentSpacing: 4) {
                         
-                        ForEach(dialodVM.messages) { message in
+                        ForEach(dialogVM.messages) { message in
                             
                             MessageView(
                                 message: message,
-                                isSelected: dialodVM.isSelected(message),
-                                dialogMode: $dialodVM.dialogMode,
-                                onSelected: dialodVM.selectMessage,
-                                onPin: dialodVM.pinMessage,
-                                onSetMessage: dialodVM.onSetActionMessage
+                                isSelected: dialogVM.isSelected(message),
+                                dialogMode: $dialogVM.dialogMode,
+                                onSelected: dialogVM.selectMessage,
+                                onPin: dialogVM.pinMessage,
+                                onSetMessage: dialogVM.onSetActionMessage
                             )
                             
-                            .padding(.bottom, dialodVM.messages.last?.id == message.id ? 10 : 0)
+                            .padding(.bottom, dialogVM.messages.last?.id == message.id ? 10 : 0)
                             .onAppear{
-                                dialodVM.loadNextPageMessages(scrollView, message: message)
+                                dialogVM.loadNextPageMessages(scrollView, message: message)
                                 onAppearForScrollButton(message)
                             }
                             .onDisappear{
@@ -46,20 +46,20 @@ struct DialogView: View {
                         bottomScrollButton(scrollView)
                     }
                     .onAppear{
-                        if let id = dialodVM.messages.last?.id {
+                        if let id = dialogVM.messages.last?.id {
                             scrollView.scrollTo(id, anchor: .bottom)
                         }
                     }
-                    .onChange(of: dialodVM.targetMessage) { message in
+                    .onChange(of: dialogVM.targetMessage) { message in
                         if let message = message {
-                            dialodVM.targetMessage = nil
+                            dialogVM.targetMessage = nil
                             withAnimation(.default) {
                                 scrollView.scrollTo(message.id)
                             }
                         }
                     }
                     .onChange(of: pinMessageTrigger) { _ in
-                        if let message = dialodVM.pinnedMessage {
+                        if let message = dialogVM.pinnedMessage {
                             withAnimation(.default) {
                                 scrollView.scrollTo(message.id, anchor: .center)
                             }
@@ -67,6 +67,7 @@ struct DialogView: View {
                     }
                 }
                 bottomBarView
+                    .environmentObject(dialogVM)
             }
             .onTapGesture {
                 UIApplication.shared.endEditing()
@@ -100,8 +101,8 @@ extension DialogView{
 
     private var navTitle: some View{
         Group{
-            if dialodVM.dialogMode == .messageSelecting{
-                Text("Selected \(dialodVM.selectedMessages.count)")
+            if dialogVM.dialogMode == .messageSelecting{
+                Text("Selected \(dialogVM.selectedMessages.count)")
             }else{
                 Text("User name")
             }
@@ -114,12 +115,29 @@ extension DialogView{
     
     @ViewBuilder
     private var trailingButtonView: some View{
-        if dialodVM.dialogMode == .messageSelecting{
+        if dialogVM.dialogMode == .messageSelecting{
             cancelButton
         }else{
-            Circle()
-                .fill(Color.blue.opacity(0.3))
-                .frame(width: 38, height: 38)
+            NavigationLink {
+                ZStack{
+                    Color.blue
+                    VStack{
+                        AudioPreviewView(mode: .message, audio: .init(id: "1", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
+                        
+                        AudioPreviewView(mode: .vocePreview, audio: .init(id: "2", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
+                        
+                        
+                    }
+                    .padding(.horizontal)
+                }
+                
+            } label: {
+                Circle()
+                    .fill(Color.blue.opacity(0.3))
+                    .frame(width: 38, height: 38)
+            }
+
+            
         }
 
     }
@@ -127,8 +145,8 @@ extension DialogView{
     private var cancelButton: some View{
         Button("Cancel"){
             withAnimation {
-                dialodVM.dialogMode = .dialog
-                dialodVM.selectedMessages.removeAll()
+                dialogVM.dialogMode = .dialog
+                dialogVM.selectedMessages.removeAll()
             }
         }
     }
@@ -141,13 +159,13 @@ extension DialogView{
         VStack(spacing: 10) {
             Divider().padding(.horizontal, -16)
             
-            if dialodVM.dialogMode != .messageSelecting{
+            if dialogVM.dialogMode != .messageSelecting{
                 activeBarMessageSection
                 HStack {
                     if voiceManager.recordState != .empty{
-                        VoceViewTabComponent()
+                        VoiceViewTabComponent()
                     }else{
-                        TextField("Message", text: $dialodVM.text)
+                        TextField("Message", text: $dialogVM.text)
                             .frame(height: 44)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                         mainBarButton
@@ -163,7 +181,7 @@ extension DialogView{
     
     @ViewBuilder
     private var selectedBottomBarView: some View{
-        if dialodVM.dialogMode == .messageSelecting{
+        if dialogVM.dialogMode == .messageSelecting{
             HStack{
                 Button {
                     
@@ -190,7 +208,7 @@ extension DialogView{
     
     @ViewBuilder
     private var activeBarMessageSection: some View{
-        if let messageForAction = dialodVM.messageForAction{
+        if let messageForAction = dialogVM.messageForAction{
             HStack(spacing: 10){
                 Image(systemName: messageForAction.mode.image)
                 Rectangle().frame(width: 1, height: 25)
@@ -204,7 +222,7 @@ extension DialogView{
                 Spacer()
                 Button {
                     withAnimation(.easeInOut(duration: 0.1)) {
-                        dialodVM.messageForAction = nil
+                        dialogVM.messageForAction = nil
                     }
                 } label: {
                     Image(systemName: "xmark")
@@ -217,7 +235,7 @@ extension DialogView{
     
     @ViewBuilder
     private var mainBarButton: some View{
-        if dialodVM.text.isEmpty{
+        if dialogVM.text.isEmpty{
             Button {
                 withAnimation(.easeInOut(duration: 0.2)) {
                     voiceManager.startRecording()
@@ -229,7 +247,7 @@ extension DialogView{
             }
         }else{
             Button {
-                dialodVM.send()
+                dialogVM.send()
             } label: {
                 VStack{
                     Image(systemName: "arrow.up")
@@ -250,12 +268,12 @@ extension DialogView{
     
     @ViewBuilder
     private var pinMessageSection: some View{
-        if let pinnedMessage = dialodVM.pinnedMessage{
+        if let pinnedMessage = dialogVM.pinnedMessage{
             PinnedMessageView(
                 message: pinnedMessage) {
                     pinMessageTrigger += 1
                 } onDelete: {
-                    dialodVM.pinnedMessage = nil
+                    dialogVM.pinnedMessage = nil
                 }
         }
     }
@@ -266,7 +284,7 @@ extension DialogView{
     private func bottomScrollButton(_ scrollView: ScrollViewProxy) -> some View{
         
         Button {
-            if let lastMessageId = dialodVM.messages.last?.id{
+            if let lastMessageId = dialogVM.messages.last?.id{
                 withAnimation(.easeOut){
                     scrollView.scrollTo(lastMessageId, anchor: .bottom)
                 }
@@ -286,7 +304,7 @@ extension DialogView{
     }
     
     private func onAppearForScrollButton(_ message: Message){
-        if dialodVM.messages.last?.id == message.id{
+        if dialogVM.messages.last?.id == message.id{
             withAnimation {
                 showBottomScrollButton = false
             }
@@ -294,7 +312,7 @@ extension DialogView{
     }
     
     private func onDisapearForScrollButton(_ message: Message){
-        if dialodVM.messages.last?.id == message.id{
+        if dialogVM.messages.last?.id == message.id{
             withAnimation {
                 showBottomScrollButton = true
             }

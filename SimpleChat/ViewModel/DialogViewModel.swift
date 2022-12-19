@@ -39,9 +39,15 @@ extension DialogViewModel{
     
     func send() {
          guard !text.isEmpty else { return }
-         let message = Message(id: UUID(), text: self.text, userId: "1", reciepType: .random)
+         let message = Message(id: UUID(), text: self.text, userId: "1", reciepType: .sent)
          self.messages.append(message)
          self.text = ""
+         self.targetMessage = message
+     }
+    
+    func sendVoice(audio: MessageAudio) {
+        let message = Message(id: UUID(), text: "", userId: "1", reciepType: .sent, contentType: .voice, audio: audio)
+         self.messages.append(message)
          self.targetMessage = message
      }
      

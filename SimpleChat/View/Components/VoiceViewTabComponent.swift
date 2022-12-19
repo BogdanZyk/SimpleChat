@@ -1,5 +1,5 @@
 //
-//  VoceViewTabComponent.swift
+//  VoiceViewTabComponent.swift
 //  SimpleChat
 //
 //  Created by Богдан Зыков on 17.12.2022.
@@ -7,7 +7,8 @@
 
 import SwiftUI
 
-struct VoceViewTabComponent: View {
+struct VoiceViewTabComponent: View {
+    @EnvironmentObject var dialogVM: DialogViewModel
     @EnvironmentObject var audioManager: AudioManager
     @EnvironmentObject var voiceVM: VoiceManager
     @GestureState private var isDragging: Bool = false
@@ -42,16 +43,17 @@ struct VoceViewTabComponent: View {
     }
 }
 
-struct VoceViewTabComponent_Previews: PreviewProvider {
+struct VoiceViewTabComponent_Previews: PreviewProvider {
     static var previews: some View {
-        VoceViewTabComponent()
+        VoiceViewTabComponent()
             .padding(.horizontal)
             .environmentObject(AudioManager())
             .environmentObject(VoiceManager())
+            .environmentObject(DialogViewModel())
     }
 }
 
-extension VoceViewTabComponent{
+extension VoiceViewTabComponent{
 
 
     private var playButton: some View{
@@ -130,7 +132,9 @@ extension VoceViewTabComponent{
             }
             audioView
             Button {
-                voiceVM.uploadAudio()
+                voiceVM.uploadAudio{ audio in
+                    dialogVM.sendVoice(audio: audio)
+                }
             } label: {
                 VStack{
                     Image(systemName: "arrow.up")
@@ -150,7 +154,6 @@ extension VoceViewTabComponent{
         HStack{
             if let audio = voiceVM.returnedAudio{
                 AudioPreviewView(mode: .vocePreview, audio: audio)
-
             }
         }
         .padding(.vertical, 5)
@@ -164,7 +167,7 @@ extension VoceViewTabComponent{
 
 
 //MARK: - Dragg action
-extension VoceViewTabComponent{
+extension VoiceViewTabComponent{
 
     private func onChanged(_ value: DragGesture.Value){
         if value.translation.width < 0 && isDragging{
