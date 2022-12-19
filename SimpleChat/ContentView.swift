@@ -8,10 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var audioManager = AudioManager()
+    @StateObject private var voiceManager = VoiceManager()
     var body: some View {
-        VoceViewTabComponent()
-        //AudioPreviewView(audio: "https://muzati.net/music/0-0-1-20146-20")
+        DialogView()
             .preferredColorScheme(.light)
+            .environmentObject(voiceManager)
+            .environmentObject(audioManager)
     }
 }
 

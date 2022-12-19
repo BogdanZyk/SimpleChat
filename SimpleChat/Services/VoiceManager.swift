@@ -20,11 +20,10 @@ class VoiceManager : NSObject , ObservableObject, AVAudioPlayerDelegate {
     @Published var recordState: AudioRecordEnum = .empty
     @Published var isLoading: Bool = false
     @Published var uploadURL: URL?
-    @Published var countSec = 0
     @Published var toggleColor : Bool = false
     @Published var timerCount : Timer?
     @Published var blinkingCount : Timer?
-    @Published var timer : String = "00:00"
+    @Published var remainingDuration: Int = 0
     
     @Published var returnedAudio: VoiceAudioModel?
     @Published var updloadedAudio: VoiceAudioModel?
@@ -59,8 +58,7 @@ class VoiceManager : NSObject , ObservableObject, AVAudioPlayerDelegate {
             audioRecorder.record()
             recordState = .recording
             timerCount = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { (value) in
-                self.countSec += 1
-                self.timer = self.countSec.secondsToTime()
+                self.remainingDuration += 1
             })
             blinkColor()
             
@@ -84,20 +82,20 @@ class VoiceManager : NSObject , ObservableObject, AVAudioPlayerDelegate {
     
     func cancel(){
         audioRecorder.stop()
-        
         timerCount!.invalidate()
         blinkingCount!.invalidate()
         returnedAudio = nil
         recordState = .empty
+        remainingDuration = 0
     }
     
     func prepairAudioForPreview(){
         let url = audioRecorder.url
         bufferService.buffer(url: url, samplesCount: Int(UIScreen.main.bounds.width * 0.5) / 4) {[weak self] decibles in
             guard let self = self else {return}
-            self.returnedAudio  = .init(id: UUID().uuidString, url: url, duration: self.countSec, decibles: decibles)
+            self.returnedAudio  = .init(id: UUID().uuidString, url: url, duration: self.remainingDuration, decibles: decibles)
                 self.recordState = .recordered
-                self.countSec = 0
+                self.remainingDuration = 0
         }
     }
 

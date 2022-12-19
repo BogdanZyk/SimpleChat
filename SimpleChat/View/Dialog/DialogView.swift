@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct DialogView: View {
+    @EnvironmentObject var voiceManager: VoiceManager
+    @EnvironmentObject var audioManager: AudioManager
     @StateObject private var dialodVM = DialogViewModel()
     @State private var pinMessageTrigger: Int = 0
     @State private var showBottomScrollButton: Bool = false
@@ -66,6 +68,9 @@ struct DialogView: View {
                 }
                 bottomBarView
             }
+            .onTapGesture {
+                UIApplication.shared.endEditing()
+            }
             .overlay(alignment: .top) {
                 pinMessageSection
             }
@@ -85,6 +90,8 @@ struct DialogView: View {
 struct DialogView_Previews: PreviewProvider {
     static var previews: some View {
         DialogView()
+            .environmentObject(AudioManager())
+            .environmentObject(VoiceManager())
     }
 }
 
@@ -121,6 +128,7 @@ extension DialogView{
         Button("Cancel"){
             withAnimation {
                 dialodVM.dialogMode = .dialog
+                dialodVM.selectedMessages.removeAll()
             }
         }
     }
@@ -132,27 +140,24 @@ extension DialogView{
     private var bottomBarView: some View{
         VStack(spacing: 10) {
             Divider().padding(.horizontal, -16)
+            
             if dialodVM.dialogMode != .messageSelecting{
                 activeBarMessageSection
-                
                 HStack {
-                    TextField("Message", text: $dialodVM.text)
-                        .frame(height: 44)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    Button(action: {
-                        dialodVM.send()
-                    }) {
-                        Text("Send")
+                    if voiceManager.recordState != .empty{
+                        VoceViewTabComponent()
+                    }else{
+                        TextField("Message", text: $dialodVM.text)
+                            .frame(height: 44)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                        mainBarButton
                     }
-                    .buttonStyle(.bordered)
                 }
             }else{
                 selectedBottomBarView
             }
         }
         .padding(.horizontal)
-       
-
     }
     
     
@@ -209,6 +214,34 @@ extension DialogView{
             .zIndex(0)
         }
     }
+    
+    @ViewBuilder
+    private var mainBarButton: some View{
+        if dialodVM.text.isEmpty{
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    voiceManager.startRecording()
+                }
+            } label: {
+                Image(systemName: "mic.fill")
+                    .imageScale(.large)
+                    .foregroundColor(.blue)
+            }
+        }else{
+            Button {
+                dialodVM.send()
+            } label: {
+                VStack{
+                    Image(systemName: "arrow.up")
+                        .imageScale(.medium)
+                        .foregroundColor(.white)
+
+                }
+                .frame(width: 30, height: 30)
+                .background(Color.blue, in: Circle())
+            }
+        }
+    }
 }
 
 //MARK: - Pin message section view
@@ -218,42 +251,14 @@ extension DialogView{
     @ViewBuilder
     private var pinMessageSection: some View{
         if let pinnedMessage = dialodVM.pinnedMessage{
-            VStack(spacing: 5) {
-                Divider().padding(.horizontal, -16)
-                HStack{
-                    Rectangle().frame(width: 1, height: 30)
-                    Button {
-                        pinMessageTrigger += 1
-                    } label: {
-                        HStack{
-                            VStack(alignment: .leading) {
-                                Text("Pin message")
-                                    .font(.subheadline.weight(.medium))
-                                Text(pinnedMessage.text)
-                                
-                            }
-                            Spacer()
-                        }
-                    }
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.1)) {
-                            dialodVM.pinnedMessage = nil
-                        }
-                    } label: {
-                        Image(systemName: "xmark")
-                    }
+            PinnedMessageView(
+                message: pinnedMessage) {
+                    pinMessageTrigger += 1
+                } onDelete: {
+                    dialodVM.pinnedMessage = nil
                 }
-                .padding(.horizontal)
-                Divider().padding(.horizontal, -16)
-            }
-            .foregroundColor(.black)
-            .background(Material.bar)
-            .zIndex(0)
-            .transition(.move(edge: .top))
         }
     }
-    
-
 }
 
 extension DialogView{

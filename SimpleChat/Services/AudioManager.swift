@@ -38,9 +38,9 @@ class AudioManager: ObservableObject {
 
         do {
             session = AVAudioSession.sharedInstance()
-            try session.setCategory(.playback)
-
-            try session.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
+            try session.setCategory(.playback, mode: .default)
+            try session.overrideOutputAudioPort(.none)
+            try session.setActive(true)
             
         } catch {
             print(error.localizedDescription)
@@ -74,15 +74,15 @@ class AudioManager: ObservableObject {
                 }
             })
             
-        
-        
-        timeObserver = player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1, preferredTimescale: 600), queue: .main) { [weak self] time in
+        let interval = CMTimeMake(value: 1, timescale: 1)
+        timeObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
             guard let self = self else { return }
             self.currentAudio?.updateRemainingDuration(Int(time.seconds))
         }
     }
     
-    @objc func playerDidFinishPlaying(note: NSNotification) {
+    @objc func playerDidFinishPlaying(note: Notification) {
+        print("DidFinishPlaying")
         self.player.pause()
         self.player.seek(to: .zero)
         self.sumplesTimer?.invalidate()
@@ -108,6 +108,12 @@ class AudioManager: ObservableObject {
         if isPlaying{
             pauseAudio()
         } else {
+//            print("NotificationCenter")
+//            NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main, using: {[weak self]  (notification) in
+//                print("NotificationCenter 2")
+//                self?.playerDidFinishPlaying(note: notification)
+//                  })
+            
             NotificationCenter.default.addObserver(self, selector:#selector(self.playerDidFinishPlaying(note:)),name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player.currentItem)
 
             isPlaying.toggle()

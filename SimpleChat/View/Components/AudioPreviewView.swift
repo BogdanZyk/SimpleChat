@@ -25,9 +25,9 @@ struct AudioPreviewView: View {
     
     private var remainingDuration: String{
         if let audio = audioManager.currentAudio, audio.id == self.audio.id{
-            return "\(Int(audio.remainingDuration).secondsToTime())"
+            return "\(audio.remainingDuration.secondsToTime())"
         }else{
-            return "\(Int(self.audio.remainingDuration).secondsToTime())"
+            return "\(audio.remainingDuration.secondsToTime())"
         }
     }
     
