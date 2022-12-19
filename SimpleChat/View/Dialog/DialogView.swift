@@ -73,7 +73,11 @@ struct DialogView: View {
                 UIApplication.shared.endEditing()
             }
             .overlay(alignment: .top) {
-                pinMessageSection
+                VStack(spacing: 0){
+                    currrentAudioBarComponent
+                    pinMessageSection
+                }
+                
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -136,10 +140,7 @@ extension DialogView{
                     .fill(Color.blue.opacity(0.3))
                     .frame(width: 38, height: 38)
             }
-
-            
         }
-
     }
     
     private var cancelButton: some View{
@@ -206,31 +207,9 @@ extension DialogView{
         }
     }
     
-    @ViewBuilder
+
     private var activeBarMessageSection: some View{
-        if let messageForAction = dialogVM.messageForAction{
-            HStack(spacing: 10){
-                Image(systemName: messageForAction.mode.image)
-                Rectangle().frame(width: 1, height: 25)
-                VStack(alignment: .leading){
-                    Text(messageForAction.mode.title)
-                        .font(.subheadline).bold()
-                    Text(messageForAction.message?.text ?? "")
-                        .font(.footnote)
-                        .lineLimit(1)
-                }
-                Spacer()
-                Button {
-                    withAnimation(.easeInOut(duration: 0.1)) {
-                        dialogVM.messageForAction = nil
-                    }
-                } label: {
-                    Image(systemName: "xmark")
-                }
-            }
-            .transition(.move(edge: .bottom))
-            .zIndex(0)
-        }
+        ActiveBarMessageComponent(message: $dialogVM.messageForAction)
     }
     
     @ViewBuilder
@@ -275,6 +254,18 @@ extension DialogView{
                 } onDelete: {
                     dialogVM.pinnedMessage = nil
                 }
+        }
+    }
+}
+
+//MARK: - Current audio bar component
+
+extension DialogView{
+    
+    @ViewBuilder
+    private var currrentAudioBarComponent: some View{
+        if let audio = audioManager.currentAudio{
+            CurrentAudioTopBarComponent(audio: audio)
         }
     }
 }

@@ -31,14 +31,6 @@ struct MessageView: View {
             .padding(8)
             .background(message.reciepType.backgroundColor, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
             .foregroundColor(message.reciepType.textColor)
-            .overlay(alignment: .bottomTrailing){
-                if message.contentType == .voice{
-                    Text("\(message.date, formatter: Date.formatter)")
-                        .font(.system(size: 10))
-                        .foregroundColor(.white)
-                        .padding(5)
-                }
-            }
             .contextMenu{
                 contextMenuView
             }
@@ -168,9 +160,12 @@ extension MessageView{
     @ViewBuilder
     private var voiceMessage: some View{
         if let audio = message.audio?.convertToVoiceAudioModel(){
-            AudioPreviewView(mode: .message, audio: audio)
+            VStack(alignment: .trailing, spacing: 0){
+                AudioPreviewView(mode: .message, audio: audio)
+                Text("\(message.date, formatter: Date.formatter)")
+                    .font(.system(size: 10))
+            }
         }
-       
     }
 }
 

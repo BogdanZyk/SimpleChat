@@ -15,7 +15,7 @@ class AudioManager: ObservableObject {
     
     private var sumplesTimer: Timer?
     
-    private var currentTime: Double = .zero
+    @Published var currentTime: Int = .zero
 
     var index = 0
     @Published var currentAudio: VoiceAudioModel?
@@ -31,7 +31,7 @@ class AudioManager: ObservableObject {
     }
     
     
-    func setAudio(_ audio: VoiceAudioModel){
+    private func setAudio(_ audio: VoiceAudioModel){
         guard currentAudio?.id != audio.id else {return}
         AVAudioSessionManager.share.configurePlaybackSession()
         sumplesTimer?.invalidate()
@@ -39,7 +39,9 @@ class AudioManager: ObservableObject {
         index = 0
         currentAudio = nil
         isPlaying = false
-        currentAudio = audio
+        withAnimation {
+            currentAudio = audio
+        }
         player = AVPlayer(url: audio.url)
         
     }
@@ -60,11 +62,15 @@ class AudioManager: ObservableObject {
         let interval = CMTimeMake(value: 1, timescale: 1)
         timeObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
             guard let self = self else { return }
-            self.currentAudio?.updateRemainingDuration(Int(time.seconds))
+            let time = Int(time.seconds)
+            self.currentAudio?.updateRemainingDuration(time)
+            if (self.currentAudio?.remainingDuration ?? 0) > 0{
+                self.currentTime = time
+            }
         }
     }
     
-    @objc func playerDidFinishPlaying(note: Notification) {
+    func playerDidFinishPlaying() {
         print("DidFinishPlaying")
         self.player.pause()
         self.player.seek(to: .zero)
@@ -73,10 +79,13 @@ class AudioManager: ObservableObject {
         self.index = 0
         currentAudio?.resetRemainingDuration()
         currentAudio?.setDefaultColor()
+        withAnimation {
+            currentAudio = nil
+        }
+        currentTime = .zero
     }
     
-    
-    
+ 
     func audioAction(_ audio: VoiceAudioModel){
         setAudio(audio)
         if isPlaying {
@@ -91,9 +100,9 @@ class AudioManager: ObservableObject {
         if isPlaying{
             pauseAudio()
         } else {
-
-            NotificationCenter.default.addObserver(self, selector:#selector(self.playerDidFinishPlaying(note:)),name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player.currentItem)
-
+            NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: .main) { _ in
+                self.playerDidFinishPlaying()
+            }
             isPlaying.toggle()
             player.play()
             

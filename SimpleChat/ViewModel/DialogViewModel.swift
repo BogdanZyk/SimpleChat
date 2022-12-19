@@ -129,7 +129,7 @@ struct SelectedMessage{
         
         var image: String{
             switch self{
-            case .reply: return "arrowshape.turn.up.right"
+            case .reply: return "arrowshape.turn.up.left"
             case .edit: return "pencil"
             }
         }

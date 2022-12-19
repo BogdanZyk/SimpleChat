@@ -48,7 +48,7 @@ struct AudioPreviewView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 5){
-                    HStack(alignment: .center, spacing: 2) {
+                    HStack(alignment: mode == .vocePreview ? .center : .bottom, spacing: 2) {
                         if !soundSamples.isEmpty {
                             ForEach(soundSamples, id: \.self) { model in
                                 barView(value: self.normalizeSoundLevel(level: model.magnitude), color: model.color)
@@ -115,7 +115,7 @@ extension AudioPreviewView{
     
     
     private func normalizeSoundLevel(level: Float) -> CGFloat {
-        let level = max(0.2, CGFloat(level) + (mode == .message ? 40 : 40)) / 2
+        let level = max(0.2, CGFloat(level) + (mode == .message ? 50 : 40)) / 2
         
         return CGFloat(level * (40/35))
     }

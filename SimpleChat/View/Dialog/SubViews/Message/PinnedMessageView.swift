@@ -58,18 +58,10 @@ extension PinnedMessageView{
     
     @ViewBuilder
     private var messageContent: some View{
-        switch message.contentType{
-            
-        case .voice:
-            Text("Voice")
-        case .onlyText:
+        if message.contentType == .onlyText{
             Text(message.text)
-        case .textAndImage:
-            Text("Image")
-        case .image:
-            Text("Image")
-        case .video:
-            Text("Video")
+        }else{
+            Text(message.contentType.typeTitle)
         }
     }
 }

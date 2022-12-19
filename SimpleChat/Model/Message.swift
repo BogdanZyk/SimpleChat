@@ -31,6 +31,16 @@ enum MessageContentType: String, Codable{
     case textAndImage = "TEXT_IMAGE"
     case image = "IMAGE"
     case video = "VIDEO"
+    
+    var typeTitle: String{
+        switch self {
+        case .voice: return "Voice message"
+        case .onlyText: return "Text message"
+        case .textAndImage: return "Text and Image"
+        case .image: return "Image message"
+        case .video: return "Video message"
+        }
+    }
 }
 
 enum RecieptType: Int, Codable, Equatable {
