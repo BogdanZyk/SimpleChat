@@ -9,29 +9,23 @@ import SwiftUI
 
 struct VoceViewTabComponent: View {
     @StateObject private var audioManager = AudioManager()
-    @StateObject private var voiceVM = VoiceViewModel()
+    @StateObject private var voiceVM = VoiceManager()
     var body: some View {
         
 
         VStack{
-            VStack{
+            VStack(alignment: .center){
                 AudioPreviewView(
-                    audio: .init(id: "1", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)),
-                    currentAudioPlayedAudio: audioManager.currentAudio,
-                    isPlaying: audioManager.isPlaying,
-                    audioAction: audioManager.audioAction
-                )
+                    audio: .init(id: "1", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
               
-                AudioPreviewView(
-                    audio: .init(id: "2", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)),
-                    currentAudioPlayedAudio: audioManager.currentAudio,
-                    isPlaying: audioManager.isPlaying,
-                    audioAction: audioManager.audioAction
-                )
-              
-                
+                AudioPreviewView(mode: .vocePreview,
+                    audio: .init(id: "2", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
+                if let audio = voiceVM.updloadedAudio{
+                    AudioPreviewView(mode: .message, audio: audio)
+                }
                 
             }
+            .padding(10)
             .background(Color.blue)
             
             switch voiceVM.recordState {
@@ -44,7 +38,7 @@ struct VoceViewTabComponent: View {
             }
             
         }
-
+        .environmentObject(audioManager)
          
 
         
@@ -61,7 +55,7 @@ struct VoceViewTabComponent: View {
 
 //            //Text("\(voiceVM.recordState.rawValue)")
 //        }
-//        .environmentObject(audioManager)
+        
     }
 }
 
@@ -126,32 +120,34 @@ extension VoceViewTabComponent{
                 Image(systemName: "trash")
             }
             audioView
+            Button {
+                voiceVM.uploadAudio()
+            } label: {
+                VStack{
+                    Image(systemName: "arrow.up")
+                        .imageScale(.medium)
+                        .foregroundColor(.white)
 
-            VStack{
-                Image(systemName: "arrow.up")
-                    .imageScale(.medium)
-                    .foregroundColor(.white)
-
+                }
+                .frame(width: 30, height: 30)
+                .background(Color.blue, in: Circle())
             }
-            .frame(width: 30, height: 30)
-            .background(Color.blue, in: Circle())
+            //32 + 20 + 40 + 60
         }
     }
 
     private var audioView: some View{
         HStack{
             if let audio = voiceVM.returnedAudio{
-                AudioPreviewView(
-                    audio: audio,
-                    currentAudioPlayedAudio: audioManager.currentAudio,
-                    isPlaying: audioManager.isPlaying,
-                    audioAction: audioManager.audioAction
-                )
-            }
+                AudioPreviewView(mode: .vocePreview, audio: audio)
 
+            }
         }
+        .padding(.vertical, 5)
         .padding(.horizontal, 10)
         .foregroundColor(.white)
+        .frame(height: 30)
+        .hCenter()
         .background(Color.blue, in: Capsule())
     }
 }

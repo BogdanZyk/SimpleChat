@@ -8,13 +8,11 @@
 import SwiftUI
 
 struct AudioPreviewView: View {
-    
+    var mode: Mode = .message
+    @EnvironmentObject var audioManager: AudioManager
     let audio: Audio
-    var currentAudioPlayedAudio: Audio?
-    var isPlaying: Bool
-    let audioAction: (Audio) -> Void
     private var soundSamples: [AudioPreviewModel] {
-        if let audio = currentAudioPlayedAudio, audio.id == self.audio.id{
+        if let audio = audioManager.currentAudio, audio.id == self.audio.id{
             return audio.soundSamples
         }else{
            return audio.soundSamples
@@ -22,57 +20,57 @@ struct AudioPreviewView: View {
     }
     
     private var isPlayCurrentAudio: Bool{
-        (currentAudioPlayedAudio?.id == audio.id) && isPlaying
+        (audioManager.currentAudio?.id == audio.id) && audioManager.isPlaying
     }
     
     private var remainingDuration: String{
-        if let audio = currentAudioPlayedAudio, audio.id == self.audio.id{
+        if let audio = audioManager.currentAudio, audio.id == self.audio.id{
             return "\(Int(audio.remainingDuration).secondsToTime())"
         }else{
             return "\(Int(self.audio.remainingDuration).secondsToTime())"
         }
     }
     
+    
+    
     var body: some View {
-        VStack( alignment: .leading ) {
+        VStack(alignment: .leading) {
         
             HStack(alignment: .center, spacing: 10) {
                 
                 Button {
-                    
-                    audioAction(audio)
-                    
-                    
+                    audioManager.audioAction(audio)
                 } label: {
-                    Image(systemName: isPlayCurrentAudio ? "pause.fill" : "play.fill")
+                    Image(systemName: icon)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 20, height: 20)
-                        .foregroundColor(.white)
-                    
+                        .frame(width: iconSize.width, height: iconSize.height)
                 }
                 
-                HStack(alignment: .center, spacing: 2) {
-                    if !soundSamples.isEmpty {
-                        ForEach(soundSamples, id: \.self) { model in
-                            barView(value: self.normalizeSoundLevel(level: model.magnitude), color: model.color)
+                VStack(alignment: .leading, spacing: 5){
+                    HStack(alignment: .center, spacing: 2) {
+                        if !soundSamples.isEmpty {
+                            ForEach(soundSamples, id: \.self) { model in
+                                barView(value: self.normalizeSoundLevel(level: model.magnitude), color: model.color)
+                            }
+                        } else {
+                            ProgressView()
                         }
-                    } else {
-                        ProgressView()
+                    }
+                    if mode == .message{
+                        Text(remainingDuration)
+                            .font(.caption2)
                     }
                 }
                 
-                Text(remainingDuration)
-                    .font(.caption2)
+                if mode == .vocePreview{
+                    Text(remainingDuration)
+                        .font(.caption2)
+                }
+                
             }
-            .frame(height: 30)
         }
-            .padding(.vertical, 8)
-            .padding(.horizontal)
-            //.frame(maxHeight: 55)
-            .hLeading()
-            //.background(Color.gray.opacity(0.3).cornerRadius(10))
-            
+        .foregroundColor(.white)
     }
 }
 
@@ -83,24 +81,28 @@ struct AudioPreviewView_Previews: PreviewProvider {
         ZStack{
             Color.blue
             VStack{
-                AudioPreviewView(audio: .init(id: "1", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)), isPlaying: false, audioAction: {_ in})
+                AudioPreviewView(mode: .message, audio: .init(id: "1", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
               
-                AudioPreviewView(audio: .init( id: "2", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)), isPlaying: false, audioAction: {_ in})
+                AudioPreviewView(mode: .vocePreview, audio: .init(id: "2", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
               
-                
                 
             }
-          
-                .padding(.horizontal)
+            .padding(.horizontal)
         }
-       
-
+        .environmentObject(AudioManager())
     }
 }
 
 
 extension AudioPreviewView{
     
+    private var iconSize: CGSize{
+        mode == .vocePreview ? .init(width: 12, height: 12) : .init(width: 40, height: 40)
+    }
+    
+    private var icon: String{
+        isPlayCurrentAudio ? (mode == .vocePreview ? "pause.fill" : "pause.circle.fill") : (mode == .vocePreview ? "play.fill" : "play.circle.fill")
+    }
     
     private func barView(value: CGFloat, color: Color) -> some View {
         ZStack {
@@ -113,9 +115,15 @@ extension AudioPreviewView{
     
     
     private func normalizeSoundLevel(level: Float) -> CGFloat {
-        let level = max(0.2, CGFloat(level) + 50) / 2 // between 0.1 and 35
+        let level = max(0.2, CGFloat(level) + (mode == .message ? 40 : 40)) / 2
         
         return CGFloat(level * (40/35))
     }
     
+}
+
+extension AudioPreviewView{
+    enum Mode: Int{
+        case message, vocePreview
+    }
 }

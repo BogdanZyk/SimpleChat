@@ -5,212 +5,173 @@
 //  Created by Богдан Зыков on 17.12.2022.
 //
 
+
 import Foundation
+import SwiftUI
+import AVKit
 import Combine
-import AVFoundation
 
 
 
-class VoiceViewModel : NSObject , ObservableObject, AVAudioPlayerDelegate {
+
+
+class AudioManager: ObservableObject {
     
-    var audioRecorder : AVAudioRecorder!
+    private var sumplesTimer: Timer?
     
-    let bufferService: AudioBufferService = AudioBufferService.shared
+    private var currentTime: Double = .zero
+
+    var index = 0
+    @Published var currentAudio: Audio?
+    @Published var isPlaying: Bool = false
+    @Published var player: AVPlayer!
+    @Published var session: AVAudioSession!
     
-    @Published var recordState: AudioRecordEnum = .empty
-    @Published var isLoading: Bool = false
-    @Published var uploadURL: URL?
-    @Published var countSec = 0
-    @Published var toggleColor : Bool = false
-    @Published var timerCount : Timer?
-    @Published var blinkingCount : Timer?
-    @Published var timer : String = "00:00"
     
-    @Published var returnedAudio: Audio?
-   
+    private var timeObserver: Any?
     
-    override init(){
-        super.init()
+    deinit {
+        removeTimeObserver()
     }
-   
- 
-    func startRecording(){
-        
-        let recordingSession = AVAudioSession.sharedInstance()
+    
+    init() {
+
         do {
-            try recordingSession.setCategory(.record, mode: .default)
-            try recordingSession.setActive(true)
-        } catch {
-            print("Can not setup the Recording")
-        }
-        
-        let path = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-        let audioCachURL = path.appendingPathComponent("CO-Voice : \(Date()).m4a")
-        let settings = [
-            AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-            AVSampleRateKey: 12000,
-            AVNumberOfChannelsKey: 1,
-            AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-        ]
-        do {
-            audioRecorder = try AVAudioRecorder(url: audioCachURL, settings: settings)
-            audioRecorder.prepareToRecord()
-            audioRecorder.record()
-            recordState = .recording
-            timerCount = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { (value) in
-                self.countSec += 1
-                self.timer = self.countSec.secondsToTime()
-            })
-            blinkColor()
+            session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback)
+
+            try session.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
             
         } catch {
-            print("Failed to Setup the Recording")
+            print(error.localizedDescription)
+        }
+        
+        
+    }
+
+    func setAudio(_ audio: Audio){
+        guard currentAudio?.id != audio.id else {return}
+            sumplesTimer?.invalidate()
+        removeTimeObserver()
+        index = 0
+        currentAudio = nil
+        isPlaying = false
+        currentAudio = audio
+        player = AVPlayer(url: audio.url)
+        
+    }
+    
+    func startTimer() {
+        guard let audio = currentAudio else {return}
+        let duration = audio.duration
+        let time_interval = Double(duration) / Double(audio.decibles.count)
+            self.sumplesTimer = Timer.scheduledTimer(withTimeInterval: time_interval, repeats: true, block: { (timer) in
+                if self.index < audio.soundSamples.count {
+                    withAnimation(Animation.linear) {
+                        self.currentAudio?.soundSamples[self.index].color = Color.white
+                    }
+                    self.index += 1
+                }
+            })
+            
+        
+        
+        timeObserver = player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1, preferredTimescale: 600), queue: .main) { [weak self] time in
+            guard let self = self else { return }
+            self.currentAudio?.updateRemainingDuration(Int(time.seconds))
+        }
+    }
+    
+    @objc func playerDidFinishPlaying(note: NSNotification) {
+        self.player.pause()
+        self.player.seek(to: .zero)
+        self.sumplesTimer?.invalidate()
+        self.isPlaying = false
+        self.index = 0
+        currentAudio?.resetRemainingDuration()
+        currentAudio?.setDefaultColor()
+    }
+    
+    
+    
+    func audioAction(_ audio: Audio){
+        setAudio(audio)
+        if isPlaying {
+            pauseAudio()
+        } else {
+            playAudio(audio)
         }
     }
     
     
-    func stopRecording(){
-       
-        
-        audioRecorder.stop()
-        
-        timerCount!.invalidate()
-        blinkingCount!.invalidate()
-        print(audioRecorder.currentTime)
-        saveAudio()
-       
+   private func playAudio(_ audio: Audio) {
+        if isPlaying{
+            pauseAudio()
+        } else {
+            NotificationCenter.default.addObserver(self, selector:#selector(self.playerDidFinishPlaying(note:)),name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player.currentItem)
+
+            isPlaying.toggle()
+            player.play()
+            
+            startTimer()
+        }
     }
     
-    func cancel(){
-        audioRecorder.stop()
-        
-        timerCount!.invalidate()
-        blinkingCount!.invalidate()
-        returnedAudio = nil
-        recordState = .empty
+    private func pauseAudio() {
+        player.pause()
+        sumplesTimer?.invalidate()
+        isPlaying = false
     }
-    
-    func saveAudio(){
-        let url = audioRecorder.url
-        bufferService.buffer(url: url, samplesCount: 30) {[weak self] decibles in
-            guard let self = self else {return}
-            self.returnedAudio  = .init(id: UUID().uuidString, url: url, duration: self.countSec, decibles: decibles)
-                self.recordState = .recordered
-                self.countSec = 0
+
+    private func removeTimeObserver(){
+        if let timeObserver = timeObserver {
+            player.removeTimeObserver(timeObserver)
         }
     }
 
-//     func uploadAudio(){
-//         isLoading = true
-//        guard let uid = FirebaseManager.shared.auth.currentUser?.uid, let url = audioCachURL else {return}
-//        let ref = FirebaseManager.shared.storage.reference(withPath: uid)
-//        ref.putFile(from: url) {(metadate, error) in
-//            if let error = error{
-//                print(error.localizedDescription)
-//            }
-//            ref.downloadURL { url, error in
-//                if let error = error{
-//                    print(error.localizedDescription)
-//                }
-//                print(url?.absoluteString ?? "nil url")
-//                self.isLoading = false
-//                self.uploadURL = url
-//            }
-//        }
-//    }
     
-    
-    private func blinkColor() {
-        
-        blinkingCount = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true, block: { (value) in
-            self.toggleColor.toggle()
-        })
-        
+    func removeAudio() {
+        if let url = currentAudio?.url{
+            do {
+                try FileManager.default.removeItem(at: url)
+            } catch {
+                print(error)
+            }
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+extension View {
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape( RoundedCorner(radius: radius, corners: corners) )
     }
 }
 
-//class AudioPlayerManager : ObservableObject {
-//    var audioPlayer = AVPlayer()
-//    @Published var currentRate: Float = 1.0
-//    @Published var isPlaying: Bool = false
-//    @Published var currentTime: Double = .zero
-//    @Published var duration: Double?
-//    @Published var isEndAudio: Bool = true
-//    @Published var timeDifferense: Double?
-//    private var subscriptions = Set<AnyCancellable>()
-//
-//    private var timeObserver: Any?
-//
-//    deinit {
-//        if let timeObserver = timeObserver {
-//            audioPlayer.removeTimeObserver(timeObserver)
-//        }
-//    }
-//
-//    init(){
-//        startSubscriptions()
-//    }
-//
-//
-//   private func setCurrentItem(_ url: URL?) {
-//        guard let url = url else {return}
-//        let item = AVPlayerItem(url: url)
-//        duration = nil
-//        audioPlayer.replaceCurrentItem(with: item)
-//        item.publisher(for: \.status)
-//            .filter({ $0 == .readyToPlay })
-//            .sink(receiveValue: { [weak self] _ in
-//                self?.duration = item.asset.duration.seconds
-//            })
-//            .store(in: &subscriptions)
-//    }
-//
-//
-//
-//    public func playOrPause(_ url: URL?){
-//
-//        if isEndAudio{
-//            setCurrentItem(url)
-//        }
-//        if isPlaying{
-//            audioPlayer.pause()
-//        }else{
-//            audioPlayer.play()
-//        }
-//        audioPlayer.rate = currentRate
-//    }
-//
-//    private func startSubscriptions(){
-//        audioPlayer.publisher(for: \.timeControlStatus)
-//            .sink { [weak self] status in
-//                switch status {
-//                case .playing:
-//                    self?.isPlaying = true
-//                case .paused:
-//                    self?.isPlaying = false
-//                case .waitingToPlayAtSpecifiedRate:
-//                    break
-//                @unknown default:
-//                    break
-//                }
-//            }
-//            .store(in: &subscriptions)
-//
-//        timeObserver = audioPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1, preferredTimescale: 600), queue: .main) { [weak self] time in
-//            guard let self = self else { return }
-//            //if self.isEditingCurrentTime == false {
-//                self.currentTime = time.seconds
-//            self.isEndAudio = self.currentTime == self.duration
-//            if let duration = self.duration {
-//               self.timeDifferense = duration - self.currentTime
-//            }
-//            //}
-//        }
-//    }
-//}
+struct RoundedCorner: Shape {
+    
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+    
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
+    }
+}
 
-
-
-enum AudioRecordEnum: Int{
-    case recording, recordered, empty
+extension Array {
+    func chunked(into size: Int) -> [[Element]] {
+        return stride(from: 0, to: count, by: size).map {
+            Array(self[$0 ..< Swift.min($0 + size, count)])
+        }
+    }
 }
