@@ -1,5 +1,5 @@
 //
-//  VoiceManager.swift
+//  RecordManager.swift
 //  SimpleChat
 //
 //  Created by Богдан Зыков on 17.12.2022.
@@ -11,7 +11,7 @@ import AVFoundation
 import SwiftUI
 
 
-class VoiceManager : NSObject , ObservableObject, AVAudioPlayerDelegate {
+class RecordManager : NSObject, ObservableObject, AVAudioPlayerDelegate {
     
     var audioRecorder : AVAudioRecorder!
     

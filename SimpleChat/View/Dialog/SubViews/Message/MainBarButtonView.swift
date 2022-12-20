@@ -10,17 +10,17 @@ import SwiftUI
 struct MainBarButtonView: View {
     @ObservedObject var dialogVM: DialogViewModel
     @EnvironmentObject var audioManager: AudioManager
-    @EnvironmentObject var voiceManager: VoiceManager
+    @EnvironmentObject var recordManager: RecordManager
     @GestureState private var isDragging: Bool = false
     @State private var offset: CGFloat = 0
     private var isRecording: Bool {
-        voiceManager.recordState == .recording
+        recordManager.recordState == .recording
     }
         
     var body: some View {
         
         if dialogVM.text.isEmpty{
-            switch voiceManager.recordState{
+            switch recordManager.recordState{
             case.recording, .empty:
                 voiceMicButton
             case .recordered:
@@ -36,7 +36,7 @@ struct MainBarButtonView_Previews: PreviewProvider {
     static var previews: some View {
         MainBarButtonView(dialogVM: DialogViewModel())
             .environmentObject(AudioManager())
-            .environmentObject(VoiceManager())
+            .environmentObject(RecordManager())
     }
 }
 
@@ -65,16 +65,16 @@ extension MainBarButtonView{
                     onChanged(value)
                 }).onEnded(onEnded)))
             .simultaneousGesture(LongPressGesture(minimumDuration: 0.5).onEnded({ _ in
-                if voiceManager.recordState == .empty{
+                if recordManager.recordState == .empty{
                     withAnimation(.easeInOut(duration: 0.2)) {
-                        voiceManager.startRecording()
+                        recordManager.startRecording()
                     }
                 }
             }))
             .simultaneousGesture(TapGesture().onEnded({ _ in
-                if voiceManager.recordState == .recording{
+                if recordManager.recordState == .recording{
                     withAnimation(.easeInOut(duration: 0.2)) {
-                        voiceManager.stopRecording()
+                        recordManager.stopRecording()
                     }
                 }
             }))
@@ -97,15 +97,15 @@ extension MainBarButtonView{
                     .fill(Color.blue)
             }
         }
-        .scaleEffect(isRecording ? (voiceManager.toggleColor ? 1.05 : 1) : 1)
-        .animation(.easeInOut(duration: 0.6), value: voiceManager.toggleColor)
+        .scaleEffect(isRecording ? (recordManager.toggleColor ? 1.05 : 1) : 1)
+        .animation(.easeInOut(duration: 0.6), value: recordManager.toggleColor)
         .scaleEffect(isRecording ? (-offset > 20 ? 0.8 : 1) : 1)
         .offset(x: isRecording ? 25 : 0, y: isRecording ? -20 : 0)
     }
     
     private var sendVoiceButton: some View{
         Button {
-            voiceManager.uploadAudio{ audio in
+            recordManager.uploadAudio{ audio in
                 dialogVM.sendVoice(audio: audio)
             }
         } label: {
@@ -128,15 +128,13 @@ extension MainBarButtonView{
     private func onChanged(_ value: DragGesture.Value){
         
        
-        if value.translation.width < 0 && isDragging && voiceManager.recordState == .recording{
+        if value.translation.width < 0 && isDragging && recordManager.recordState == .recording{
             DispatchQueue.main.async {
-               // if (-value.translation.width < getRect().width / 3){
                     withAnimation {
                         offset = value.translation.width * 0.5
                     }
-                //}
                 if (-value.translation.width >= getRect().width / 3){
-                    voiceManager.cancel()
+                    recordManager.cancel()
                     offset = 0
                 }
             }

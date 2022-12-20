@@ -39,8 +39,9 @@ extension VoiceAudioModel{
         }
     }
     mutating func updateRemainingDuration(_ currentTime: Double){
-        if remainingDuration < duration {
-            remainingDuration = duration - currentTime
+        let dif = duration - currentTime
+        if dif > 0{
+            remainingDuration = dif
         }
     }
     

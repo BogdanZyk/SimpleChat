@@ -9,12 +9,12 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var audioManager = AudioManager()
-    @StateObject private var voiceManager = VoiceManager()
+    @StateObject private var recordManager = RecordManager()
     var body: some View {
         DialogView()
             .preferredColorScheme(.light)
-            .environmentObject(voiceManager)
             .environmentObject(audioManager)
+            .environmentObject(recordManager)
     }
 }
 

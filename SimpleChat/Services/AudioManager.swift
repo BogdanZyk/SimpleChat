@@ -22,12 +22,31 @@ class AudioManager: ObservableObject {
     @Published var isPlaying: Bool = false
     @Published var player: AVPlayer!
     @Published var session: AVAudioSession!
-    
+    @Published var currentRate: Float = 1.0
+    private var subscriptions = Set<AnyCancellable>()
     
     private var timeObserver: Any?
     
     deinit {
         removeTimeObserver()
+    }
+    
+    
+    private func startSubscriptions(){
+        player.publisher(for: \.timeControlStatus)
+            .sink { [weak self] status in
+                switch status {
+                case .playing:
+                    self?.isPlaying = true
+                case .paused:
+                    self?.isPlaying = false
+                case .waitingToPlayAtSpecifiedRate:
+                    break
+                @unknown default:
+                    break
+                }
+            }
+            .store(in: &subscriptions)
     }
     
     
@@ -38,12 +57,15 @@ class AudioManager: ObservableObject {
         removeTimeObserver()
         index = 0
         currentAudio = nil
-        isPlaying = false
         withAnimation {
             currentAudio = audio
         }
         player = AVPlayer(url: audio.url)
-        
+        startSubscriptions()
+    }
+    
+    func udateRate(){
+        player.playImmediately(atRate: currentRate)
     }
     
     func startTimer() {
@@ -65,12 +87,13 @@ class AudioManager: ObservableObject {
             guard let self = self else { return }
             let time = time.seconds
             self.currentAudio?.updateRemainingDuration(time)
-            if self.currentTime < (self.currentAudio?.duration ?? 0){
+            if (self.currentAudio?.duration ?? 0) > time{
                 withAnimation {
                     self.currentTime = time
                 }
             }
         }
+        
     }
     
     func playerDidFinishPlaying() {
@@ -78,7 +101,6 @@ class AudioManager: ObservableObject {
         self.player.pause()
         self.player.seek(to: .zero)
         self.sumplesTimer?.invalidate()
-        self.isPlaying = false
         self.index = 0
         currentAudio?.resetRemainingDuration()
         currentAudio?.setDefaultColor()
@@ -106,9 +128,8 @@ class AudioManager: ObservableObject {
             NotificationCenter.default.addObserver(forName: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: .main) { _ in
                 self.playerDidFinishPlaying()
             }
-            isPlaying.toggle()
             player.play()
-            
+            udateRate()
             startTimer()
         }
     }
@@ -116,7 +137,6 @@ class AudioManager: ObservableObject {
     private func pauseAudio() {
         player.pause()
         sumplesTimer?.invalidate()
-        isPlaying = false
     }
 
     private func removeTimeObserver(){
@@ -128,6 +148,7 @@ class AudioManager: ObservableObject {
     
     func removeAudio() {
         if let url = currentAudio?.url{
+            pauseAudio()
             do {
                 try FileManager.default.removeItem(at: url)
             } catch {

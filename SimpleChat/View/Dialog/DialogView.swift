@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DialogView: View {
-    @EnvironmentObject var voiceManager: VoiceManager
+    @EnvironmentObject var recordManager: RecordManager
     @EnvironmentObject var audioManager: AudioManager
     @StateObject private var dialogVM = DialogViewModel()
     @State private var pinMessageTrigger: Int = 0
@@ -96,7 +96,7 @@ struct DialogView_Previews: PreviewProvider {
     static var previews: some View {
         DialogView()
             .environmentObject(AudioManager())
-            .environmentObject(VoiceManager())
+            .environmentObject(RecordManager())
     }
 }
 
@@ -165,7 +165,7 @@ extension DialogView{
                 VStack(spacing: 10) {
                     activeBarMessageSection
                     HStack {
-                        if voiceManager.recordState != .empty{
+                        if recordManager.recordState != .empty{
                             VoiceViewTabComponent()
                         }else{
                             TextField("Message", text: $dialogVM.text)

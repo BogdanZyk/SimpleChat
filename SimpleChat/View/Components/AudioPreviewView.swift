@@ -115,7 +115,7 @@ extension AudioPreviewView{
     
     
     private func normalizeSoundLevel(level: Float) -> CGFloat {
-        let level = max(0.2, CGFloat(level) + (mode == .message ? 50 : 40)) / 2
+        let level = max(0.2, CGFloat(level) + 50) / 2
         
         return CGFloat(level * (40/35))
     }

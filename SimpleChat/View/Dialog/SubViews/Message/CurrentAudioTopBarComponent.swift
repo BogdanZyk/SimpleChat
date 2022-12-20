@@ -13,9 +13,8 @@ struct CurrentAudioTopBarComponent: View {
     var body: some View {
         VStack(spacing: 0) {
             Divider().padding(.horizontal, -16)
-            HStack{
+            HStack(spacing: 15){
                 playButton
-                
                 Spacer()
                 VStack(alignment: .center) {
                     Text("User")
@@ -25,6 +24,8 @@ struct CurrentAudioTopBarComponent: View {
                 }.padding(.vertical, 5)
                 Spacer()
                 
+                rateButton
+                
                 Button {
                     audioManager.playerDidFinishPlaying()
                 } label: {
@@ -32,13 +33,15 @@ struct CurrentAudioTopBarComponent: View {
                 }
             }
             .padding(.horizontal)
-            Divider().padding(.horizontal, -16)
             progressView
         }
         .foregroundColor(.black)
         .background(Material.bar)
         .zIndex(0)
         .transition(.move(edge: .top))
+        .onAppear{
+            print(audioManager.currentTime, audio.duration)
+        }
     }
 }
 
@@ -63,5 +66,18 @@ extension CurrentAudioTopBarComponent{
         ProgressView(value: audioManager.currentTime, total: audio.duration)
                        //.progressViewStyle(LinerProgressStyle())
                        .frame(height: 1)
+    }
+    
+    private var rateButton: some View{
+        Button {
+            audioManager.currentRate = audioManager.currentRate == 2 ? 1 : 2
+            audioManager.udateRate()
+        } label: {
+            Text(audioManager.currentRate == 2 ? "1X" : "2X")
+                .font(.caption)
+                .padding(.horizontal, 2)
+                .foregroundColor(.blue)
+                .background(Color.blue, in: RoundedRectangle(cornerRadius: 2).stroke(lineWidth: 1.5))
+        }
     }
 }

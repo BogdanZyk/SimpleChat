@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5A5FA6CE294E0D61008DD4A2 /* VoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6CD294E0D61008DD4A2 /* VoiceView.swift */; };
-		5A5FA6D0294E0D81008DD4A2 /* VoiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6CF294E0D81008DD4A2 /* VoiceManager.swift */; };
+		5A5FA6D0294E0D81008DD4A2 /* RecordManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6CF294E0D81008DD4A2 /* RecordManager.swift */; };
 		5A5FA6D3294E106E008DD4A2 /* VoiceViewTabComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6D2294E106D008DD4A2 /* VoiceViewTabComponent.swift */; };
 		5A5FA6D5294E26A5008DD4A2 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6D4294E26A5008DD4A2 /* AudioManager.swift */; };
 		5A5FA6D7294E27ED008DD4A2 /* AudioPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6D6294E27ED008DD4A2 /* AudioPreviewView.swift */; };
@@ -38,7 +38,7 @@
 
 /* Begin PBXFileReference section */
 		5A5FA6CD294E0D61008DD4A2 /* VoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceView.swift; sourceTree = "<group>"; };
-		5A5FA6CF294E0D81008DD4A2 /* VoiceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceManager.swift; sourceTree = "<group>"; };
+		5A5FA6CF294E0D81008DD4A2 /* RecordManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordManager.swift; sourceTree = "<group>"; };
 		5A5FA6D2294E106D008DD4A2 /* VoiceViewTabComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceViewTabComponent.swift; sourceTree = "<group>"; };
 		5A5FA6D4294E26A5008DD4A2 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
 		5A5FA6D6294E27ED008DD4A2 /* AudioPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPreviewView.swift; sourceTree = "<group>"; };
@@ -83,7 +83,7 @@
 			isa = PBXGroup;
 			children = (
 				5A5FA6CD294E0D61008DD4A2 /* VoiceView.swift */,
-				5A5FA6CF294E0D81008DD4A2 /* VoiceManager.swift */,
+				5A5FA6CF294E0D81008DD4A2 /* RecordManager.swift */,
 				5A5FA6D4294E26A5008DD4A2 /* AudioManager.swift */,
 				5A5FA6D8294E3BD3008DD4A2 /* AudioBufferService.swift */,
 				5A5FA6E92950A3D0008DD4A2 /* AvAudioSessionManager.swift */,
@@ -308,7 +308,7 @@
 				5A5FA6CE294E0D61008DD4A2 /* VoiceView.swift in Sources */,
 				5ABC3214294C850F00559B90 /* DialogView.swift in Sources */,
 				5A5FA6DC295051B1008DD4A2 /* VoiceAudioModel.swift in Sources */,
-				5A5FA6D0294E0D81008DD4A2 /* VoiceManager.swift in Sources */,
+				5A5FA6D0294E0D81008DD4A2 /* RecordManager.swift in Sources */,
 				5A5FA6D7294E27ED008DD4A2 /* AudioPreviewView.swift in Sources */,
 				5ABC3212294C847000559B90 /* DialogViewModel.swift in Sources */,
 				5A5FA6E52950773F008DD4A2 /* PinnedMessageView.swift in Sources */,

@@ -10,36 +10,18 @@ import SwiftUI
 struct VoiceViewTabComponent: View {
     @EnvironmentObject var dialogVM: DialogViewModel
     @EnvironmentObject var audioManager: AudioManager
-    @EnvironmentObject var voiceVM: VoiceManager
+    @EnvironmentObject var recordManager: RecordManager
     @GestureState private var isDragging: Bool = false
     @State private var offset: CGFloat = 0
     var body: some View {
         
-
-        VStack{
-//            VStack(alignment: .center){
-//                AudioPreviewView(
-//                    audio: .init(id: "1", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
-//
-//                AudioPreviewView(mode: .vocePreview,
-//                    audio: .init(id: "2", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
-//                if let audio = voiceVM.updloadedAudio{
-//                    AudioPreviewView(mode: .message, audio: audio)
-//                }
-//
-//            }
-//            .padding(10)
-//            .background(Color.blue)
-            
-            switch voiceVM.recordState {
-            case .recording:
-                recordingAudio
-            case .recordered:
-                recordedAudioSection
-            case .empty:
-                EmptyView()
-               // activeMicButton
-            }
+        switch recordManager.recordState {
+        case .recording:
+            recordingAudio
+        case .recordered:
+            recordedAudioSection
+        case .empty:
+            EmptyView()
         }
     }
 }
@@ -49,45 +31,16 @@ struct VoiceViewTabComponent_Previews: PreviewProvider {
         VoiceViewTabComponent()
             .padding(.horizontal)
             .environmentObject(AudioManager())
-            .environmentObject(VoiceManager())
+            .environmentObject(RecordManager())
             .environmentObject(DialogViewModel())
     }
 }
 
 extension VoiceViewTabComponent{
 
-
-//    private var playButton: some View{
-//        VStack{
-//            Image(systemName: "mic")
-//                .resizable()
-//                .aspectRatio(contentMode: .fit)
-//                .frame(width: 25, height: 25)
-//                .foregroundColor(.white)
-//
-//                .padding(25)
-//        }
-//        .background(Color.blue, in: Circle())
-//        .scaleEffect(voiceVM.toggleColor ? 1.05 : 1)
-//        .animation(.easeInOut(duration: 0.6), value: voiceVM.toggleColor)
-//        .scaleEffect(-offset > 20 ? 0.8 : 1)
-//        .offset(x: offset)
-//        .onTapGesture {
-//            withAnimation {
-//                voiceVM.stopRecording()
-//            }
-//        }
-//        .gesture((DragGesture()
-//            .updating($isDragging, body: { (value, state, _) in
-//                state = true
-//                onChanged(value)
-//            }).onEnded(onEnded)))
-//
-//    }
-
     private var activeMicButton: some View{
         Button {
-            voiceVM.startRecording()
+            recordManager.startRecording()
         } label: {
             Image(systemName: "mic")
                 .imageScale(.medium)
@@ -99,13 +52,13 @@ extension VoiceViewTabComponent{
 
     private var recordingAudio: some View{
         HStack{
-            Text(voiceVM.remainingDuration.minutesSecondsMilliseconds)
-                .font(.subheadline)
             Circle()
                 .fill(Color.red)
                 .frame(width: 8, height: 8)
-                .opacity(voiceVM.toggleColor ? 0 : 1)
-                .animation(.easeInOut(duration: 0.6), value: voiceVM.toggleColor)
+                .opacity(recordManager.toggleColor ? 0 : 1)
+                .animation(.easeInOut(duration: 0.6), value: recordManager.toggleColor)
+            Text(recordManager.remainingDuration.minutesSecondsMilliseconds)
+                .font(.subheadline)
             Spacer()
             Label("left to cancel", systemImage: "chevron.left")
                 .opacity(-offset > 20 ? 0 : 1)
@@ -115,17 +68,14 @@ extension VoiceViewTabComponent{
             
         }
         .frame(height: 44)
-//        .overlay(alignment: .trailing){
-//            playButton
-//                .offset(x: 25, y: -20)
-//        }
     }
 
     private var recordedAudioSection: some View{
         HStack(spacing: 10){
             Button {
+                audioManager.removeAudio()
                 withAnimation {
-                    voiceVM.cancel()
+                    recordManager.cancel()
                 }
             } label: {
                 Image(systemName: "trash")
@@ -139,7 +89,7 @@ extension VoiceViewTabComponent{
 
     private var audioView: some View{
         HStack{
-            if let audio = voiceVM.returnedAudio{
+            if let audio = recordManager.returnedAudio{
                 AudioPreviewView(mode: .vocePreview, audio: audio)
             }
         }
@@ -153,28 +103,3 @@ extension VoiceViewTabComponent{
 }
 
 
-//MARK: - Dragg action
-extension VoiceViewTabComponent{
-
-    private func onChanged(_ value: DragGesture.Value){
-        if value.translation.width < 0 && isDragging{
-            DispatchQueue.main.async {
-               // if (-value.translation.width < getRect().width / 3){
-                    withAnimation {
-                        offset = value.translation.width * 0.5
-                    }
-                //}
-                if (-value.translation.width >= getRect().width / 3){
-                    voiceVM.cancel()
-                    offset = 0
-                }
-            }
-        }
-    }
-    
-    private func onEnded(_ value: DragGesture.Value){
-        withAnimation {
-            offset = 0
-        }
-    }
-}
