@@ -60,7 +60,7 @@ extension CurrentAudioTopBarComponent{
     }
     @ViewBuilder
     private var progressView: some View{
-        ProgressView(value: Double(audioManager.currentTime), total: Double(audio.duration))
+        ProgressView(value: audioManager.currentTime, total: audio.duration)
                        //.progressViewStyle(LinerProgressStyle())
                        .frame(height: 1)
     }

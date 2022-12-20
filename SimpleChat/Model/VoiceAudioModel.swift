@@ -11,14 +11,14 @@ struct VoiceAudioModel: Identifiable{
     
     var id: String
     var url: URL
-    var duration: Int
+    var duration: Double
     var decibles: [Float]
     
-    var remainingDuration: Int
+    var remainingDuration: Double
     
     var soundSamples = [AudioSimpleModel]()
     
-    init(id: String, url: URL, duration: Int, decibles: [Float], soundSamples: [AudioSimpleModel] = [AudioSimpleModel]()) {
+    init(id: String, url: URL, duration: Double, decibles: [Float], soundSamples: [AudioSimpleModel] = [AudioSimpleModel]()) {
         self.id = id
         self.url = url
         self.duration = duration
@@ -38,9 +38,9 @@ extension VoiceAudioModel{
             return cur
         }
     }
-    mutating func updateRemainingDuration(_ currentTime: Int){
-        if self.remainingDuration > 0{
-            self.remainingDuration = duration - currentTime
+    mutating func updateRemainingDuration(_ currentTime: Double){
+        if remainingDuration < duration {
+            remainingDuration = duration - currentTime
         }
     }
     

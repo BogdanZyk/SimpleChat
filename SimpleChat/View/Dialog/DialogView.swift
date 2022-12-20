@@ -161,22 +161,33 @@ extension DialogView{
             Divider().padding(.horizontal, -16)
             
             if dialogVM.dialogMode != .messageSelecting{
-                activeBarMessageSection
-                HStack {
-                    if voiceManager.recordState != .empty{
-                        VoiceViewTabComponent()
-                    }else{
-                        TextField("Message", text: $dialogVM.text)
+                
+                VStack(spacing: 10) {
+                    activeBarMessageSection
+                    HStack {
+                        if voiceManager.recordState != .empty{
+                            VoiceViewTabComponent()
+                        }else{
+                            TextField("Message", text: $dialogVM.text)
                             .frame(height: 44)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                           
+                        }
+                        Spacer()
+                        Text("")
+                            .frame(width: 35)
+                    }
+                    .overlay(alignment: .trailing) {
                         mainBarButton
                     }
                 }
+                
             }else{
                 selectedBottomBarView
             }
         }
         .padding(.horizontal)
+       
     }
     
     
@@ -212,32 +223,32 @@ extension DialogView{
         ActiveBarMessageComponent(message: $dialogVM.messageForAction)
     }
     
-    @ViewBuilder
     private var mainBarButton: some View{
-        if dialogVM.text.isEmpty{
-            Button {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    voiceManager.startRecording()
-                }
-            } label: {
-                Image(systemName: "mic.fill")
-                    .imageScale(.large)
-                    .foregroundColor(.blue)
-            }
-        }else{
-            Button {
-                dialogVM.send()
-            } label: {
-                VStack{
-                    Image(systemName: "arrow.up")
-                        .imageScale(.medium)
-                        .foregroundColor(.white)
-
-                }
-                .frame(width: 30, height: 30)
-                .background(Color.blue, in: Circle())
-            }
-        }
+        MainBarButtonView(dialogVM: dialogVM)
+//        if dialogVM.text.isEmpty{
+//            Button {
+//                withAnimation(.easeInOut(duration: 0.2)) {
+//                    voiceManager.startRecording()
+//                }
+//            } label: {
+//                Image(systemName: "mic.fill")
+//                    .imageScale(.large)
+//                    .foregroundColor(.blue)
+//            }
+//        }else{
+//            Button {
+//                dialogVM.send()
+//            } label: {
+//                VStack{
+//                    Image(systemName: "arrow.up")
+//                        .imageScale(.medium)
+//                        .foregroundColor(.white)
+//
+//                }
+//                .frame(width: 30, height: 30)
+//                .background(Color.blue, in: Circle())
+//            }
+//        }
     }
 }
 

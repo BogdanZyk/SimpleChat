@@ -21,6 +21,7 @@
 		5A5FA6EA2950A3D0008DD4A2 /* AvAudioSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6E92950A3D0008DD4A2 /* AvAudioSessionManager.swift */; };
 		5A5FA6EC2950B556008DD4A2 /* ActiveBarMessageComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6EB2950B556008DD4A2 /* ActiveBarMessageComponent.swift */; };
 		5A5FA6EE2950B8FD008DD4A2 /* CurrentAudioTopBarComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6ED2950B8FD008DD4A2 /* CurrentAudioTopBarComponent.swift */; };
+		5A5FA6F02951A208008DD4A2 /* MainBarButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6EF2951A208008DD4A2 /* MainBarButtonView.swift */; };
 		5ABC31F5294C838700559B90 /* SimpleChatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC31F4294C838700559B90 /* SimpleChatApp.swift */; };
 		5ABC31F7294C838700559B90 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC31F6294C838700559B90 /* ContentView.swift */; };
 		5ABC31F9294C838900559B90 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5ABC31F8294C838900559B90 /* Assets.xcassets */; };
@@ -51,6 +52,7 @@
 		5A5FA6E92950A3D0008DD4A2 /* AvAudioSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvAudioSessionManager.swift; sourceTree = "<group>"; };
 		5A5FA6EB2950B556008DD4A2 /* ActiveBarMessageComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveBarMessageComponent.swift; sourceTree = "<group>"; };
 		5A5FA6ED2950B8FD008DD4A2 /* CurrentAudioTopBarComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentAudioTopBarComponent.swift; sourceTree = "<group>"; };
+		5A5FA6EF2951A208008DD4A2 /* MainBarButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBarButtonView.swift; sourceTree = "<group>"; };
 		5ABC31F1294C838700559B90 /* SimpleChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5ABC31F4294C838700559B90 /* SimpleChatApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleChatApp.swift; sourceTree = "<group>"; };
 		5ABC31F6294C838700559B90 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -123,6 +125,7 @@
 				5A5FA6E42950773F008DD4A2 /* PinnedMessageView.swift */,
 				5A5FA6EB2950B556008DD4A2 /* ActiveBarMessageComponent.swift */,
 				5A5FA6ED2950B8FD008DD4A2 /* CurrentAudioTopBarComponent.swift */,
+				5A5FA6EF2951A208008DD4A2 /* MainBarButtonView.swift */,
 			);
 			path = Message;
 			sourceTree = "<group>";
@@ -297,6 +300,7 @@
 				5ABC3209294C83CE00559B90 /* MessageView.swift in Sources */,
 				5A5FA6D5294E26A5008DD4A2 /* AudioManager.swift in Sources */,
 				5ABC320C294C83F100559B90 /* Date.swift in Sources */,
+				5A5FA6F02951A208008DD4A2 /* MainBarButtonView.swift in Sources */,
 				5A5FA6EE2950B8FD008DD4A2 /* CurrentAudioTopBarComponent.swift in Sources */,
 				5ABC3207294C83BA00559B90 /* Message.swift in Sources */,
 				5A5FA6D3294E106E008DD4A2 /* VoiceViewTabComponent.swift in Sources */,

@@ -47,8 +47,8 @@ extension DialogViewModel{
     
     func sendVoice(audio: MessageAudio) {
         let message = Message(id: UUID(), text: "", userId: "1", reciepType: .sent, contentType: .voice, audio: audio)
-         self.messages.append(message)
-         self.targetMessage = message
+            self.messages.append(message)
+            self.targetMessage = message
      }
      
     func loadNextPageMessages(_ scrollView: ScrollViewProxy, message: Message){

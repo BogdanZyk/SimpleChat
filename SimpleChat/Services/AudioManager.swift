@@ -15,7 +15,7 @@ class AudioManager: ObservableObject {
     
     private var sumplesTimer: Timer?
     
-    @Published var currentTime: Int = .zero
+    @Published var currentTime: Double = .zero
 
     var index = 0
     @Published var currentAudio: VoiceAudioModel?
@@ -47,10 +47,11 @@ class AudioManager: ObservableObject {
     }
     
     func startTimer() {
+        
         guard let audio = currentAudio else {return}
         let duration = audio.duration
-        let time_interval = Double(duration) / Double(audio.decibles.count)
-            self.sumplesTimer = Timer.scheduledTimer(withTimeInterval: time_interval, repeats: true, block: { (timer) in
+        let time_interval = duration / Double(audio.decibles.count)
+        self.sumplesTimer = Timer.scheduledTimer(withTimeInterval: time_interval, repeats: true, block: { (timer) in
                 if self.index < audio.soundSamples.count {
                     withAnimation(Animation.linear) {
                         self.currentAudio?.soundSamples[self.index].color = Color.white
@@ -59,13 +60,15 @@ class AudioManager: ObservableObject {
                 }
             })
             
-        let interval = CMTimeMake(value: 1, timescale: 1)
+        let interval = CMTimeMake(value: 1, timescale: 2)
         timeObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
             guard let self = self else { return }
-            let time = Int(time.seconds)
+            let time = time.seconds
             self.currentAudio?.updateRemainingDuration(time)
-            if (self.currentAudio?.remainingDuration ?? 0) > 0{
-                self.currentTime = time
+            if self.currentTime < (self.currentAudio?.duration ?? 0){
+                withAnimation {
+                    self.currentTime = time
+                }
             }
         }
     }

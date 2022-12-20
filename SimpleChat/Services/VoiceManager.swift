@@ -23,10 +23,9 @@ class VoiceManager : NSObject , ObservableObject, AVAudioPlayerDelegate {
     @Published var toggleColor : Bool = false
     @Published var timerCount : Timer?
     @Published var blinkingCount : Timer?
-    @Published var remainingDuration: Int = 0
-    
+    @Published var remainingDuration: Double = 0
     @Published var returnedAudio: VoiceAudioModel?
-
+    var lastRecordTime: TimeInterval = .zero
    
     
     override init(){
@@ -35,11 +34,11 @@ class VoiceManager : NSObject , ObservableObject, AVAudioPlayerDelegate {
    
  
     func startRecording(){
-        
+        print("DEBUG:", "startRecording")
         AVAudioSessionManager.share.configureRecordAudioSessionCategory()
         
         let path = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-        let audioCachURL = path.appendingPathComponent("CO-Voice : \(Date()).m4a")
+        let audioCachURL = path.appendingPathComponent("CO-Voice : \(UUID().uuidString).m4a")
         let settings = [
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
             AVSampleRateKey: 12000,
@@ -51,8 +50,8 @@ class VoiceManager : NSObject , ObservableObject, AVAudioPlayerDelegate {
             audioRecorder.prepareToRecord()
             audioRecorder.record()
             recordState = .recording
-            timerCount = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { (value) in
-                self.remainingDuration += 1
+            timerCount = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { (value) in
+                self.remainingDuration += 0.1
             })
             blinkColor()
             
@@ -63,18 +62,16 @@ class VoiceManager : NSObject , ObservableObject, AVAudioPlayerDelegate {
     
     
     func stopRecording(){
-       
-        
+        print("DEBUG:", "stopRecording")
+        lastRecordTime = audioRecorder.currentTime
         audioRecorder.stop()
-        
         timerCount!.invalidate()
         blinkingCount!.invalidate()
-        print(audioRecorder.currentTime)
-        prepairAudioForPreview()
-       
+        prepairAudio()
     }
     
     func cancel(){
+        print("DEBUG:", "cancel")
         audioRecorder.stop()
         timerCount!.invalidate()
         blinkingCount!.invalidate()
@@ -83,24 +80,28 @@ class VoiceManager : NSObject , ObservableObject, AVAudioPlayerDelegate {
         remainingDuration = 0
     }
     
-    func prepairAudioForPreview(){
+    func prepairAudio(){
+        print("DEBUG:", "prepairAudio")
         let url = audioRecorder.url
+        print(remainingDuration)
         bufferService.buffer(url: url, samplesCount: Int(UIScreen.main.bounds.width * 0.5) / 4) {[weak self] decibles in
             guard let self = self else {return}
-            self.returnedAudio  = .init(id: UUID().uuidString, url: url, duration: self.remainingDuration, decibles: decibles)
+            self.returnedAudio  = .init(id: UUID().uuidString, url: url, duration: self.lastRecordTime, decibles: decibles)
                 self.recordState = .recordered
                 self.remainingDuration = 0
+               
         }
     }
 
     func uploadAudio(completion: @escaping (MessageAudio) -> Void){
+        print("DEBUG:", "uploadAudio", returnedAudio?.duration)
          guard let returnedAudio = returnedAudio else {return}
          let url = returnedAudio.url
          bufferService.buffer(url: url, samplesCount: 30) {[weak self] decibles in
              guard let self = self else {return}
-             let updloadedAudio: MessageAudio = .init(id: UUID().uuidString, url: url, duration: returnedAudio.duration, decibles: decibles)
-             self.recordState = .empty
+             let updloadedAudio: MessageAudio = .init(id: returnedAudio.id, url: url, duration: returnedAudio.duration, decibles: decibles)
              completion(updloadedAudio)
+             self.recordState = .empty
          }
          
 //         isLoading = true
@@ -131,88 +132,23 @@ class VoiceManager : NSObject , ObservableObject, AVAudioPlayerDelegate {
     }
 }
 
-//class AudioPlayerManager : ObservableObject {
-//    var audioPlayer = AVPlayer()
-//    @Published var currentRate: Float = 1.0
-//    @Published var isPlaying: Bool = false
-//    @Published var currentTime: Double = .zero
-//    @Published var duration: Double?
-//    @Published var isEndAudio: Bool = true
-//    @Published var timeDifferense: Double?
-//    private var subscriptions = Set<AnyCancellable>()
-//
-//    private var timeObserver: Any?
-//
-//    deinit {
-//        if let timeObserver = timeObserver {
-//            audioPlayer.removeTimeObserver(timeObserver)
-//        }
-//    }
-//
-//    init(){
-//        startSubscriptions()
-//    }
-//
-//
-//   private func setCurrentItem(_ url: URL?) {
-//        guard let url = url else {return}
-//        let item = AVPlayerItem(url: url)
-//        duration = nil
-//        audioPlayer.replaceCurrentItem(with: item)
-//        item.publisher(for: \.status)
-//            .filter({ $0 == .readyToPlay })
-//            .sink(receiveValue: { [weak self] _ in
-//                self?.duration = item.asset.duration.seconds
-//            })
-//            .store(in: &subscriptions)
-//    }
-//
-//
-//
-//    public func playOrPause(_ url: URL?){
-//
-//        if isEndAudio{
-//            setCurrentItem(url)
-//        }
-//        if isPlaying{
-//            audioPlayer.pause()
-//        }else{
-//            audioPlayer.play()
-//        }
-//        audioPlayer.rate = currentRate
-//    }
-//
-//    private func startSubscriptions(){
-//        audioPlayer.publisher(for: \.timeControlStatus)
-//            .sink { [weak self] status in
-//                switch status {
-//                case .playing:
-//                    self?.isPlaying = true
-//                case .paused:
-//                    self?.isPlaying = false
-//                case .waitingToPlayAtSpecifiedRate:
-//                    break
-//                @unknown default:
-//                    break
-//                }
-//            }
-//            .store(in: &subscriptions)
-//
-//        timeObserver = audioPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1, preferredTimescale: 600), queue: .main) { [weak self] time in
-//            guard let self = self else { return }
-//            //if self.isEditingCurrentTime == false {
-//                self.currentTime = time.seconds
-//            self.isEndAudio = self.currentTime == self.duration
-//            if let duration = self.duration {
-//               self.timeDifferense = duration - self.currentTime
-//            }
-//            //}
-//        }
-//    }
-//}
-
 
 
 enum AudioRecordEnum: Int{
     case recording, recordered, empty
+}
+
+
+extension TimeInterval {
+    var minutesSecondsMilliseconds: String {
+        String(format: "%02.0f:%02.0f:%02.0f",
+               (self / 60).truncatingRemainder(dividingBy: 60),
+               truncatingRemainder(dividingBy: 60),
+               (self * 100).truncatingRemainder(dividingBy: 100).rounded(.down))
+    }
+    var minuteSeconds: String{
+        String(format: "%02.0f:%02.0f",
+               (self / 60).truncatingRemainder(dividingBy: 60),
+               truncatingRemainder(dividingBy: 60))
+    }
 }

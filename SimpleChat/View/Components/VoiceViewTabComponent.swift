@@ -37,7 +37,8 @@ struct VoiceViewTabComponent: View {
             case .recordered:
                 recordedAudioSection
             case .empty:
-                activeMicButton
+                EmptyView()
+               // activeMicButton
             }
         }
     }
@@ -56,33 +57,33 @@ struct VoiceViewTabComponent_Previews: PreviewProvider {
 extension VoiceViewTabComponent{
 
 
-    private var playButton: some View{
-        VStack{
-            Image(systemName: "mic")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 25, height: 25)
-                .foregroundColor(.white)
-              
-                .padding(25)
-        }
-        .background(Color.blue, in: Circle())
-        .scaleEffect(voiceVM.toggleColor ? 1.05 : 1)
-        .animation(.easeInOut(duration: 0.6), value: voiceVM.toggleColor)
-        .scaleEffect(-offset > 20 ? 0.8 : 1)
-        .offset(x: offset)
-        .onTapGesture {
-            withAnimation {
-                voiceVM.stopRecording()
-            }
-        }
-        .gesture((DragGesture()
-            .updating($isDragging, body: { (value, state, _) in
-                state = true
-                onChanged(value)
-            }).onEnded(onEnded)))
-
-    }
+//    private var playButton: some View{
+//        VStack{
+//            Image(systemName: "mic")
+//                .resizable()
+//                .aspectRatio(contentMode: .fit)
+//                .frame(width: 25, height: 25)
+//                .foregroundColor(.white)
+//
+//                .padding(25)
+//        }
+//        .background(Color.blue, in: Circle())
+//        .scaleEffect(voiceVM.toggleColor ? 1.05 : 1)
+//        .animation(.easeInOut(duration: 0.6), value: voiceVM.toggleColor)
+//        .scaleEffect(-offset > 20 ? 0.8 : 1)
+//        .offset(x: offset)
+//        .onTapGesture {
+//            withAnimation {
+//                voiceVM.stopRecording()
+//            }
+//        }
+//        .gesture((DragGesture()
+//            .updating($isDragging, body: { (value, state, _) in
+//                state = true
+//                onChanged(value)
+//            }).onEnded(onEnded)))
+//
+//    }
 
     private var activeMicButton: some View{
         Button {
@@ -98,7 +99,7 @@ extension VoiceViewTabComponent{
 
     private var recordingAudio: some View{
         HStack{
-            Text(voiceVM.remainingDuration.secondsToTime())
+            Text(voiceVM.remainingDuration.minutesSecondsMilliseconds)
                 .font(.subheadline)
             Circle()
                 .fill(Color.red)
@@ -114,10 +115,10 @@ extension VoiceViewTabComponent{
             
         }
         .frame(height: 44)
-        .overlay(alignment: .trailing){
-            playButton
-                .offset(x: 25, y: -20)
-        }
+//        .overlay(alignment: .trailing){
+//            playButton
+//                .offset(x: 25, y: -20)
+//        }
     }
 
     private var recordedAudioSection: some View{
@@ -131,21 +132,7 @@ extension VoiceViewTabComponent{
                     .foregroundColor(.red)
             }
             audioView
-            Button {
-                voiceVM.uploadAudio{ audio in
-                    dialogVM.sendVoice(audio: audio)
-                }
-            } label: {
-                VStack{
-                    Image(systemName: "arrow.up")
-                        .imageScale(.medium)
-                        .foregroundColor(.white)
-                    
-                }
-                .frame(width: 30, height: 30)
-                .background(Color.blue, in: Circle())
-                
-            }
+            Spacer()
         }
         .frame(height: 44)
     }

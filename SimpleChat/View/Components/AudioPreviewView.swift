@@ -25,9 +25,9 @@ struct AudioPreviewView: View {
     
     private var remainingDuration: String{
         if let audio = audioManager.currentAudio, audio.id == self.audio.id{
-            return "\(audio.remainingDuration.secondsToTime())"
+            return "\(audio.remainingDuration.minuteSeconds)"
         }else{
-            return "\(audio.remainingDuration.secondsToTime())"
+            return "\(audio.remainingDuration.minuteSeconds)"
         }
     }
     
@@ -81,7 +81,7 @@ struct AudioPreviewView_Previews: PreviewProvider {
         ZStack{
             Color.blue
             VStack{
-                AudioPreviewView(mode: .message, audio: .init(id: "1", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
+                AudioPreviewView(mode: .message, audio: .init(id: "1", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0, count: 50)))
               
                 AudioPreviewView(mode: .vocePreview, audio: .init(id: "2", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
               
@@ -109,7 +109,7 @@ extension AudioPreviewView{
             Rectangle()
                 .fill(color)
                 .cornerRadius(10)
-                .frame(width: 2, height: value)
+                .frame(width: 2, height: value <= 0 ? 3 : value)
         }
     }
     

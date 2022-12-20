@@ -11,7 +11,7 @@ import SwiftUI
 struct MessageAudio: Identifiable, Codable{
     var id: String
     var url: URL
-    var duration: Int
+    var duration: Double
     var decibles: [Float]
     
     
