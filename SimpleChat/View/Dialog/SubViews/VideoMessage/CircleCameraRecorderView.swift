@@ -6,15 +6,25 @@
 //
 
 import SwiftUI
+import AVKit
 
 struct CircleCameraRecorderView: View {
+    @Binding var show: Bool
     @StateObject private var cameraManager = CameraManager()
     var body: some View {
         ZStack{
-            CameraPreviewView()
-                .frame(width: getRect().width - 40)
-                .clipShape(Circle())
+            if let url = cameraManager.recordedURL{
+                VideoPlayer(player: AVPlayer(url: url))
+                    .frame(width: getRect().width - 40)
+                    .clipShape(Circle())
+            }else{
+                CameraPreviewView()
+                    .frame(width: getRect().width - 40)
+                    .clipShape(Circle())
+            }
+            
         }
+        .allFrame()
         .environmentObject(cameraManager)
         .background(Material.ultraThinMaterial)
         .overlay(alignment: .bottomLeading) {
@@ -29,7 +39,7 @@ struct CircleCameraRecorderView: View {
 
 struct CircleCameraRecorderView_Previews: PreviewProvider {
     static var previews: some View {
-        CircleCameraRecorderView()
+        CircleCameraRecorderView(show: .constant(true))
     }
 }
 
@@ -46,6 +56,7 @@ extension CircleCameraRecorderView{
     }
     private var closeButton: some View{
         Button {
+            cameraManager.stopRecording()
             show.toggle()
         } label: {
             Image(systemName: "xmark")

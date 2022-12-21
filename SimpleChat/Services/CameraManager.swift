@@ -17,7 +17,10 @@ final class CameraManager: NSObject, ObservableObject{
     @Published var output = AVCaptureMovieFileOutput()
     
     @Published var cameraPosition: AVCaptureDevice.Position = .front
-    
+    @Published var recordedDuration: CGFloat = .zero
+    @Published var maxDuration: CGFloat = 60
+    @Published var isRecording: Bool = false
+    @Published var recordedURL: URL?
 
     
     
@@ -25,10 +28,12 @@ final class CameraManager: NSObject, ObservableObject{
         switch AVCaptureDevice.authorizationStatus(for: .video){
         case .authorized:
             setUp()
+            startRecording()
         case .notDetermined:
             AVCaptureDevice.requestAccess(for: .video) { status in
                 if status{
                     self.setUp()
+                    self.startRecording()
                 }
             }
         case .denied:
@@ -42,7 +47,7 @@ final class CameraManager: NSObject, ObservableObject{
         do{
             
             self.captureSession.beginConfiguration()
-            let cameraDevice = AVCaptureDevice.default(.builtInDualWideCamera, for: .video, position: cameraPosition)
+            let cameraDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: cameraPosition)
             let cameraInput = try AVCaptureDeviceInput(device: cameraDevice!)
             let audioDevice = AVCaptureDevice.default(for: .audio)
             let audioInput = try AVCaptureDeviceInput(device: audioDevice!)
@@ -86,69 +91,33 @@ final class CameraManager: NSObject, ObservableObject{
             print(error.localizedDescription)
         }
     }
+        
+   private func startRecording(){
+        //MARK: - Temporary URL for recording Video
+        let tempURL = NSTemporaryDirectory() + "\(Date()).mov"
+        output.startRecording(to: URL(fileURLWithPath: tempURL), recordingDelegate: self)
+        
+    }
+    
+    func stopRecording(){
+        output.stopRecording()
+    }
+    
 
 }
 
 
 
-extension CameraManager: AVCaptureVideoDataOutputSampleBufferDelegate{
-//
-//
-//    enum CaptureState {
-//        case idle, start, capturing, end
-//    }
-//
-//
-//    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-//        let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer).seconds
-//        let filename = UUID().uuidString
-//        switch captureState {
-//        case .start:
-//            // Set up recorder
-//
-//            let videoPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("\(filename).mov")
-//            let writer = try! AVAssetWriter(outputURL: videoPath, fileType: .mov)
-//            let settings = videoOutput!.recommendedVideoSettingsForAssetWriter(writingTo: .mov)
-//            let input = AVAssetWriterInput(mediaType: .video, outputSettings: settings) // [AVVideoCodecKey: AVVideoCodecType.h264, AVVideoWidthKey: 1920, AVVideoHeightKey: 1080])
-//            input.mediaTimeScale = CMTimeScale(bitPattern: 600)
-//            input.expectsMediaDataInRealTime = true
-//            input.transform = CGAffineTransform(rotationAngle: .pi/2)
-//            let adapter = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: input, sourcePixelBufferAttributes: nil)
-//            if writer.canAdd(input) {
-//                writer.add(input)
-//            }
-//            writer.startWriting()
-//            writer.startSession(atSourceTime: .zero)
-//            DispatchQueue.main.async {
-//                self.assetWriter = writer
-//                self.assetWriterInput = input
-//                self.adpater = adapter
-//                self.captureState = .capturing
-//                self.time = timestamp
-//            }
-//
-//        case .capturing:
-//            if assetWriterInput?.isReadyForMoreMediaData == true {
-//                let time = CMTime(seconds: timestamp - time, preferredTimescale: CMTimeScale(600))
-//                adpater?.append(CMSampleBufferGetImageBuffer(sampleBuffer)!, withPresentationTime: time)
-//            }
-//            break
-//        case .end:
-//            guard assetWriterInput?.isReadyForMoreMediaData == true, assetWriter!.status != .failed else { break }
-//            let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("\(filename).mov")
-//            assetWriterInput?.markAsFinished()
-//            assetWriter?.finishWriting { [weak self] in
-//                self?.captureState = .idle
-//                self?.assetWriter = nil
-//                self?.assetWriterInput = nil
-//                DispatchQueue.main.async {
-//                    print(url)
-//                }
-//            }
-//        default:
-//            break
-//        }
-//    }
+extension CameraManager: AVCaptureFileOutputRecordingDelegate{
+    
+    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
+        if let error = error{
+            print(error.localizedDescription)
+            return
+        }
+        print(outputFileURL)
+        self.recordedURL = outputFileURL
+    }
 }
 
 
@@ -165,6 +134,7 @@ struct CameraPreviewFrame: UIViewRepresentable{
         cameraManager.preview = AVCaptureVideoPreviewLayer(session: cameraManager.captureSession)
         cameraManager.preview.frame.size = size
         cameraManager.preview.videoGravity = .resizeAspectFill
+        view.layer.addSublayer(cameraManager.preview)
         cameraManager.captureSession.startRunning()
 
         return view
@@ -376,5 +346,21 @@ class PreviewView: UIView {
     func stopRecording(){
         videoFileOutput.stopRecording()
         print("🔴 RECORDING \(videoFileOutput.isRecording)")
+    }
+}
+
+
+extension FileManager {
+    func clearTmpDirectory() {
+        do {
+            let tmpDirURL = FileManager.default.temporaryDirectory
+            let tmpDirectory = try contentsOfDirectory(atPath: tmpDirURL.path)
+            try tmpDirectory.forEach { file in
+                let fileUrl = tmpDirURL.appendingPathComponent(file)
+                try removeItem(atPath: fileUrl.path)
+            }
+        } catch {
+           //catch the error somehow
+        }
     }
 }

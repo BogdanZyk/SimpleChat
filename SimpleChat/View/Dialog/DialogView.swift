@@ -80,7 +80,7 @@ struct DialogView: View {
             }
             .overlay{
                 if dialogVM.showCameraView{
-                    CameraPreviewView(show: $dialogVM.showCameraView)
+                    CircleCameraRecorderView(show: $dialogVM.showCameraView)
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
