@@ -77,7 +77,11 @@ struct DialogView: View {
                     currrentAudioBarComponent
                     pinMessageSection
                 }
-                
+            }
+            .overlay{
+                if dialogVM.showCameraView{
+                    CameraPreviewView(show: $dialogVM.showCameraView)
+                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

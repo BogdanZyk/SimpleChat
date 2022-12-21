@@ -19,6 +19,7 @@ final class DialogViewModel: ObservableObject{
     @Published var isLoad: Bool = false
     @Published var isShowFirstMessage: Bool = false
     @Published var dialogMode: DialogMode = .dialog
+    @Published var showCameraView: Bool = false
     
     init(){
         fetchMessages()

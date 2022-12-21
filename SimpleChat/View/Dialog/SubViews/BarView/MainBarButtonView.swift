@@ -13,6 +13,7 @@ struct MainBarButtonView: View {
     @EnvironmentObject var recordManager: RecordManager
     @GestureState private var isDragging: Bool = false
     @State private var offset: CGFloat = 0
+    @State private var isCameraButton: Bool = false
     private var isRecording: Bool {
         recordManager.recordState == .recording
     }
@@ -20,12 +21,30 @@ struct MainBarButtonView: View {
     var body: some View {
         
         if dialogVM.text.isEmpty{
-            switch recordManager.recordState{
-            case.recording, .empty:
-                voiceMicButton
-            case .recordered:
-                sendVoiceButton
+            
+            if isCameraButton{
+                Image(systemName: "camera")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 25, height: 25)
+                    .foregroundColor(.blue)
+                    .simultaneousGesture(LongPressGesture(minimumDuration: 0.5).onEnded({ _ in
+                        dialogVM.showCameraView = true
+                    }))
+                    .simultaneousGesture(TapGesture().onEnded({ _ in
+                        isCameraButton.toggle()
+                    }))
+                    
+
+            }else{
+                switch recordManager.recordState{
+                case.recording, .empty:
+                    voiceMicButton
+                case .recordered:
+                    sendVoiceButton
+                }
             }
+            
         }else{
             sendButton
         }
@@ -76,6 +95,8 @@ extension MainBarButtonView{
                     withAnimation(.easeInOut(duration: 0.2)) {
                         recordManager.stopRecording()
                     }
+                }else{
+                    isCameraButton.toggle()
                 }
             }))
     }
