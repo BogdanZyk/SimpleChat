@@ -10,7 +10,7 @@ import AVKit
 
 struct CircleCameraRecorderView: View {
     @Binding var show: Bool
-    @StateObject private var cameraManager = CameraManager()
+    @EnvironmentObject var cameraManager: CameraManager
     var body: some View {
         VStack{
             Group{
@@ -43,26 +43,10 @@ struct CircleCameraRecorderView: View {
             changeCameraButton
                 .padding()
         }
-        .overlay(alignment: .topTrailing){
-            HStack {
-                closeButton
-                Spacer()
-                Button {
-                    cameraManager.stopRecording(for: .user)
-                } label: {
-                    Text("Stop")
-                }
-                Spacer()
-//                Button {
-//                    
-//                } label: {
-//                    Text("Start")
-//                }
-            }
-        }
-        .onChange(of: cameraManager.isPermissions) { isPermissions in
-            
-            if isPermissions{
+        .onChange(of: cameraManager.captureSession.isRunning) { isRunning in
+            print("isRunning", isRunning)
+            if isRunning{
+                
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1){
                     cameraManager.startRecording()
                 }
@@ -72,7 +56,7 @@ struct CircleCameraRecorderView: View {
             print(newValue)
         }
         .onDisappear{
-            
+            cameraManager.resetAll()
         }
     }
 }
@@ -80,6 +64,7 @@ struct CircleCameraRecorderView: View {
 struct CircleCameraRecorderView_Previews: PreviewProvider {
     static var previews: some View {
         CircleCameraRecorderView(show: .constant(true))
+            .environmentObject(CameraManager())
     }
 }
 
@@ -92,15 +77,6 @@ extension CircleCameraRecorderView{
             Image(systemName: "arrow.triangle.2.circlepath.camera")
                 .imageScale(.large)
                 .foregroundColor(.blue)
-        }
-    }
-    private var closeButton: some View{
-        Button {
-            
-            show.toggle()
-        } label: {
-            Image(systemName: "xmark")
-                .padding()
         }
     }
 }

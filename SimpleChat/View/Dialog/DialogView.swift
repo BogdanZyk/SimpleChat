@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct DialogView: View {
+    @EnvironmentObject var cameraManager: CameraManager
     @EnvironmentObject var recordManager: RecordManager
     @EnvironmentObject var audioManager: AudioManager
     @StateObject private var dialogVM = DialogViewModel()
@@ -66,6 +67,11 @@ struct DialogView: View {
                         }
                     }
                 }
+                .overlay{
+                    if cameraManager.showCameraView{
+                        CircleCameraRecorderView(show: $dialogVM.showCameraView)
+                    }
+                }
                 bottomBarView
                     .environmentObject(dialogVM)
             }
@@ -78,11 +84,7 @@ struct DialogView: View {
                     pinMessageSection
                 }
             }
-            .overlay{
-                if dialogVM.showCameraView{
-                    CircleCameraRecorderView(show: $dialogVM.showCameraView)
-                }
-            }
+            
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
@@ -101,6 +103,7 @@ struct DialogView_Previews: PreviewProvider {
         DialogView()
             .environmentObject(AudioManager())
             .environmentObject(RecordManager())
+            .environmentObject(CameraManager())
     }
 }
 
@@ -169,20 +172,16 @@ extension DialogView{
                 VStack(spacing: 10) {
                     activeBarMessageSection
                     HStack {
-                        if recordManager.recordState != .empty{
-                            VoiceViewTabComponent()
-                        }else{
-                            TextField("Message", text: $dialogVM.text)
+                        TextField("Message", text: $dialogVM.text)
                             .frame(height: 44)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                           
-                        }
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
                         Spacer()
                         Text("")
                             .frame(width: 35)
                     }
                     .overlay(alignment: .trailing) {
-                        mainBarButton
+                        RecordTabComponent()
+                            .padding(.horizontal, -16)
                     }
                 }
                 
@@ -225,34 +224,6 @@ extension DialogView{
 
     private var activeBarMessageSection: some View{
         ActiveBarMessageComponent(message: $dialogVM.messageForAction)
-    }
-    
-    private var mainBarButton: some View{
-        MainBarButtonView(dialogVM: dialogVM)
-//        if dialogVM.text.isEmpty{
-//            Button {
-//                withAnimation(.easeInOut(duration: 0.2)) {
-//                    voiceManager.startRecording()
-//                }
-//            } label: {
-//                Image(systemName: "mic.fill")
-//                    .imageScale(.large)
-//                    .foregroundColor(.blue)
-//            }
-//        }else{
-//            Button {
-//                dialogVM.send()
-//            } label: {
-//                VStack{
-//                    Image(systemName: "arrow.up")
-//                        .imageScale(.medium)
-//                        .foregroundColor(.white)
-//
-//                }
-//                .frame(width: 30, height: 30)
-//                .background(Color.blue, in: Circle())
-//            }
-//        }
     }
 }
 

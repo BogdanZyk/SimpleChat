@@ -11,7 +11,6 @@ struct CameraPreviewFrame: UIViewRepresentable{
 
     @EnvironmentObject var cameraManager: CameraManager
     var size: CGSize
-    var isRecord: Bool = false
 
     
     func makeUIView(context: Context) -> some UIView {

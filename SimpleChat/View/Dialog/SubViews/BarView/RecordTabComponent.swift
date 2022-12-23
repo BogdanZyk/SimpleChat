@@ -1,5 +1,5 @@
 //
-//  VoiceViewTabComponent.swift
+//  RecordTabComponent.swift
 //  SimpleChat
 //
 //  Created by Богдан Зыков on 17.12.2022.
@@ -7,36 +7,51 @@
 
 import SwiftUI
 
-struct VoiceViewTabComponent: View {
+struct RecordTabComponent: View {
+    @State private var type: RecordButtonEnum = .audio
+    @EnvironmentObject var cameraManager: CameraManager
     @EnvironmentObject var dialogVM: DialogViewModel
     @EnvironmentObject var audioManager: AudioManager
     @EnvironmentObject var recordManager: RecordManager
     @GestureState private var isDragging: Bool = false
-    @State private var offset: CGFloat = 0
+    
+    var recordDuration: Double{
+        type == .audio ?
+        recordManager.remainingDuration :
+        Double(cameraManager.recordedDuration)
+    }
+    
     var body: some View {
-        
-        switch recordManager.recordState {
-        case .recording:
-            recordingAudio
-        case .recordered:
-            recordedAudioSection
-        case .empty:
-            EmptyView()
+        HStack{
+            
+            if recordManager.recordState != .empty || cameraManager.showCameraView{
+                if recordManager.recordState == .recording || cameraManager.showCameraView{
+                    InRecordingView
+                }else if recordManager.recordState == .recordered{
+                    recordedAudioSection
+                }
+                Spacer()
+            }
+            
+           
+            MainBarButtonView(type: $type)
         }
+        .padding(.horizontal)
+        .background(.white)
     }
 }
 
-struct VoiceViewTabComponent_Previews: PreviewProvider {
+struct RecordTabComponent_Previews: PreviewProvider {
     static var previews: some View {
-        VoiceViewTabComponent()
-            .padding(.horizontal)
+        RecordTabComponent()
             .environmentObject(AudioManager())
             .environmentObject(RecordManager())
             .environmentObject(DialogViewModel())
+            .environmentObject(CameraManager())
     }
 }
 
-extension VoiceViewTabComponent{
+extension RecordTabComponent{
 
     private var activeMicButton: some View{
         Button {
@@ -50,18 +65,17 @@ extension VoiceViewTabComponent{
     }
 
 
-    private var recordingAudio: some View{
+    private var InRecordingView: some View{
         HStack{
             Circle()
                 .fill(Color.red)
                 .frame(width: 8, height: 8)
                 .opacity(recordManager.toggleColor ? 0 : 1)
                 .animation(.easeInOut(duration: 0.6), value: recordManager.toggleColor)
-            Text(recordManager.remainingDuration.minutesSecondsMilliseconds)
+            Text(recordDuration.minutesSecondsMilliseconds)
                 .font(.subheadline)
             Spacer()
             Label("left to cancel", systemImage: "chevron.left")
-                .opacity(-offset > 20 ? 0 : 1)
                 .font(.subheadline)
                 .padding(.trailing, 30)
             Spacer()

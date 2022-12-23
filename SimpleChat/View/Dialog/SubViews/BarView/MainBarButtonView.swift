@@ -8,43 +8,26 @@
 import SwiftUI
 
 struct MainBarButtonView: View {
-    @ObservedObject var dialogVM: DialogViewModel
-    @EnvironmentObject var audioManager: AudioManager
+
+    @Binding var type: RecordButtonEnum
+    @EnvironmentObject var dialogVM: DialogViewModel
     @EnvironmentObject var recordManager: RecordManager
-    @GestureState private var isDragging: Bool = false
-    @State private var offset: CGFloat = 0
-    @State private var isCameraButton: Bool = false
+    @EnvironmentObject var cameraManager: CameraManager
+
     private var isRecording: Bool {
-        recordManager.recordState == .recording
+        type == .audio ? (recordManager.recordState == .recording) : (cameraManager.showCameraView)
     }
         
     var body: some View {
         
         if dialogVM.text.isEmpty{
             
-            if isCameraButton{
-                Image(systemName: "camera")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 25, height: 25)
-                    .foregroundColor(.blue)
-                    .simultaneousGesture(LongPressGesture(minimumDuration: 0.5).onEnded({ _ in
-                        dialogVM.showCameraView = true
-                    }))
-                    .simultaneousGesture(TapGesture().onEnded({ _ in
-                        isCameraButton.toggle()
-                    }))
-                    
-
-            }else{
-                switch recordManager.recordState{
-                case.recording, .empty:
-                    voiceMicButton
-                case .recordered:
-                    sendVoiceButton
-                }
+            switch recordManager.recordState{
+            case.recording, .empty:
+                recordButton
+            case .recordered:
+                sendVoiceButton
             }
-            
         }else{
             sendButton
         }
@@ -53,9 +36,10 @@ struct MainBarButtonView: View {
 
 struct MainBarButtonView_Previews: PreviewProvider {
     static var previews: some View {
-        MainBarButtonView(dialogVM: DialogViewModel())
-            .environmentObject(AudioManager())
+        MainBarButtonView(type: .constant(.audio))
+            .environmentObject(DialogViewModel())
             .environmentObject(RecordManager())
+            .environmentObject(CameraManager())
     }
 }
 
@@ -75,54 +59,29 @@ extension MainBarButtonView{
         }
     }
     
-    private var voiceMicButton: some View{
-        micButtonView
-            .offset(x: offset)
-            .gesture((DragGesture()
-                .updating($isDragging, body: { (value, state, _) in
-                    state = true
-                    onChanged(value)
-                }).onEnded(onEnded)))
-            .simultaneousGesture(LongPressGesture(minimumDuration: 0.5).onEnded({ _ in
-                if recordManager.recordState == .empty{
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        recordManager.startRecording()
-                    }
-                }
-            }))
-            .simultaneousGesture(TapGesture().onEnded({ _ in
-                if recordManager.recordState == .recording{
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        recordManager.stopRecording()
-                    }
-                }else{
-                    isCameraButton.toggle()
-                }
-            }))
+    private var recordButton: some View{
+        RecordButton(type: $type, isRecording: isRecording, onStartRecord: {
+            if type == .audio{
+                recordManager.startRecording()
+            }else{
+                cameraManager.showCameraView.toggle()
+            }
+        }, onStopRecord: {
+            if type == .audio{
+                recordManager.stopRecording()
+            }else{
+                cameraManager.stopRecording(for: .user)
+            }
+        }, onCancelRecord: {
+            if type == .audio{
+                recordManager.cancel()
+            }else{
+                cameraManager.showCameraView = false
+            }
+        })
     }
     
-    @ViewBuilder
-    private var micButtonView: some View{
-        VStack{
-            Image(systemName: isRecording ? "mic" : "mic.fill")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 25, height: 25)
-                .foregroundColor(isRecording ? .white : .blue)
-            
-                .padding(isRecording ? 25 : 0)
-        }
-        .background{
-            if isRecording {
-                Circle()
-                    .fill(Color.blue)
-            }
-        }
-        .scaleEffect(isRecording ? (recordManager.toggleColor ? 1.05 : 1) : 1)
-        .animation(.easeInOut(duration: 0.6), value: recordManager.toggleColor)
-        .scaleEffect(isRecording ? (-offset > 20 ? 0.8 : 1) : 1)
-        .offset(x: isRecording ? 25 : 0, y: isRecording ? -20 : 0)
-    }
+
     
     private var sendVoiceButton: some View{
         Button {
@@ -138,33 +97,6 @@ extension MainBarButtonView{
             }
             .frame(width: 30, height: 30)
             .background(Color.blue, in: Circle())
-        }
-    }
-}
-
-
-//MARK: - Dragg action
-extension MainBarButtonView{
-
-    private func onChanged(_ value: DragGesture.Value){
-        
-       
-        if value.translation.width < 0 && isDragging && recordManager.recordState == .recording{
-            DispatchQueue.main.async {
-                    withAnimation {
-                        offset = value.translation.width * 0.5
-                    }
-                if (-value.translation.width >= getRect().width / 3){
-                    recordManager.cancel()
-                    offset = 0
-                }
-            }
-        }
-    }
-    
-    private func onEnded(_ value: DragGesture.Value){
-        withAnimation {
-            offset = 0
         }
     }
 }

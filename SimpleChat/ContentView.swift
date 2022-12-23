@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var cameraManager = CameraManager()
     @StateObject private var audioManager = AudioManager()
     @StateObject private var recordManager = RecordManager()
     var body: some View {
@@ -15,6 +16,7 @@ struct ContentView: View {
             .preferredColorScheme(.light)
             .environmentObject(audioManager)
             .environmentObject(recordManager)
+            .environmentObject(cameraManager)
     }
 }
 

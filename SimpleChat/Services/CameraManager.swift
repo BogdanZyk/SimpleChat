@@ -13,6 +13,7 @@ import AVFoundation
 final class CameraManager: NSObject, ObservableObject{
 
     @Published var alert: Bool = false
+    @Published var showCameraView: Bool = false
     @Published var preview: AVCaptureVideoPreviewLayer?
     @Published var captureSession = AVCaptureSession()
     @Published var output = AVCaptureMovieFileOutput()
@@ -20,7 +21,6 @@ final class CameraManager: NSObject, ObservableObject{
     @Published var cameraPosition: AVCaptureDevice.Position = .front
     @Published var recordedDuration: CGFloat = .zero
     @Published var maxDuration: CGFloat = 60
-    @Published var isRecording: Bool = false
     @Published var finalURL: URL?
     @Published var isPermissions: Bool = false
     
@@ -30,10 +30,7 @@ final class CameraManager: NSObject, ObservableObject{
     
     private var stopInitiatorType: Initiator = .empty
     
-    deinit{
-        print("deinit")
-        resetAll()
-    }
+
     
     func checkPermissions(){
         switch AVCaptureDevice.authorizationStatus(for: .video){
@@ -101,8 +98,13 @@ final class CameraManager: NSObject, ObservableObject{
         timer?.invalidate()
         timer = nil
         output.stopRecording()
-        captureSession.removeOutput(output)
+        captureSession.stopRunning()
+        preview = nil
+        recordedDuration = .zero
+        
     }
+    
+    
 
     
 
