@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CircleProgressBar: View {
-    let total: CGFloat = 60
+    var total: CGFloat = 60
     var progress: CGFloat
     var lineWidth: CGFloat = 10
     var bgCircleColor: Color = .clear

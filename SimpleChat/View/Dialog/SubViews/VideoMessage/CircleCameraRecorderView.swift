@@ -11,6 +11,7 @@ import AVKit
 struct CircleCameraRecorderView: View {
     @Binding var show: Bool
     @EnvironmentObject var cameraManager: CameraManager
+    @EnvironmentObject var dialogVM: DialogViewModel
     var body: some View {
         VStack{
             Group{
@@ -52,8 +53,13 @@ struct CircleCameraRecorderView: View {
                 }
             }
         }
-        .onChange(of: cameraManager.finalURL) { newValue in
-            print(newValue)
+        .onChange(of: cameraManager.finalURL) { url in
+            guard let url = url else {return}
+            let video = MessageVideo(id: "1", url: url, duration: 0)
+            withAnimation {
+                cameraManager.showCameraView.toggle()
+            }
+            dialogVM.sendVideo(video: video)
         }
         .onDisappear{
             cameraManager.resetAll()
@@ -65,6 +71,7 @@ struct CircleCameraRecorderView_Previews: PreviewProvider {
     static var previews: some View {
         CircleCameraRecorderView(show: .constant(true))
             .environmentObject(CameraManager())
+            .environmentObject(DialogViewModel())
     }
 }
 

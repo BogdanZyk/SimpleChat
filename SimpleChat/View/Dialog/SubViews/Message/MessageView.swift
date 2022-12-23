@@ -22,23 +22,32 @@ struct MessageView: View {
     let onSetMessage: (SelectedMessage) -> Void
     
     var body: some View {
+        
+     
+           
+        
+        
         HStack {
-            
             messageCheckmarkButton
             
-            messageContent
-           
-            .padding(8)
-            .background(message.reciepType.backgroundColor, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
-            .foregroundColor(message.reciepType.textColor)
+            Group{
+                if message.contentType == .video{
+                    VideoMessageView(message: message)
+                }else{
+                    messageContent
+                   
+                    .padding(8)
+                    .background(message.reciepType.backgroundColor, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .foregroundColor(message.reciepType.textColor)
+                }
+            }
+        
             .contextMenu{
                 contextMenuView
             }
             .frame(maxWidth: .infinity, alignment: message.reciepType == .sent ? .trailing : .leading)
             
-            
             messageReplyButton
-                    
         }
         .offset(x: offset, y: 0)
         .id(message.id)
@@ -67,6 +76,7 @@ struct MessageView_Previews: PreviewProvider {
                         onSelected: {_ in},
                         onPin: {_ in},
                         onSetMessage: {_ in})
+            MessageView(message: .init(id: UUID(), text: "", userId: "1", reciepType: .sent, contentType: .video, video: .init(id: "12", url: URL(string: "https://firebasestorage.googleapis.com/v0/b/tiktokreels-443d9.appspot.com/o/food.mp4?alt=media&token=9713528e-07cd-4b04-af6c-6e6f4878983e")!, duration: 60)), dialogMode: .constant(.dialog), onSelected: {_ in}, onPin: {_ in}, onSetMessage: {_ in})
         }
         .padding()
         .environmentObject(AudioManager())

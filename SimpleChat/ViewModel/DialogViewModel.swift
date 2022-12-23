@@ -51,6 +51,12 @@ extension DialogViewModel{
             self.messages.append(message)
             self.targetMessage = message
      }
+    
+    func sendVideo(video: MessageVideo){
+        let message = Message(id: UUID(), text: "", userId: "1", reciepType: .sent, contentType: .video, video: video)
+        self.messages.append(message)
+        self.targetMessage = message
+    }
      
     func loadNextPageMessages(_ scrollView: ScrollViewProxy, message: Message){
          let lastMessageId = messages.first?.id

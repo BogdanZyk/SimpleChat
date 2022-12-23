@@ -17,6 +17,7 @@ struct Message: Codable, Identifiable, Equatable {
     var date: Date = Date()
     var contentType: MessageContentType = .onlyText
     var audio: MessageAudio?
+    var video: MessageVideo?
 }
 
 extension Message{

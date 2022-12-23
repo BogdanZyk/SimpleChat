@@ -70,6 +70,7 @@ struct DialogView: View {
                 .overlay{
                     if cameraManager.showCameraView{
                         CircleCameraRecorderView(show: $dialogVM.showCameraView)
+                            .environmentObject(dialogVM)
                     }
                 }
                 bottomBarView
@@ -88,10 +89,14 @@ struct DialogView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    navTitle
+                    if !cameraManager.showCameraView{
+                        navTitle
+                    }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    trailingButtonView
+                    if !cameraManager.showCameraView{
+                        trailingButtonView
+                    }
                 }
             }
         }
