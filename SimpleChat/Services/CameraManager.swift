@@ -24,6 +24,9 @@ final class CameraManager: NSObject, ObservableObject{
     @Published var finalURL: URL?
     @Published var isPermissions: Bool = false
     
+    private var videoSize = CGSize(width: 640, height: 480)
+    private var exportPreset = AVAssetExportPreset640x480
+    
     private var recordsURl = [URL]()
     
     private var timer: Timer?
@@ -101,7 +104,8 @@ final class CameraManager: NSObject, ObservableObject{
         captureSession.stopRunning()
         preview = nil
         recordedDuration = .zero
-        
+        recordsURl.removeAll()
+        finalURL = nil
     }
     
     
@@ -207,9 +211,10 @@ extension CameraManager: AVCaptureFileOutputRecordingDelegate{
             lastTime = CMTimeAdd(lastTime, asset.duration)
         }
        
-       guard let exporter = AVAssetExportSession(asset: composition, presetName: AVAssetExportPreset960x540) else {return}
+       guard let exporter = AVAssetExportSession(asset: composition, presetName: exportPreset) else {return}
        let tempUrl = URL(fileURLWithPath: NSTemporaryDirectory() + "\(Date()).mp4")
        exporter.outputFileType = .mp4
+       exporter.shouldOptimizeForNetworkUse = true
        exporter.outputURL = tempUrl
        exporter.videoComposition = prepairVideoComposition(videoTrack, lastTime: lastTime)
        completion(exporter)
@@ -220,7 +225,7 @@ extension CameraManager: AVCaptureFileOutputRecordingDelegate{
         let layerInstructions = AVMutableVideoCompositionLayerInstruction(assetTrack: videoTrack)
         //transform video
         var transform = CGAffineTransform.identity
-        transform = transform.rotated(by: 90 * (.pi / 180))
+        transform = transform.rotated(by: 90.degreesToRadians)
         transform = transform.translatedBy(x: 0, y: -videoTrack.naturalSize.height)
         layerInstructions.setTransform(transform, at: .zero)
         
@@ -538,3 +543,13 @@ extension CameraManager{
 //        }
 //    }
 //}
+
+
+extension BinaryInteger {
+    var degreesToRadians: CGFloat { CGFloat(self) * .pi / 180 }
+}
+
+extension FloatingPoint {
+    var degreesToRadians: Self { self * .pi / 180 }
+    var radiansToDegrees: Self { self * 180 / .pi }
+}

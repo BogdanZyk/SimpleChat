@@ -14,28 +14,19 @@ struct CircleCameraRecorderView: View {
     @EnvironmentObject var dialogVM: DialogViewModel
     var body: some View {
         VStack{
-            Group{
-                if let url = cameraManager.finalURL{
-                    VideoPlayer(player: AVPlayer(url: url))
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: getRect().width - 40)
-                        .clipShape(Circle())
-                }else{
-                    ZStack{
-                        Circle()
-                            .fill(Material.ultraThin)
-                        CameraPreviewView()
-                        if cameraManager.output.isRecording{
-                            CircleProgressBar(progress: cameraManager.recordedDuration, lineWidth: 4)
-                                .frame(width: getRect().width - 60)
-                                .zIndex(1)
-                        }
-                    }
-                    .frame(width: getRect().width - 40)
-                    .clipShape(Circle())
+            ZStack{
+                Circle()
+                    .fill(Material.ultraThin)
+                CameraPreviewView()
+                if cameraManager.output.isRecording{
+                    CircleProgressBar(progress: cameraManager.recordedDuration, lineWidth: 4)
+                        .frame(width: getRect().width - 60)
+                        .zIndex(1)
                 }
-                Spacer()
             }
+            .frame(width: getRect().width - 40)
+            .clipShape(Circle())
+            Spacer()
         }
         .allFrame()
         .environmentObject(cameraManager)

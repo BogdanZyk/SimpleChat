@@ -33,6 +33,7 @@ struct MessageView: View {
             Group{
                 if message.contentType == .video{
                     VideoMessageView(message: message)
+                        .padding(.vertical, 5)
                 }else{
                     messageContent
                    

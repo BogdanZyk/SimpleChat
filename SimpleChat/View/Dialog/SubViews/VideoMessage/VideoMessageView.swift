@@ -28,10 +28,18 @@ struct VideoMessageView: View {
         ZStack{
             if let url = message.video?.url{
                 VideoPlayer(url: url, play: $play, time: $time)
+                    
                     .autoReplay(autoReplay)
                     .mute(isMute)
                     .onPlayToEndTime {
                         resetTimeVideo()
+                    }
+                    .onReplay {
+                        if isFocus{
+                            withAnimation {
+                                isFocus.toggle()
+                            }
+                        }
                     }
                     .onStateChanged { state in
                         switch state {
@@ -46,6 +54,8 @@ struct VideoMessageView: View {
                     }
                     .aspectRatio(1, contentMode: .fill)
                     .clipShape(Circle())
+                    .contentShape(Circle())
+                    .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
             }
             if showLoader{
                 Circle()
@@ -54,14 +64,16 @@ struct VideoMessageView: View {
             }
             Circle()
                 .stroke(style: .init(lineWidth: 1.5))
-                .foregroundColor(.green)
+                .foregroundColor(message.reciepType == .sent ? .green : .secondary)
             if isFocus{
-                CircleProgressBar(total: totalDuration, progress: time.seconds, lineWidth: 4)
-                    .frame(width: getRect().width - 70)
+                CircleProgressBar(total: totalDuration, progress: time.seconds, lineWidth: play ? 4 : 6)
+                    .frame(width: getRect().width - (play ? 75 : 90))
+                if !play{
+                    playButton
+                }
             }
-            
         }
-        .frame(width: width)
+        .frame(width: width, height: width)
         .overlay(alignment: .bottom) {
             if !isFocus{
                 muteButton
@@ -70,25 +82,29 @@ struct VideoMessageView: View {
             messageTimeAndDuration
         }
         .onTapGesture {
-            withAnimation {
-                isFocus.toggle()
+            if !isFocus{
+                withAnimation {
+                    isFocus.toggle()
+                }
+            }else{
+                withAnimation {
+                    play = !play
+                }
             }
+        }
+        .onLongPressGesture{
+            withAnimation {
+                isFocus = false
+            }
+        }
+        .onChange(of: isFocus) { newValue in
+            isMute = newValue
         }
         .onDisappear{
             play = false
         }
         .onAppear{
             play = true
-        }
-        .onChange(of: isFocus) { newValue in
-            isMute = newValue
-        }
-        .onChange(of: time) { newTime in
-            if newTime.seconds == totalDuration && isFocus{
-                withAnimation {
-                    isFocus.toggle()
-                }
-            }
         }
     }
 }
@@ -137,10 +153,17 @@ extension VideoMessageView{
     }
     
     private func resetTimeVideo(){
-          self.time = CMTimeMakeWithSeconds(0.0, preferredTimescale: self.time.timescale)
+        self.time = .zero
       }
     
-//    private var playButton: some View{
-//
-//    }
+    private var playButton: some View{
+        Image(systemName: "play.fill")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 40, height: 40)
+            .foregroundColor(.white.opacity(0.8))
+    }
 }
+
+
+
