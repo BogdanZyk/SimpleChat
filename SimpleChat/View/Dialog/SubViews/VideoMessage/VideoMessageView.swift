@@ -10,34 +10,40 @@ import VideoPlayer
 import AVFoundation
 
 struct VideoMessageView: View {
+    @EnvironmentObject var videoPinVM: VideoPinViewModel
     let message: Message
     @State private var totalDuration: Double = 0
     @State private var play: Bool = true
     @State private var autoReplay: Bool = true
     @State private var time: CMTime = .zero
-    @State private var isFocus: Bool = false
-    @State private var isMute: Bool = false
+    @State private var isMute: Bool = true
     @State private var stateText: String = ""
     @State private var showLoader: Bool = false
-
+    
+    var isFocus: Bool{
+        videoPinVM.focusedVideoMessage?.id == message.id
+    }
+    
     var width: CGFloat{
         isFocus ? getRect().width - 60 : getRect().width / 2
+    }
+    
+    var remainingDuration: Double{
+        (totalDuration - time.seconds)
     }
         
     var body: some View {
         ZStack{
             if let url = message.video?.url{
+                Circle()
+                    .fill(Material.bar)
                 VideoPlayer(url: url, play: $play, time: $time)
-                    
                     .autoReplay(autoReplay)
                     .mute(isMute)
-                    .onPlayToEndTime {
-                        resetTimeVideo()
-                    }
                     .onReplay {
                         if isFocus{
                             withAnimation {
-                                isFocus.toggle()
+                                videoPinVM.remove()
                             }
                         }
                     }
@@ -49,25 +55,21 @@ struct VideoMessageView: View {
                             showLoader = false
                             self.totalDuration = totalDuration
                         default:
-                            break
+                            showLoader = true
                         }
                     }
-                    .aspectRatio(1, contentMode: .fill)
+                
+                    .centerCropped()
                     .clipShape(Circle())
                     .contentShape(Circle())
                     .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))
-            }
-            if showLoader{
-                Circle()
-                    .fill(Material.ultraThin)
-                ProgressView()
             }
             Circle()
                 .stroke(style: .init(lineWidth: 1.5))
                 .foregroundColor(message.reciepType == .sent ? .green : .secondary)
             if isFocus{
                 CircleProgressBar(total: totalDuration, progress: time.seconds, lineWidth: play ? 4 : 6)
-                    .frame(width: getRect().width - (play ? 75 : 90))
+                    .frame(width: width - (play ? 15 : 30))
                 if !play{
                     playButton
                 }
@@ -84,27 +86,42 @@ struct VideoMessageView: View {
         .onTapGesture {
             if !isFocus{
                 withAnimation {
-                    isFocus.toggle()
+                    videoPinVM.focusedVideoMessage = message
                 }
             }else{
                 withAnimation {
                     play = !play
+                    videoPinVM.isPlay = play
                 }
             }
         }
         .onLongPressGesture{
             withAnimation {
-                isFocus = false
+                videoPinVM.remove()
             }
         }
         .onChange(of: isFocus) { newValue in
-            isMute = newValue
+            isMute = !newValue
+        }
+        .onChange(of: videoPinVM.isPlay){ isPlay in
+            if isFocus{
+                if isPlay != play{
+                    play = isPlay
+                }
+            }
         }
         .onDisappear{
             play = false
+            withAnimation {
+                videoPinVM.isDissAppearMessage = true
+            }
         }
         .onAppear{
             play = true
+            withAnimation {
+                videoPinVM.isDissAppearMessage = false
+            }
+            
         }
     }
 }
@@ -121,6 +138,7 @@ struct VideoMessageView_Previews: PreviewProvider {
             }
            
         }
+        .environmentObject(VideoPinViewModel())
     }
 }
 
@@ -134,7 +152,7 @@ extension VideoMessageView{
     
     private var messageTimeAndDuration: some View{
         HStack(spacing: 0){
-            Text((totalDuration - time.seconds).minuteSeconds)
+            Text(remainingDuration.minuteSeconds)
                 .font(.system(size: 10))
                 .foregroundColor(.secondary)
                 .padding(.horizontal, 8)
@@ -167,3 +185,16 @@ extension VideoMessageView{
 
 
 
+extension View{
+    
+    func centerCropped() -> some View {
+        GeometryReader { geo in
+            self
+                
+                .scaledToFill()
+                .frame(width: geo.size.width, height: geo.size.height)
+                .clipped()
+        }
+    }
+    
+}

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct DialogView: View {
+    @EnvironmentObject var videoPinVM: VideoPinViewModel
     @EnvironmentObject var cameraManager: CameraManager
     @EnvironmentObject var recordManager: RecordManager
     @EnvironmentObject var audioManager: AudioManager
@@ -85,6 +86,14 @@ struct DialogView: View {
                     pinMessageSection
                 }
             }
+            .overlay(alignment: .topTrailing) {
+                if videoPinVM.isDissAppearMessage && videoPinVM.focusedVideoMessage != nil{
+                    PinVideoMessageView()
+                        .padding(10)
+                        .transition(.move(edge: .trailing))
+                        .environmentObject(videoPinVM)
+                }
+            }
             
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -109,6 +118,7 @@ struct DialogView_Previews: PreviewProvider {
             .environmentObject(AudioManager())
             .environmentObject(RecordManager())
             .environmentObject(CameraManager())
+            .environmentObject(VideoPinViewModel())
     }
 }
 
@@ -255,8 +265,23 @@ extension DialogView{
     
     @ViewBuilder
     private var currrentAudioBarComponent: some View{
-        if let audio = audioManager.currentAudio{
-            CurrentAudioTopBarComponent(audio: audio)
+        if let audio = audioManager.currentAudio, !videoPinVM.isPlay{
+            
+            CurrentAudioTopBarComponent(type: .audio, totalTime: audio.duration, currentTime: audioManager.currentTime, currentRate: audioManager.currentRate, isPlaying: audioManager.isPlaying, onPlayStop: {
+                audioManager.audioAction(audio)
+            }, onClose: {
+                audioManager.playerDidFinishPlaying()
+            }, onRateChenge: {
+                audioManager.currentRate = audioManager.currentRate == 2 ? 1 : 2
+                audioManager.udateRate()
+            })
+        }
+        if let _ = videoPinVM.focusedVideoMessage{
+            CurrentAudioTopBarComponent(type: .video, isPlaying: videoPinVM.isPlay, onPlayStop: {
+                videoPinVM.playOrStop()
+            }, onClose: {
+                videoPinVM.remove()
+            })
         }
     }
 }

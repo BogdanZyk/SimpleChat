@@ -23,10 +23,6 @@ struct MessageView: View {
     
     var body: some View {
         
-     
-           
-        
-        
         HStack {
             messageCheckmarkButton
             
@@ -81,6 +77,7 @@ struct MessageView_Previews: PreviewProvider {
         }
         .padding()
         .environmentObject(AudioManager())
+        .environmentObject(VideoPinViewModel())
     }
 }
 

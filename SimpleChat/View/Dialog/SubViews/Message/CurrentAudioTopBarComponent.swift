@@ -8,8 +8,15 @@
 import SwiftUI
 
 struct CurrentAudioTopBarComponent: View {
-    @EnvironmentObject var audioManager: AudioManager
-    let audio: VoiceAudioModel
+    var type: ViewType = .video
+    var totalTime: Double = 10
+    var currentTime: Double = 0
+    var currentRate: Float = 1
+    var isPlaying: Bool
+    let onPlayStop: () -> Void
+    let onClose: () -> Void
+    var onRateChenge: (() -> ())?
+    
     var body: some View {
         VStack(spacing: 0) {
             Divider().padding(.horizontal, -16)
@@ -19,7 +26,7 @@ struct CurrentAudioTopBarComponent: View {
                 VStack(alignment: .center) {
                     Text("User")
                         .font(.subheadline.weight(.medium))
-                    Text("Voice message")
+                    Text(type.title)
                         .font(.caption2)
                 }.padding(.vertical, 5)
                 Spacer()
@@ -27,57 +34,77 @@ struct CurrentAudioTopBarComponent: View {
                 rateButton
                 
                 Button {
-                    audioManager.playerDidFinishPlaying()
+                    onClose()
+                    //
                 } label: {
                     Image(systemName: "xmark")
                 }
             }
             .padding(.horizontal)
-            progressView
+            if type == .audio{
+                progressView
+            }else{
+                Divider()
+            }
         }
         .foregroundColor(.black)
         .background(Material.bar)
         .zIndex(0)
         .transition(.move(edge: .top))
-        .onAppear{
-            print(audioManager.currentTime, audio.duration)
-        }
     }
 }
 
 struct CurrentAudioTopBarComponent_Previews: PreviewProvider {
     static var previews: some View {
-        CurrentAudioTopBarComponent(audio: .init(id: "1", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
-            .environmentObject(AudioManager())
+        CurrentAudioTopBarComponent(type: .video, totalTime: 60, currentTime: 30, isPlaying: true, onPlayStop: {}, onClose: {})
     }
 }
 
 extension CurrentAudioTopBarComponent{
     private var playButton: some View{
         Button {
-            audioManager.audioAction(audio)
+            onPlayStop()
+            //audioManager.audioAction(audio)
         } label: {
-            Image(systemName: audioManager.isPlaying ? "pause.fill" : "play.fill")
+            Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                 .foregroundColor(.blue)
         }
     }
     @ViewBuilder
     private var progressView: some View{
-        ProgressView(value: audioManager.currentTime, total: audio.duration)
+        ProgressView(value: currentTime, total: totalTime)
                        //.progressViewStyle(LinerProgressStyle())
                        .frame(height: 1)
     }
     
+    @ViewBuilder
     private var rateButton: some View{
-        Button {
-            audioManager.currentRate = audioManager.currentRate == 2 ? 1 : 2
-            audioManager.udateRate()
-        } label: {
-            Text(audioManager.currentRate == 2 ? "1X" : "2X")
-                .font(.caption)
-                .padding(.horizontal, 2)
-                .foregroundColor(.blue)
-                .background(Color.blue, in: RoundedRectangle(cornerRadius: 2).stroke(lineWidth: 1.5))
+        if let update = onRateChenge{
+            Button {
+                update()
+    //            audioManager.currentRate = audioManager.currentRate == 2 ? 1 : 2
+    //            audioManager.udateRate()
+            } label: {
+                Text(currentRate == 2 ? "1X" : "2X")
+                    .font(.caption)
+                    .padding(.horizontal, 2)
+                    .foregroundColor(.blue)
+                    .background(Color.blue, in: RoundedRectangle(cornerRadius: 2).stroke(lineWidth: 1.5))
+            }
+        }
+    }
+}
+
+extension CurrentAudioTopBarComponent{
+    enum ViewType{
+        case video, audio
+        
+        
+        var title: String{
+            switch self{
+            case .video: return "Video message"
+            case .audio: return "Voice message"
+            }
         }
     }
 }

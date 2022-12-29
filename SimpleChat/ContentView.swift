@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var videoPinVM = VideoPinViewModel()
     @StateObject private var cameraManager = CameraManager()
     @StateObject private var audioManager = AudioManager()
     @StateObject private var recordManager = RecordManager()
@@ -17,6 +18,7 @@ struct ContentView: View {
             .environmentObject(audioManager)
             .environmentObject(recordManager)
             .environmentObject(cameraManager)
+            .environmentObject(videoPinVM)
     }
 }
 

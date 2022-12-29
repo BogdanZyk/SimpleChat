@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5A5FA6CE294E0D61008DD4A2 /* VoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6CD294E0D61008DD4A2 /* VoiceView.swift */; };
 		5A5FA6D0294E0D81008DD4A2 /* RecordManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6CF294E0D81008DD4A2 /* RecordManager.swift */; };
 		5A5FA6D3294E106E008DD4A2 /* RecordTabComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6D2294E106D008DD4A2 /* RecordTabComponent.swift */; };
 		5A5FA6D5294E26A5008DD4A2 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5FA6D4294E26A5008DD4A2 /* AudioManager.swift */; };
@@ -43,10 +42,11 @@
 		5ACCEBD02955AE7D00711DB6 /* VideoPlayer in Frameworks */ = {isa = PBXBuildFile; productRef = 5ACCEBCF2955AE7D00711DB6 /* VideoPlayer */; };
 		5ACCEBD22955AEA900711DB6 /* VideoMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ACCEBD12955AEA900711DB6 /* VideoMessageView.swift */; };
 		5ACCEBD42955B15C00711DB6 /* MessageVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ACCEBD32955B15C00711DB6 /* MessageVideo.swift */; };
+		5ACCEBD82955EED500711DB6 /* VideoPinViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ACCEBD72955EED500711DB6 /* VideoPinViewModel.swift */; };
+		5ACCEBDA2955FF8600711DB6 /* PinVideoMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ACCEBD92955FF8600711DB6 /* PinVideoMessageView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		5A5FA6CD294E0D61008DD4A2 /* VoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceView.swift; sourceTree = "<group>"; };
 		5A5FA6CF294E0D81008DD4A2 /* RecordManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordManager.swift; sourceTree = "<group>"; };
 		5A5FA6D2294E106D008DD4A2 /* RecordTabComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordTabComponent.swift; sourceTree = "<group>"; };
 		5A5FA6D4294E26A5008DD4A2 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
@@ -83,6 +83,8 @@
 		5ABC3216294C992800559B90 /* OnDelete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnDelete.swift; sourceTree = "<group>"; };
 		5ACCEBD12955AEA900711DB6 /* VideoMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoMessageView.swift; sourceTree = "<group>"; };
 		5ACCEBD32955B15C00711DB6 /* MessageVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageVideo.swift; sourceTree = "<group>"; };
+		5ACCEBD72955EED500711DB6 /* VideoPinViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPinViewModel.swift; sourceTree = "<group>"; };
+		5ACCEBD92955FF8600711DB6 /* PinVideoMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinVideoMessageView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,12 +102,8 @@
 		5A5FA6CC294E09C8008DD4A2 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				5A5FA6CD294E0D61008DD4A2 /* VoiceView.swift */,
-				5A5FA6CF294E0D81008DD4A2 /* RecordManager.swift */,
-				5A5FA6D4294E26A5008DD4A2 /* AudioManager.swift */,
-				5A5FA6D8294E3BD3008DD4A2 /* AudioBufferService.swift */,
-				5A5FA6E92950A3D0008DD4A2 /* AvAudioSessionManager.swift */,
-				5A5FA6F32951FCCF008DD4A2 /* CameraManager.swift */,
+				5ACCEBD62955EEC800711DB6 /* Video */,
+				5ACCEBD52955EEB000711DB6 /* Audio */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -165,6 +163,7 @@
 			children = (
 				5A5FA70029531DC4008DD4A2 /* CircleCameraRecorderView.swift */,
 				5ACCEBD12955AEA900711DB6 /* VideoMessageView.swift */,
+				5ACCEBD92955FF8600711DB6 /* PinVideoMessageView.swift */,
 			);
 			path = VideoMessage;
 			sourceTree = "<group>";
@@ -292,6 +291,26 @@
 			path = ViewModifiers;
 			sourceTree = "<group>";
 		};
+		5ACCEBD52955EEB000711DB6 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				5A5FA6E92950A3D0008DD4A2 /* AvAudioSessionManager.swift */,
+				5A5FA6D8294E3BD3008DD4A2 /* AudioBufferService.swift */,
+				5A5FA6D4294E26A5008DD4A2 /* AudioManager.swift */,
+				5A5FA6CF294E0D81008DD4A2 /* RecordManager.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		5ACCEBD62955EEC800711DB6 /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				5A5FA6F32951FCCF008DD4A2 /* CameraManager.swift */,
+				5ACCEBD72955EED500711DB6 /* VideoPinViewModel.swift */,
+			);
+			path = Video;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -380,7 +399,6 @@
 				5A5FA6F42951FCCF008DD4A2 /* CameraManager.swift in Sources */,
 				5A5FA6D3294E106E008DD4A2 /* RecordTabComponent.swift in Sources */,
 				5ABC320E294C841400559B90 /* ReversedScrollView.swift in Sources */,
-				5A5FA6CE294E0D61008DD4A2 /* VoiceView.swift in Sources */,
 				5ABC3214294C850F00559B90 /* DialogView.swift in Sources */,
 				5A5FA6DC295051B1008DD4A2 /* VoiceAudioModel.swift in Sources */,
 				5A5FA6D0294E0D81008DD4A2 /* RecordManager.swift in Sources */,
@@ -391,6 +409,7 @@
 				5A5FA6E52950773F008DD4A2 /* PinnedMessageView.swift in Sources */,
 				5A5FA6EC2950B556008DD4A2 /* ActiveBarMessageComponent.swift in Sources */,
 				5ABC31F7294C838700559B90 /* ContentView.swift in Sources */,
+				5ACCEBDA2955FF8600711DB6 /* PinVideoMessageView.swift in Sources */,
 				5AB9276D2954BF1D0011287D /* RecordButton.swift in Sources */,
 				5A5FA6E82950827B008DD4A2 /* UIApplication.swift in Sources */,
 				5ABC3217294C992800559B90 /* OnDelete.swift in Sources */,
@@ -398,6 +417,7 @@
 				5A5FA6EA2950A3D0008DD4A2 /* AvAudioSessionManager.swift in Sources */,
 				5ABC3210294C842E00559B90 /* View.swift in Sources */,
 				5ABC31F5294C838700559B90 /* SimpleChatApp.swift in Sources */,
+				5ACCEBD82955EED500711DB6 /* VideoPinViewModel.swift in Sources */,
 				5ACCEBD42955B15C00711DB6 /* MessageVideo.swift in Sources */,
 				5A5FA6E129507029008DD4A2 /* MessageAudio.swift in Sources */,
 				5A5FA70129531DC4008DD4A2 /* CircleCameraRecorderView.swift in Sources */,

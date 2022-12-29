@@ -46,7 +46,7 @@ struct CircleCameraRecorderView: View {
         }
         .onChange(of: cameraManager.finalURL) { url in
             guard let url = url else {return}
-            let video = MessageVideo(id: "1", url: url, duration: 0)
+            let video = MessageVideo(id: UUID().uuidString, url: url, duration: 0)
             withAnimation {
                 cameraManager.showCameraView.toggle()
             }
