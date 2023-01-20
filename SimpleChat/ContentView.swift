@@ -8,17 +8,10 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var videoPinVM = VideoPinViewModel()
-    @StateObject private var cameraManager = CameraManager()
-    @StateObject private var audioManager = AudioManager()
-    @StateObject private var recordManager = RecordManager()
+
     var body: some View {
-        DialogView()
+        ChatView()
             .preferredColorScheme(.light)
-            .environmentObject(audioManager)
-            .environmentObject(recordManager)
-            .environmentObject(cameraManager)
-            .environmentObject(videoPinVM)
     }
 }
 

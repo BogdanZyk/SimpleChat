@@ -12,11 +12,16 @@ struct DialogView: View {
     @EnvironmentObject var cameraManager: CameraManager
     @EnvironmentObject var recordManager: RecordManager
     @EnvironmentObject var audioManager: AudioManager
-    @StateObject private var dialogVM = DialogViewModel()
+    @StateObject private var dialogVM: DialogViewModel
     @State private var pinMessageTrigger: Int = 0
     @State private var showBottomScrollButton: Bool = false
+    
+    
+    init(messages: [Message]){
+        self._dialogVM = StateObject(wrappedValue: DialogViewModel(messages: messages))
+    }
+    
     var body: some View {
-        NavigationView {
             VStack(spacing: 0) {
                 
                 ScrollViewReader { scrollView in
@@ -108,17 +113,18 @@ struct DialogView: View {
                     }
                 }
             }
-        }
     }
 }
 
 struct DialogView_Previews: PreviewProvider {
     static var previews: some View {
-        DialogView()
-            .environmentObject(AudioManager())
-            .environmentObject(RecordManager())
-            .environmentObject(CameraManager())
-            .environmentObject(VideoPinViewModel())
+        NavigationView{
+            DialogView(messages: Mocks.mockMassage)
+                .environmentObject(AudioManager())
+                .environmentObject(RecordManager())
+                .environmentObject(CameraManager())
+                .environmentObject(VideoPinViewModel())
+        }
     }
 }
 
@@ -147,14 +153,14 @@ extension DialogView{
             NavigationLink {
                 ZStack{
                     Color.blue
-                    VStack{
-                        AudioPreviewView(mode: .message, audio: .init(id: "1", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
-                        
-                        AudioPreviewView(mode: .vocePreview, audio: .init(id: "2", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
-                        
-                        
-                    }
-                    .padding(.horizontal)
+//                    VStack{
+//                        AudioPreviewView(mode: .message, audio: .init(id: "1", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
+//                        
+//                        AudioPreviewView(mode: .vocePreview, audio: .init(id: "2", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
+//                        
+//                        
+//                    }
+//                    .padding(.horizontal)
                 }
                 
             } label: {

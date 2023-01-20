@@ -21,8 +21,9 @@ final class DialogViewModel: ObservableObject{
     @Published var dialogMode: DialogMode = .dialog
     @Published var showCameraView: Bool = false
     
-    init(){
-        fetchMessages()
+    init(messages: [Message]? = nil){
+        guard let messages = messages else {return}
+        self.messages.append(contentsOf: messages)
     }
 }
 
@@ -32,10 +33,6 @@ enum DialogMode: Int{
 }
 
 extension DialogViewModel{
-    
-    func fetchMessages(){
-        messages.append(contentsOf: mockMassage)
-    }
     
     
     func send() {
@@ -71,7 +68,7 @@ extension DialogViewModel{
              print(message.text)
              isLoad = true
              DispatchQueue.main.asyncAfter(deadline: .now() + 0.5){
-                 let message = mockMassage
+                 let message = Mocks.mockMassage
                  
                  self.messages.insert(contentsOf: message, at: 0)
                  
