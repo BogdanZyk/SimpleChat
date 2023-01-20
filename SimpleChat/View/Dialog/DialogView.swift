@@ -14,7 +14,6 @@ struct DialogView: View {
     @EnvironmentObject var audioManager: AudioManager
     @StateObject private var dialogVM: DialogViewModel
     @State private var pinMessageTrigger: Int = 0
-    @State private var showBottomScrollButton: Bool = false
     
     
     init(messages: [Message]){
@@ -23,56 +22,8 @@ struct DialogView: View {
     
     var body: some View {
             VStack(spacing: 0) {
-                
-                ScrollViewReader { scrollView in
-                    ReversedScrollView(.vertical, showsIndicators: true, contentSpacing: 4) {
-                        
-                        ForEach(dialogVM.messages) { message in
-                            
-                            MessageView(
-                                message: message,
-                                isSelected: dialogVM.isSelected(message),
-                                dialogMode: $dialogVM.dialogMode,
-                                onSelected: dialogVM.selectMessage,
-                                onPin: dialogVM.pinMessage,
-                                onSetMessage: dialogVM.onSetActionMessage
-                            )
-                            
-                            .padding(.bottom, dialogVM.messages.last?.id == message.id ? 10 : 0)
-                            .onAppear{
-                                dialogVM.loadNextPageMessages(scrollView, message: message)
-                                onAppearForScrollButton(message)
-                            }
-                            .onDisappear{
-                                onDisapearForScrollButton(message)
-                            }
-                        }
-                        .padding(.horizontal)
-                    }
-                    .overlay(alignment: .bottomTrailing){
-                        bottomScrollButton(scrollView)
-                    }
-                    .onAppear{
-                        if let id = dialogVM.messages.last?.id {
-                            scrollView.scrollTo(id, anchor: .bottom)
-                        }
-                    }
-                    .onChange(of: dialogVM.targetMessage) { message in
-                        if let message = message {
-                            dialogVM.targetMessage = nil
-                            withAnimation(.default) {
-                                scrollView.scrollTo(message.id)
-                            }
-                        }
-                    }
-                    .onChange(of: pinMessageTrigger) { _ in
-                        if let message = dialogVM.pinnedMessage {
-                            withAnimation(.default) {
-                                scrollView.scrollTo(message.id, anchor: .center)
-                            }
-                        }
-                    }
-                }
+                DialogBodyView(dialogVM: dialogVM, pinMessageTrigger: $pinMessageTrigger)
+
                 .overlay{
                     if cameraManager.showCameraView{
                         CircleCameraRecorderView(show: $dialogVM.showCameraView)
@@ -292,43 +243,4 @@ extension DialogView{
     }
 }
 
-extension DialogView{
-    
-    private func bottomScrollButton(_ scrollView: ScrollViewProxy) -> some View{
-        
-        Button {
-            if let lastMessageId = dialogVM.messages.last?.id{
-                withAnimation(.easeOut){
-                    scrollView.scrollTo(lastMessageId, anchor: .bottom)
-                }
-            }
-        } label: {
-            ZStack{
-                Image(systemName: "chevron.down")
-                    .foregroundColor(.secondary)
-                    .padding(12)
-            }
-            .background(Material.bar)
-            .clipShape(Circle())
-            .padding(10)
-            .opacity(showBottomScrollButton ? 1 : 0)
-            .scaleEffect(showBottomScrollButton ? 1 : 0.001)
-        }
-    }
-    
-    private func onAppearForScrollButton(_ message: Message){
-        if dialogVM.messages.last?.id == message.id{
-            withAnimation {
-                showBottomScrollButton = false
-            }
-        }
-    }
-    
-    private func onDisapearForScrollButton(_ message: Message){
-        if dialogVM.messages.last?.id == message.id{
-            withAnimation {
-                showBottomScrollButton = true
-            }
-        }
-    }
-}
+

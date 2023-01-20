@@ -45,7 +45,9 @@ final class CameraManager: NSObject, ObservableObject{
                 if status{
                     self.setUp()
                 }
-                self.isPermissions = status
+                DispatchQueue.main.async {
+                    self.isPermissions = status
+                }
             }
         case .denied:
             alert.toggle()

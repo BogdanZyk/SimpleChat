@@ -16,7 +16,7 @@ struct ChatView: View {
     var body: some View {
         NavigationView {
             List{
-                ForEach(chatVM.chats){chat in
+                ForEach(chatVM.chats.sorted(by: {$0.chat.isPinned && !$1.chat.isPinned})){chat in
                     NavigationLink {
                         DialogView(messages: chat.messages)
                             .environmentObject(audioManager)
@@ -24,10 +24,12 @@ struct ChatView: View {
                             .environmentObject(cameraManager)
                             .environmentObject(videoPinVM)
                     } label: {
-                        Text(chat.chat.userUnfo.fullName)
+                        ChatRowView(chat: chat.chat)
+                            .environmentObject(chatVM)
                     }
                 }
             }
+            .listStyle(.inset)
             .environmentObject(audioManager)
             .environmentObject(recordManager)
             .environmentObject(cameraManager)

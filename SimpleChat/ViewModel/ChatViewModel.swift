@@ -22,13 +22,13 @@ class ChatViewModel: ObservableObject{
     
     func fetchMocksChats() -> [ChatMockModel]{
         
-        let users = ["Boris", "Elena"]
+        let users = ["Boris Aron", "Elena Gosh", "Erlan Yan", "Angela Hort"]
         
         let chats: [ChatMockModel] = users.map({
             .init(chat: .init(userUnfo: .init(avatarURl: "", fullName: $0)), messages: Mocks.mockMassage)
         })
         
-        return chats.sorted(by: {$0.chat.isMute && !$1.chat.isMute})
+        return chats
     }
 }
 
@@ -49,10 +49,11 @@ extension ChatViewModel{
     }
     
     func addArhived(_ id: String){
+        guard let chat = chats.first(where: {$0.id == id}) else {return}
         withAnimation {
-            let chat = chats.drop(while: {$0.id == id})
-            arhivedChats.append(contentsOf: chat)
+            arhivedChats.append(chat)
         }
+        deleteChat(id)
     }
     
     func muteAction(_ id: String){

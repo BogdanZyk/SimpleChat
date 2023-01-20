@@ -30,6 +30,8 @@
 		5A93B3F0297AAB5C0082EC42 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A93B3EF297AAB5C0082EC42 /* Mocks.swift */; };
 		5A93B3F3297AB0330082EC42 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A93B3F2297AB0330082EC42 /* ChatViewModel.swift */; };
 		5A93B3F5297AB3580082EC42 /* ChatRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A93B3F4297AB3580082EC42 /* ChatRowView.swift */; };
+		5A93B3F8297ADBD50082EC42 /* DialogBodyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A93B3F7297ADBD50082EC42 /* DialogBodyView.swift */; };
+		5A93B3FB297AE09A0082EC42 /* DialogContextMenuPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A93B3FA297AE09A0082EC42 /* DialogContextMenuPreview.swift */; };
 		5AB9276B295484DA0011287D /* CameraPreviewFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB9276A295484DA0011287D /* CameraPreviewFrame.swift */; };
 		5AB9276D2954BF1D0011287D /* RecordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB9276C2954BF1D0011287D /* RecordButton.swift */; };
 		5ABC31F5294C838700559B90 /* SimpleChatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC31F4294C838700559B90 /* SimpleChatApp.swift */; };
@@ -76,6 +78,8 @@
 		5A93B3EF297AAB5C0082EC42 /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
 		5A93B3F2297AB0330082EC42 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		5A93B3F4297AB3580082EC42 /* ChatRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRowView.swift; sourceTree = "<group>"; };
+		5A93B3F7297ADBD50082EC42 /* DialogBodyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogBodyView.swift; sourceTree = "<group>"; };
+		5A93B3FA297AE09A0082EC42 /* DialogContextMenuPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogContextMenuPreview.swift; sourceTree = "<group>"; };
 		5AB9276A295484DA0011287D /* CameraPreviewFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewFrame.swift; sourceTree = "<group>"; };
 		5AB9276C2954BF1D0011287D /* RecordButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordButton.swift; sourceTree = "<group>"; };
 		5ABC31F1294C838700559B90 /* SimpleChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -131,8 +135,9 @@
 		5A5FA6E2295076F5008DD4A2 /* Dialog */ = {
 			isa = PBXGroup;
 			children = (
-				5A5FA6E32950771C008DD4A2 /* SubViews */,
 				5ABC3213294C850F00559B90 /* DialogView.swift */,
+				5A93B3F7297ADBD50082EC42 /* DialogBodyView.swift */,
+				5A5FA6E32950771C008DD4A2 /* SubViews */,
 			);
 			path = Dialog;
 			sourceTree = "<group>";
@@ -208,7 +213,7 @@
 			isa = PBXGroup;
 			children = (
 				5A93B3EC297AAAFC0082EC42 /* ChatView.swift */,
-				5A93B3F4297AB3580082EC42 /* ChatRowView.swift */,
+				5A93B3F9297AE0610082EC42 /* SubView */,
 			);
 			path = Chats;
 			sourceTree = "<group>";
@@ -238,6 +243,15 @@
 				5A93B3EF297AAB5C0082EC42 /* Mocks.swift */,
 			);
 			path = Mocks;
+			sourceTree = "<group>";
+		};
+		5A93B3F9297AE0610082EC42 /* SubView */ = {
+			isa = PBXGroup;
+			children = (
+				5A93B3F4297AB3580082EC42 /* ChatRowView.swift */,
+				5A93B3FA297AE09A0082EC42 /* DialogContextMenuPreview.swift */,
+			);
+			path = SubView;
 			sourceTree = "<group>";
 		};
 		5ABC31E8294C838700559B90 = {
@@ -450,6 +464,7 @@
 				5ABC320E294C841400559B90 /* ReversedScrollView.swift in Sources */,
 				5ABC3214294C850F00559B90 /* DialogView.swift in Sources */,
 				5A5FA6DC295051B1008DD4A2 /* VoiceAudioModel.swift in Sources */,
+				5A93B3F8297ADBD50082EC42 /* DialogBodyView.swift in Sources */,
 				5A5FA6D0294E0D81008DD4A2 /* RecordManager.swift in Sources */,
 				5A5FA6D7294E27ED008DD4A2 /* AudioPreviewView.swift in Sources */,
 				5A93B3F5297AB3580082EC42 /* ChatRowView.swift in Sources */,
@@ -471,6 +486,7 @@
 				5ABC31F5294C838700559B90 /* SimpleChatApp.swift in Sources */,
 				5ACCEBD82955EED500711DB6 /* VideoPinViewModel.swift in Sources */,
 				5ACCEBD42955B15C00711DB6 /* MessageVideo.swift in Sources */,
+				5A93B3FB297AE09A0082EC42 /* DialogContextMenuPreview.swift in Sources */,
 				5A5FA6E129507029008DD4A2 /* MessageAudio.swift in Sources */,
 				5A5FA70129531DC4008DD4A2 /* CircleCameraRecorderView.swift in Sources */,
 			);

@@ -16,8 +16,15 @@ struct ChatRowView: View {
                 .fill(Color.gray)
                 .frame(width: 50, height: 50)
             VStack(alignment: .leading, spacing: 5){
-                Text(chat.userUnfo.fullName)
-                    .font(.headline)
+                HStack{
+                    Text(chat.userUnfo.fullName)
+                        .font(.headline)
+                    if chat.isMute{
+                        Image(systemName: "speaker.slash.fill")
+                            .imageScale(.small)
+                            .foregroundColor(.gray)
+                    }
+                }
                 Text(chat.lastMessageTitle)
                     .font(.subheadline)
                     .lineLimit(1)
@@ -28,10 +35,10 @@ struct ChatRowView: View {
                     Text("\(date, formatter: Date.formatter)")
                         .font(.system(size: 14).weight(.light))
                 }
-                //if chat.isPinned{
+                if chat.isPinned{
                     Image(systemName: "pin.fill")
                     .foregroundColor(.gray)
-                //}
+                }
             }
         }
         .listRowBackground(chat.isPinned ? Color.gray.opacity(0.1) : .white)
@@ -39,8 +46,18 @@ struct ChatRowView: View {
         .swipeActions(edge: .trailing) {
             swipeButtons
         }
-        .contextMenu{
+        .contextMenuWithPreview {
             contextMenuContent
+        } preview: {
+            //Group{
+                //if let messages = chatVM.chats.first(where: {$0.id == chat.id})?.messages{
+                GeometryReader { reader in
+                    DialogContextMenuPreview(messages: chatVM.chats.first(where: {$0.chat.id == chat.id})?.messages ?? [])
+                        .frame(width: reader.size.width, height: reader.size.height)
+                }
+                .frame(width: getRect().width, height: getRect().height / 2)
+                //}
+           // }
         }
     }
 }
@@ -92,7 +109,7 @@ extension ChatRowView{
             Button {
                 chatVM.muteAction(chat.id)
             } label: {
-                Label("Mute", systemImage: "speaker.slash")
+                Label(chat.isMute ? "Unmute": "Mute", systemImage: chat.isMute ? "speaker.wave.3" : "speaker.slash")
             }
             
             Button(role: .destructive) {
@@ -103,3 +120,30 @@ extension ChatRowView{
         }
     }
 }
+
+
+
+extension View{
+    
+    @ViewBuilder
+    func contextMenuWithPreview<M, P>(menuItems: () -> M, preview: () -> P) -> some View where M : View, P : View{
+        
+        
+        if #available(iOS 16.0, *) {
+            self
+                .contextMenu {
+                    menuItems()
+                } preview: {
+                   preview()
+                }
+        } else {
+            self.contextMenu{
+                menuItems()
+            }
+        }
+    }
+    
+}
+
+
+
