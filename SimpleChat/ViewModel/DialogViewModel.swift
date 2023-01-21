@@ -16,6 +16,7 @@ final class DialogViewModel: ObservableObject{
     @Published var pinnedMessage: Message?
     @Published var messageForAction: SelectedMessage?
     @Published var targetMessage: Message?
+    @Published var highlightMessage: Message?
     @Published var isLoad: Bool = false
     @Published var isShowFirstMessage: Bool = false
     @Published var dialogMode: DialogMode = .dialog

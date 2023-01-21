@@ -12,8 +12,9 @@ struct DialogBodyView: View {
     @EnvironmentObject var cameraManager: CameraManager
     @EnvironmentObject var recordManager: RecordManager
     @EnvironmentObject var audioManager: AudioManager
-    @ObservedObject  var dialogVM: DialogViewModel
+    @ObservedObject var dialogVM: DialogViewModel
     @Binding var pinMessageTrigger: Int
+    @GestureState var isUpdating = false
     @State var showBottomScrollButton: Bool = false
     var isDisabledMessage: Bool = false
     var body: some View {
@@ -31,12 +32,30 @@ struct DialogBodyView: View {
                         onSetMessage: dialogVM.onSetActionMessage
                     )
                     .disabled(isDisabledMessage)
-                    
                     .padding(.bottom, dialogVM.messages.last?.id == message.id ? 10 : 0)
                     .onAppear{
                         dialogVM.loadNextPageMessages(scrollView, message: message)
                         onAppearForScrollButton(message)
                     }
+                    #warning("FIX scroll bug")
+                    .highPriorityGesture(LongPressGesture(minimumDuration: 0.2).onEnded({ _ in
+                        withAnimation {
+                            dialogVM.highlightMessage = message
+                        }
+                    }))
+//                    .gesture(
+//                        LongPressGesture(minimumDuration: 1.0)
+//                            .updating($isUpdating, body: { (currentState, state, transaction) in
+//                                state = currentState
+//                            })
+//                            .onEnded({ _ in
+//                                withAnimation {
+//                                    dialogVM.highlightMessage = message
+//                                }
+//                            })
+//                    )
+                    
+
                     .onDisappear{
                         onDisapearForScrollButton(message)
                     }
@@ -70,11 +89,17 @@ struct DialogBodyView: View {
     }
 }
 
-//struct DialogBodyView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        DialogBodyView()
-//    }
-//}
+struct DialogBodyView_Previews: PreviewProvider {
+    static var previews: some View {
+        NavigationView{
+            DialogView(messages: Mocks.mockMassage)
+                .environmentObject(AudioManager())
+                .environmentObject(RecordManager())
+                .environmentObject(CameraManager())
+                .environmentObject(VideoPinViewModel())
+        }
+    }
+}
 
 
 extension DialogBodyView{

@@ -52,6 +52,8 @@
 		5ACCEBD42955B15C00711DB6 /* MessageVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ACCEBD32955B15C00711DB6 /* MessageVideo.swift */; };
 		5ACCEBD82955EED500711DB6 /* VideoPinViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ACCEBD72955EED500711DB6 /* VideoPinViewModel.swift */; };
 		5ACCEBDA2955FF8600711DB6 /* PinVideoMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ACCEBD92955FF8600711DB6 /* PinVideoMessageView.swift */; };
+		5ACCF883297C6269009CD0E0 /* BoundsPreferece.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ACCF882297C6269009CD0E0 /* BoundsPreferece.swift */; };
+		5ACCF886297C798B009CD0E0 /* CustomMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ACCF885297C798B009CD0E0 /* CustomMenuView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -101,6 +103,8 @@
 		5ACCEBD32955B15C00711DB6 /* MessageVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageVideo.swift; sourceTree = "<group>"; };
 		5ACCEBD72955EED500711DB6 /* VideoPinViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPinViewModel.swift; sourceTree = "<group>"; };
 		5ACCEBD92955FF8600711DB6 /* PinVideoMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinVideoMessageView.swift; sourceTree = "<group>"; };
+		5ACCF882297C6269009CD0E0 /* BoundsPreferece.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundsPreferece.swift; sourceTree = "<group>"; };
+		5ACCF885297C798B009CD0E0 /* CustomMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomMenuView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,9 +131,11 @@
 		5A5FA6D1294E104C008DD4A2 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				5ACCF884297C7976009CD0E0 /* CustomContext */,
 				5A5FA70229532AEF008DD4A2 /* ProgressBar */,
 				5A5FA6FA29531BB5008DD4A2 /* Camera */,
 				5ABC320D294C841400559B90 /* ReversedScrollView.swift */,
+				5ACCF882297C6269009CD0E0 /* BoundsPreferece.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -383,6 +389,14 @@
 			path = Video;
 			sourceTree = "<group>";
 		};
+		5ACCF884297C7976009CD0E0 /* CustomContext */ = {
+			isa = PBXGroup;
+			children = (
+				5ACCF885297C798B009CD0E0 /* CustomMenuView.swift */,
+			);
+			path = CustomContext;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -473,6 +487,7 @@
 				5A5FA6F42951FCCF008DD4A2 /* CameraManager.swift in Sources */,
 				5A5FA6D3294E106E008DD4A2 /* RecordTabComponent.swift in Sources */,
 				5ABC320E294C841400559B90 /* ReversedScrollView.swift in Sources */,
+				5ACCF883297C6269009CD0E0 /* BoundsPreferece.swift in Sources */,
 				5ABC3214294C850F00559B90 /* DialogView.swift in Sources */,
 				5A5FA6DC295051B1008DD4A2 /* VoiceAudioModel.swift in Sources */,
 				5A93B3F8297ADBD50082EC42 /* DialogBodyView.swift in Sources */,
@@ -496,6 +511,7 @@
 				5A5FA6EA2950A3D0008DD4A2 /* AvAudioSessionManager.swift in Sources */,
 				5ABC3210294C842E00559B90 /* View.swift in Sources */,
 				5ABC31F5294C838700559B90 /* SimpleChatApp.swift in Sources */,
+				5ACCF886297C798B009CD0E0 /* CustomMenuView.swift in Sources */,
 				5ACCEBD82955EED500711DB6 /* VideoPinViewModel.swift in Sources */,
 				5ACCEBD42955B15C00711DB6 /* MessageVideo.swift in Sources */,
 				5A93B3FB297AE09A0082EC42 /* DialogContextMenuPreview.swift in Sources */,

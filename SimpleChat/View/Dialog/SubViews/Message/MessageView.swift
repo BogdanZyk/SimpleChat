@@ -20,7 +20,6 @@ struct MessageView: View {
     let onSelected: (Message) -> Void
     let onPin: (Message) -> Void
     let onSetMessage: (SelectedMessage) -> Void
-    
     var body: some View {
         
         HStack {
@@ -38,17 +37,19 @@ struct MessageView: View {
                     .foregroundColor(message.reciepType.textColor)
                 }
             }
-            .contextMenu{
-                contextMenuView
-            }
+//            .contextMenu{
+//                contextMenuView
+//            }
             .frame(maxWidth: .infinity, alignment: message.reciepType == .sent ? .trailing : .leading)
             
             messageReplyButton
         }
         .offset(x: offset, y: 0)
         .id(message.id)
-
-        .gesture((DragGesture()
+        .anchorPreference(key: BoundsPreferece.self, value: .bounds, transform: { anchor in
+            return [message.id : anchor]
+        })
+        .simultaneousGesture((DragGesture()
             .updating($isDragging, body: { (value, state, _) in
                 state = true
                 onChanged(value)

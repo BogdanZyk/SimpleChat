@@ -64,6 +64,23 @@ struct DialogView: View {
                     }
                 }
             }
+            .overlay{
+                if dialogVM.highlightMessage != nil{
+                    Rectangle()
+                        .fill(Material.ultraThinMaterial)
+                        .ignoresSafeArea()
+                        .onTapGesture {
+                            withAnimation {
+                                dialogVM.highlightMessage = nil
+                            }
+                        }
+                }
+            }
+            .overlayPreferenceValue(BoundsPreferece.self) { values in
+                if let highlightMessage = dialogVM.highlightMessage, let preferense = values.first(where: {$0.key == highlightMessage.id}){
+                    MessageContextMenuView(message: $dialogVM.highlightMessage, preferense: preferense)
+                }
+            }
     }
 }
 
@@ -244,3 +261,109 @@ extension DialogView{
 }
 
 
+//MARK: - Custom message context menu
+struct MessageContextMenuView: View{
+    @StateObject private var audioManager = AudioManager()
+    @Binding var message: Message?
+    let preferense: Dictionary<UUID, Anchor<CGRect>>.Element
+    var body: some View{
+        GeometryReader { proxy in
+            let rect = proxy[preferense.value]
+            let isBottom = (rect.minY) > proxy.size.height / 2
+            let isBigSizeMessage = rect.size.height >= (proxy.size.height / 3)
+            VStack(alignment: message?.reciepType == .sent ? .trailing : .leading){
+                if isBigSizeMessage{
+                    ScrollView(.vertical, showsIndicators: false) {
+                        content
+                    }
+                }else{
+                    content
+                }
+            }
+            .id(message?.id ?? UUID())
+            .frame(width: rect.width)
+            .offset(x: rect.minX, y: isBottom ? (getRect().height / 2.5) : rect.minY)
+            .transition(.asymmetric(insertion: .identity, removal: .offset(x: 1)))
+        }
+    }
+}
+
+extension MessageContextMenuView{
+    
+    @ViewBuilder
+    private var content: some View{
+        EmojiReactionView {_ in
+            withAnimation {
+                message = nil
+            }
+        }
+        if let message = message{
+            MessageView(message: message, dialogMode: .constant(.dialog), onSelected: {_ in}, onPin: {_ in}, onSetMessage: {_ in})
+                .disabled(true)
+                .environmentObject(audioManager)
+        }
+        CustomMenuView{
+            ForEach(1...7, id: \.self){_ in
+                Button {
+                    
+                } label: {
+                    Text("Button")
+                        .hCenter()
+                }
+                Divider().padding(.horizontal, -16)
+            }
+        }
+    }
+}
+
+struct EmojiReactionView: View{
+   
+    @State private var emojesModels: [EmojiReaction]
+    @State private var animateView: Bool = false
+    var onTap: (EmojiReaction) -> Void
+    
+    init(emojis: [String] = ["❤️", "😀", "😂", "🥳"], onTap: @escaping (EmojiReaction) -> Void){
+        emojesModels = emojis.map({.init(title: $0)})
+        self.onTap = onTap
+    }
+ 
+    var body: some View{
+        HStack(spacing: 12) {
+            ForEach(emojesModels.indices, id: \.self) { index in
+                Text(emojesModels[index].title)
+                    .font(.system(size: 25))
+                    .scaleEffect(emojesModels[index].isAnimate ? 1 : 0.01)
+                    .onAppear{
+                        withAnimation(.easeInOut.delay(Double(index) * 0.08)){
+                            emojesModels[(emojesModels.count - 1) - index].isAnimate = true
+                        }
+                    }
+                    .onTapGesture {
+                        onTap(emojesModels[index])
+                    }
+            }
+        }
+        .padding(.horizontal, 15)
+        .padding(.vertical, 8)
+        .background{
+            Capsule()
+                .fill(.white)
+                .mask {
+                    Capsule()
+                        .scaleEffect(animateView ? 1 : 0, anchor: .leading)
+                }
+        }
+        .onAppear{
+            withAnimation {
+                animateView = true
+            }
+        }
+    }
+}
+
+extension EmojiReactionView{
+    struct EmojiReaction{
+        var title: String
+        var isAnimate: Bool = false
+    }
+}
