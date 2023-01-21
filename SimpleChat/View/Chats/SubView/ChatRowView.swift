@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ChatRowView: View {
     @EnvironmentObject var chatVM: ChatViewModel
-    var chat: Chat
+    @Binding var chat: Chat
     var body: some View {
         HStack(alignment: .top){
             Circle()
@@ -41,7 +41,6 @@ struct ChatRowView: View {
                 }
             }
         }
-        .listRowBackground(chat.isPinned ? Color.gray.opacity(0.1) : .white)
         .hLeading()
         .swipeActions(edge: .trailing) {
             swipeButtons
@@ -65,7 +64,7 @@ struct ChatRowView: View {
 struct ChatRowView_Previews: PreviewProvider {
     static var previews: some View {
         List{
-            ChatRowView(chat: Mocks.chat)
+            ChatRowView(chat: .constant(Mocks.chat))
         }
         .listStyle(.plain)
         .environmentObject(ChatViewModel())
@@ -90,7 +89,7 @@ extension ChatRowView{
             .tint(.red)
             
             Button {
-                chatVM.muteAction(chat.id)
+                chatVM.muteAction($chat)
             } label: {
                 Image(systemName: chat.isMute ? "speaker.wave.3.fill" : "speaker.slash.fill")
                 
@@ -102,12 +101,12 @@ extension ChatRowView{
     private var contextMenuContent: some View{
         Group{
             Button {
-                chatVM.pinAction(chat.id)
+                chatVM.pinAction($chat)
             } label: {
                 Label(chat.isPinned ? "Unpined" : "Pin", systemImage: chat.isPinned ? "pin.slash" : "pin")
             }
             Button {
-                chatVM.muteAction(chat.id)
+                chatVM.muteAction($chat)
             } label: {
                 Label(chat.isMute ? "Unmute": "Mute", systemImage: chat.isMute ? "speaker.wave.3" : "speaker.slash")
             }

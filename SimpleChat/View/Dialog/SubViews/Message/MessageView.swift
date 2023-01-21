@@ -38,7 +38,6 @@ struct MessageView: View {
                     .foregroundColor(message.reciepType.textColor)
                 }
             }
-        
             .contextMenu{
                 contextMenuView
             }

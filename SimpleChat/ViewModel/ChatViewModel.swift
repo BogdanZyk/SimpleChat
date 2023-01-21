@@ -35,11 +35,13 @@ class ChatViewModel: ObservableObject{
 
 extension ChatViewModel{
     
-    func pinAction(_ id: String){
-        guard let index = chats.firstIndex(where: {$0.id == id}) else {return}
-        withAnimation {
-            chats[index].chat.isPinned.toggle()
+    func pinAction(_ chat: Binding<Chat>){
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8){
+            withAnimation {
+                chat.isPinned.wrappedValue.toggle()
+            }
         }
+        
     }
     
     func deleteChat(_ id: String){
@@ -56,10 +58,9 @@ extension ChatViewModel{
         deleteChat(id)
     }
     
-    func muteAction(_ id: String){
-        guard let index = chats.firstIndex(where: {$0.id == id}) else {return}
+    func muteAction(_ chat: Binding<Chat>){
         withAnimation {
-            chats[index].chat.isMute.toggle()
+            chat.isMute.wrappedValue.toggle()
         }
     }
     

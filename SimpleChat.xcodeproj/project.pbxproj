@@ -32,6 +32,7 @@
 		5A93B3F5297AB3580082EC42 /* ChatRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A93B3F4297AB3580082EC42 /* ChatRowView.swift */; };
 		5A93B3F8297ADBD50082EC42 /* DialogBodyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A93B3F7297ADBD50082EC42 /* DialogBodyView.swift */; };
 		5A93B3FB297AE09A0082EC42 /* DialogContextMenuPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A93B3FA297AE09A0082EC42 /* DialogContextMenuPreview.swift */; };
+		5A93B3FE297AF1450082EC42 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A93B3FD297AF1450082EC42 /* RootView.swift */; };
 		5AB9276B295484DA0011287D /* CameraPreviewFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB9276A295484DA0011287D /* CameraPreviewFrame.swift */; };
 		5AB9276D2954BF1D0011287D /* RecordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB9276C2954BF1D0011287D /* RecordButton.swift */; };
 		5ABC31F5294C838700559B90 /* SimpleChatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC31F4294C838700559B90 /* SimpleChatApp.swift */; };
@@ -80,6 +81,7 @@
 		5A93B3F4297AB3580082EC42 /* ChatRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRowView.swift; sourceTree = "<group>"; };
 		5A93B3F7297ADBD50082EC42 /* DialogBodyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogBodyView.swift; sourceTree = "<group>"; };
 		5A93B3FA297AE09A0082EC42 /* DialogContextMenuPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogContextMenuPreview.swift; sourceTree = "<group>"; };
+		5A93B3FD297AF1450082EC42 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		5AB9276A295484DA0011287D /* CameraPreviewFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewFrame.swift; sourceTree = "<group>"; };
 		5AB9276C2954BF1D0011287D /* RecordButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordButton.swift; sourceTree = "<group>"; };
 		5ABC31F1294C838700559B90 /* SimpleChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -254,6 +256,14 @@
 			path = SubView;
 			sourceTree = "<group>";
 		};
+		5A93B3FC297AF1390082EC42 /* TabView */ = {
+			isa = PBXGroup;
+			children = (
+				5A93B3FD297AF1450082EC42 /* RootView.swift */,
+			);
+			path = TabView;
+			sourceTree = "<group>";
+		};
 		5ABC31E8294C838700559B90 = {
 			isa = PBXGroup;
 			children = (
@@ -308,6 +318,7 @@
 		5ABC3203294C839D00559B90 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				5A93B3FC297AF1390082EC42 /* TabView */,
 				5A93B3E6297AA6680082EC42 /* Chats */,
 				5A5FA6E2295076F5008DD4A2 /* Dialog */,
 				5A5FA6D1294E104C008DD4A2 /* Components */,
@@ -480,6 +491,7 @@
 				5A5FA6E82950827B008DD4A2 /* UIApplication.swift in Sources */,
 				5ABC3217294C992800559B90 /* OnDelete.swift in Sources */,
 				5A5FA6DE295051F2008DD4A2 /* Int.swift in Sources */,
+				5A93B3FE297AF1450082EC42 /* RootView.swift in Sources */,
 				5A93B3F3297AB0330082EC42 /* ChatViewModel.swift in Sources */,
 				5A5FA6EA2950A3D0008DD4A2 /* AvAudioSessionManager.swift in Sources */,
 				5ABC3210294C842E00559B90 /* View.swift in Sources */,
