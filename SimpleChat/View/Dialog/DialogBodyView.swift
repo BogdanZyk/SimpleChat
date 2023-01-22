@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct DialogBodyView: View {
+    let namespace: Namespace.ID
     @EnvironmentObject var videoPinVM: VideoPinViewModel
     @EnvironmentObject var cameraManager: CameraManager
     @EnvironmentObject var recordManager: RecordManager
@@ -23,41 +24,10 @@ struct DialogBodyView: View {
                 
                 ForEach(dialogVM.messages) { message in
                     
-                    MessageView(
-                        message: message,
-                        isSelected: dialogVM.isSelected(message),
-                        dialogMode: dialogVM.dialogMode,
-                        onSelected: dialogVM.selectMessage,
-                        onReplay: dialogVM.onSetActionMessage
-                    )
-                    .disabled(isDisabledMessage)
-                    .padding(.bottom, dialogVM.messages.last?.id == message.id ? 10 : 0)
-                    .onAppear{
-                        dialogVM.loadNextPageMessages(scrollView, message: message)
-                        onAppearForScrollButton(message)
-                    }
+                    //if message.id != dialogVM.highlightMessage?.id{
+                        messageView(message, scrollView: scrollView)
+                    //}
                     
-                    .highPriorityGesture(LongPressGesture(minimumDuration: 0.2).onEnded({ _ in
-                        dialogVM.highlightMessageAction(message)
-                        #warning("FIX scroll bug")
-                    }))
-                   
-//                    .gesture(
-//                        LongPressGesture(minimumDuration: 1.0)
-//                            .updating($isUpdating, body: { (currentState, state, transaction) in
-//                                state = currentState
-//                            })
-//                            .onEnded({ _ in
-//                                withAnimation {
-//                                    dialogVM.highlightMessage = message
-//                                }
-//                            })
-//                    )
-                    
-
-                    .onDisappear{
-                        onDisapearForScrollButton(message)
-                    }
                 }
                 .padding(.horizontal)
             }
@@ -100,8 +70,32 @@ struct DialogBodyView_Previews: PreviewProvider {
     }
 }
 
+extension DialogBodyView{
+    private func messageView(_ message: Message, scrollView: ScrollViewProxy) -> some View{
+        MessageView(
+            namespace: namespace, message: message,
+            isSelected: dialogVM.isSelected(message),
+            dialogMode: dialogVM.dialogMode,
+            onSelected: dialogVM.selectMessage,
+            onReplay: dialogVM.onSetActionMessage,
+            onLongPress: dialogVM.highlightMessageAction
+        )
+        .disabled(isDisabledMessage)
+        .padding(.bottom, dialogVM.messages.last?.id == message.id ? 10 : 0)
+        .onAppear{
+            dialogVM.loadNextPageMessages(scrollView, message: message)
+            onAppearForScrollButton(message)
+        }
+    
+        .onDisappear{
+            onDisapearForScrollButton(message)
+        }
+    }
+}
+
 
 extension DialogBodyView{
+    
     
     private func onAppearForScrollButton(_ message: Message){
         if dialogVM.messages.last?.id == message.id{

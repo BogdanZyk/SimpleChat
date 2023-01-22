@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct DialogView: View {
+    @Namespace var namespace
     @EnvironmentObject var videoPinVM: VideoPinViewModel
     @EnvironmentObject var cameraManager: CameraManager
     @EnvironmentObject var recordManager: RecordManager
@@ -22,7 +23,7 @@ struct DialogView: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
-                DialogBodyView(dialogVM: dialogVM, pinMessageTrigger: $pinMessageTrigger)
+            DialogBodyView(namespace: namespace, dialogVM: dialogVM, pinMessageTrigger: $pinMessageTrigger)
                 .padding(.bottom, 52)
                 .overlay{
                     if cameraManager.showCameraView{
@@ -65,7 +66,7 @@ struct DialogView: View {
                 }
             }
             .overlay{
-                if dialogVM.showHighlightMessage{
+                if dialogVM.showHighlightMessage && dialogVM.highlightMessage != nil{
                     Rectangle()
                         .fill(Material.ultraThinMaterial)
                         .ignoresSafeArea()
@@ -76,7 +77,7 @@ struct DialogView: View {
             }
             .overlayPreferenceValue(BoundsPreferece.self) { values in
                 if let highlightMessage = dialogVM.highlightMessage, let preferense = values.first(where: {$0.key == highlightMessage.id}), dialogVM.showHighlightMessage{
-                    MessageContextMenuView(dialogVM: dialogVM, message: highlightMessage, preferense: preferense)
+                    MessageContextMenuView(namespace: namespace, dialogVM: dialogVM, preferense: preferense)
                 }
             }
     }

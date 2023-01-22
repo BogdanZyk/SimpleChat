@@ -263,6 +263,7 @@
 		5A93B3F9297AE0610082EC42 /* SubView */ = {
 			isa = PBXGroup;
 			children = (
+				5AA6009F297DD0B200929CBF /* ChatContextMenu */,
 				5A93B3F4297AB3580082EC42 /* ChatRowView.swift */,
 				5A93B3FA297AE09A0082EC42 /* DialogContextMenuPreview.swift */,
 			);
@@ -285,6 +286,13 @@
 				5AA6009B297D98EF00929CBF /* EmojiReactionView.swift */,
 			);
 			path = MessageContextMenu;
+			sourceTree = "<group>";
+		};
+		5AA6009F297DD0B200929CBF /* ChatContextMenu */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ChatContextMenu;
 			sourceTree = "<group>";
 		};
 		5ABC31E8294C838700559B90 = {

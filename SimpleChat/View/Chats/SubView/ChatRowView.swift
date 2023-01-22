@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ChatRowView: View {
+    @Namespace private var namespace
     @EnvironmentObject var chatVM: ChatViewModel
     @Binding var chat: Chat
     var body: some View {
@@ -51,7 +52,7 @@ struct ChatRowView: View {
             //Group{
                 //if let messages = chatVM.chats.first(where: {$0.id == chat.id})?.messages{
                 GeometryReader { reader in
-                    DialogContextMenuPreview(messages: chatVM.chats.first(where: {$0.chat.id == chat.id})?.messages ?? [])
+                    DialogContextMenuPreview(messages: chatVM.chats.first(where: {$0.chat.id == chat.id})?.messages ?? [], namespace: namespace)
                         .frame(width: reader.size.width, height: reader.size.height)
                 }
                 .frame(width: getRect().width, height: getRect().height / 2)

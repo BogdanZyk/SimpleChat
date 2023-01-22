@@ -7,10 +7,8 @@
 
 import SwiftUI
 
-
-
-
 struct MessageView: View {
+    let namespace: Namespace.ID
     @EnvironmentObject var audioManager: AudioManager
     @GestureState private var isDragging: Bool = false
     @State private var offset: CGFloat = 0
@@ -20,7 +18,8 @@ struct MessageView: View {
     var dialogMode: DialogMode = .dialog
     var onSelected: ((Message) -> Void)?
     var onReplay: ((SelectedMessage) -> Void)?
-    
+    var onLongPress: ((Message) -> Void)?
+    @State private var isLongPress: Bool = false
     var body: some View {
         
         HStack {
@@ -43,15 +42,33 @@ struct MessageView: View {
             messageReplyButton
         }
         .offset(x: offset, y: 0)
+       // .background(Color.white.opacity(0.001))
         .id(message.id)
         .anchorPreference(key: BoundsPreferece.self, value: .bounds, transform: { anchor in
             return [message.id : anchor]
         })
-        .simultaneousGesture((DragGesture()
-            .updating($isDragging, body: { (value, state, _) in
-                state = true
-                onChanged(value)
-            }).onEnded(onEnded)))
+        .matchedGeometryEffect(id: message.id, in: namespace)
+       // .scaleEffect(isLongPress ? 0.95 : 1)
+        .onTapGesture {}
+        .gesture(LongPressGesture(minimumDuration: 0.8)
+            .onChanged({ isPressed in
+                withAnimation {
+                    isLongPress = isPressed
+                }
+            })
+            .onEnded({ _ in
+                onLongPress?(message)
+                withAnimation {
+                    isLongPress = false
+                }
+        }))
+
+//        .gesture((DragGesture(minimumDistance: 10)
+//            .updating($isDragging, body: { (value, state, _) in
+//                state = true
+//                onChanged(value)
+//            }).onEnded(onEnded)))
+        
     }
 }
 
@@ -102,6 +119,34 @@ extension MessageView{
             offset = 0
             isSwipeFinished = false
         }
+    }
+}
+
+extension MessageView{
+    
+    private var gesture: SimultaneousGesture<_EndedGesture<_ChangedGesture<DragGesture>>, _EndedGesture<LongPressGesture>>{
+
+//         let tapGesture = DragGesture(minimumDistance: 10)
+//             .updating($isTapping) {_, isTapping, _ in
+//                 isTapping = true
+//             }
+
+         let dragGesture = DragGesture(minimumDistance: 100)
+             .onChanged(onChanged)
+             .onEnded(onEnded)
+         
+         let pressGesture = LongPressGesture(minimumDuration: 1.0)
+             .onEnded { value in
+                 withAnimation {
+                     isLongPress = true
+                 }
+             }
+         
+         let combined = dragGesture.simultaneously(with: pressGesture)
+         
+//        let simultaneously = tapGesture.exclusively(before: combined)
+         
+        return combined
     }
 }
 
@@ -183,7 +228,7 @@ extension MessageView{
     private var messageReplyButton: some View{
         if offset < 0{
             Image(systemName: "arrowshape.turn.up.left.circle.fill")
-                .foregroundColor(.blue)
+                .foregroundColor(.blue.opacity(0.5))
                 .imageScale(.large)
                 .transition(.scale)
                 .scaleEffect(isSwipeFinished ? 1.3 : 1)
@@ -254,3 +299,5 @@ struct MessageReactionEmojiView: View{
             }
     }
 }
+
+

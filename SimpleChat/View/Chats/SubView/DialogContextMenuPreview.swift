@@ -8,20 +8,22 @@
 import SwiftUI
 
 struct DialogContextMenuPreview: View {
+    let namespace: Namespace.ID
     @StateObject private var videoPinVM = VideoPinViewModel()
     @StateObject private var cameraManager = CameraManager()
     @StateObject private var audioManager = AudioManager()
     @StateObject private var recordManager = RecordManager()
     @StateObject private var dialogVM: DialogViewModel
     
-    init(messages: [Message]){
+    init(messages: [Message], namespace: Namespace.ID){
         self._dialogVM = StateObject(wrappedValue: DialogViewModel(messages: messages))
+        self.namespace = namespace
     }
     
     var body: some View {
         ZStack(alignment: .top){
             
-            DialogBodyView(dialogVM: dialogVM, pinMessageTrigger: .constant(0), isDisabledMessage: true)
+            DialogBodyView(namespace: namespace, dialogVM: dialogVM, pinMessageTrigger: .constant(0), isDisabledMessage: true)
             header
         }
     }
@@ -29,7 +31,7 @@ struct DialogContextMenuPreview: View {
 
 struct DialogContextMenuPreview_Previews: PreviewProvider {
     static var previews: some View {
-        DialogContextMenuPreview(messages: Mocks.mockMassage)
+        DialogContextMenuPreview(messages: Mocks.mockMassage, namespace: Namespace().wrappedValue)
     }
 }
 
