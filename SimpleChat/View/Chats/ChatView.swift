@@ -15,7 +15,7 @@ struct ChatView: View {
     @StateObject private var recordManager = RecordManager()
     @State private var searchText: String = ""
     var body: some View {
-        NavigationView {
+        //NavigationView {
             List{
                 chatsSections
             }
@@ -35,7 +35,7 @@ struct ChatView: View {
                 }
             }
             
-        }
+        //}
         .environmentObject(audioManager)
         .environmentObject(recordManager)
         .environmentObject(cameraManager)

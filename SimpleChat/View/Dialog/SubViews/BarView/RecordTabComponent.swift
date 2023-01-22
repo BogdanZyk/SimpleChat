@@ -37,7 +37,7 @@ struct RecordTabComponent: View {
             MainBarButtonView(type: $type)
         }
         .padding(.horizontal)
-        .background(.white)
+        .background(Material.bar)
     }
 }
 

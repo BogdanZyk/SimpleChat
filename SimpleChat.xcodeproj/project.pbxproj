@@ -36,6 +36,7 @@
 		5AA60097297D946000929CBF /* MessageContextAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA60096297D945F00929CBF /* MessageContextAction.swift */; };
 		5AA6009A297D989700929CBF /* MessageContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA60099297D989700929CBF /* MessageContextMenu.swift */; };
 		5AA6009C297D98EF00929CBF /* EmojiReactionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA6009B297D98EF00929CBF /* EmojiReactionView.swift */; };
+		5AA6009E297DA66800929CBF /* ParticlesModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA6009D297DA66800929CBF /* ParticlesModifier.swift */; };
 		5AB9276B295484DA0011287D /* CameraPreviewFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB9276A295484DA0011287D /* CameraPreviewFrame.swift */; };
 		5AB9276D2954BF1D0011287D /* RecordButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB9276C2954BF1D0011287D /* RecordButton.swift */; };
 		5ABC31F5294C838700559B90 /* SimpleChatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC31F4294C838700559B90 /* SimpleChatApp.swift */; };
@@ -49,7 +50,6 @@
 		5ABC3210294C842E00559B90 /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC320F294C842E00559B90 /* View.swift */; };
 		5ABC3212294C847000559B90 /* DialogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC3211294C847000559B90 /* DialogViewModel.swift */; };
 		5ABC3214294C850F00559B90 /* DialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC3213294C850F00559B90 /* DialogView.swift */; };
-		5ABC3217294C992800559B90 /* OnDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ABC3216294C992800559B90 /* OnDelete.swift */; };
 		5ACCEBD02955AE7D00711DB6 /* VideoPlayer in Frameworks */ = {isa = PBXBuildFile; productRef = 5ACCEBCF2955AE7D00711DB6 /* VideoPlayer */; };
 		5ACCEBD22955AEA900711DB6 /* VideoMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ACCEBD12955AEA900711DB6 /* VideoMessageView.swift */; };
 		5ACCEBD42955B15C00711DB6 /* MessageVideo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ACCEBD32955B15C00711DB6 /* MessageVideo.swift */; };
@@ -90,6 +90,7 @@
 		5AA60096297D945F00929CBF /* MessageContextAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageContextAction.swift; sourceTree = "<group>"; };
 		5AA60099297D989700929CBF /* MessageContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageContextMenu.swift; sourceTree = "<group>"; };
 		5AA6009B297D98EF00929CBF /* EmojiReactionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiReactionView.swift; sourceTree = "<group>"; };
+		5AA6009D297DA66800929CBF /* ParticlesModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticlesModifier.swift; sourceTree = "<group>"; };
 		5AB9276A295484DA0011287D /* CameraPreviewFrame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewFrame.swift; sourceTree = "<group>"; };
 		5AB9276C2954BF1D0011287D /* RecordButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordButton.swift; sourceTree = "<group>"; };
 		5ABC31F1294C838700559B90 /* SimpleChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -104,7 +105,6 @@
 		5ABC320F294C842E00559B90 /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		5ABC3211294C847000559B90 /* DialogViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogViewModel.swift; sourceTree = "<group>"; };
 		5ABC3213294C850F00559B90 /* DialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogView.swift; sourceTree = "<group>"; };
-		5ABC3216294C992800559B90 /* OnDelete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnDelete.swift; sourceTree = "<group>"; };
 		5ACCEBD12955AEA900711DB6 /* VideoMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoMessageView.swift; sourceTree = "<group>"; };
 		5ACCEBD32955B15C00711DB6 /* MessageVideo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageVideo.swift; sourceTree = "<group>"; };
 		5ACCEBD72955EED500711DB6 /* VideoPinViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPinViewModel.swift; sourceTree = "<group>"; };
@@ -381,7 +381,7 @@
 		5ABC3215294C991300559B90 /* ViewModifiers */ = {
 			isa = PBXGroup;
 			children = (
-				5ABC3216294C992800559B90 /* OnDelete.swift */,
+				5AA6009D297DA66800929CBF /* ParticlesModifier.swift */,
 			);
 			path = ViewModifiers;
 			sourceTree = "<group>";
@@ -523,7 +523,7 @@
 				5A93B3EB297AA70C0082EC42 /* ChatModel.swift in Sources */,
 				5AB9276D2954BF1D0011287D /* RecordButton.swift in Sources */,
 				5A5FA6E82950827B008DD4A2 /* UIApplication.swift in Sources */,
-				5ABC3217294C992800559B90 /* OnDelete.swift in Sources */,
+				5AA6009E297DA66800929CBF /* ParticlesModifier.swift in Sources */,
 				5A5FA6DE295051F2008DD4A2 /* Int.swift in Sources */,
 				5A93B3FE297AF1450082EC42 /* RootView.swift in Sources */,
 				5A93B3F3297AB0330082EC42 /* ChatViewModel.swift in Sources */,

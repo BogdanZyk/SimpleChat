@@ -9,24 +9,39 @@ import SwiftUI
 
 struct RootView: View {
     @State private var tab: Tab = .chats
+    
+    init(){
+        UITabBar.appearance().isHidden = true
+    }
+    
     var body: some View {
+        
         TabView(selection: $tab) {
-            Text("Contacts")
-                .tag(Tab.contacts)
-                .tabItem {
-                    tabButton(Tab.contacts)
-                }
-            ChatView()
-                .tag(Tab.chats)
-                .tabItem {
-                    tabButton(Tab.chats)
-                }
             
-            Text("Setting")
-                .tag(Tab.settings)
-                .tabItem {
-                    tabButton(Tab.settings)
+            //MARK: - Contacts view
+            VStack(spacing: 0){
+                Text("Contacts")
+                    .allFrame()
+                tabView
+            }
+            .tag(Tab.contacts)
+            
+            //MARK: - Chat view
+            NavigationView {
+                VStack(spacing: 0){
+                    ChatView()
+                    tabView
                 }
+            }
+            .tag(Tab.chats)
+            
+            //MARK: - Setting view
+            VStack(spacing: 0){
+                Text("Setting")
+                    .allFrame()
+                tabView
+            }
+            .tag(Tab.settings)
         }
     }
 }
@@ -52,10 +67,31 @@ enum Tab: String, CaseIterable{
 }
 
 extension RootView{
-    private func tabButton(_ tab: Tab) -> some View{
-        VStack{
-            Image(systemName: tab.image)
-            Text(tab.rawValue)
+    
+    private var tabView: some View{
+        VStack(spacing: 0) {
+            Divider()
+            HStack{
+                ForEach(Tab.allCases, id: \.self){ tab in
+                    tabButton(tab)
+                        .hCenter()
+                        .onTapGesture {
+                            self.tab = tab
+                        }
+                }
+            }
+            .padding(.top, 5)
         }
+        .background(Material.bar)
+    }
+    
+    private func tabButton(_ tab: Tab) -> some View{
+        VStack(spacing: 5){
+            Image(systemName: tab.image)
+                .imageScale(.large)
+            Text(tab.rawValue)
+                .font(.caption2)
+        }
+        .foregroundColor(tab == self.tab ? .blue : .secondary)
     }
 }

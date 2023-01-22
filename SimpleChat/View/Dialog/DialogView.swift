@@ -21,9 +21,9 @@ struct DialogView: View {
     }
     
     var body: some View {
-            VStack(spacing: 0) {
+        ZStack(alignment: .bottom) {
                 DialogBodyView(dialogVM: dialogVM, pinMessageTrigger: $pinMessageTrigger)
-
+                .padding(.bottom, 52)
                 .overlay{
                     if cameraManager.showCameraView{
                         CircleCameraRecorderView(show: $dialogVM.showCameraView)
@@ -177,7 +177,7 @@ extension DialogView{
             }
         }
         .padding(.horizontal)
-       
+        .background(Material.bar)
     }
     
     

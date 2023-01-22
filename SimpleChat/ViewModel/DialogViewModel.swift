@@ -145,22 +145,21 @@ extension DialogViewModel{
             selectMessage(message)
         }
     }
+}
+
+
+//MARK: - Reaction logic
+
+extension DialogViewModel{
     
-//    Button("Reply", action: {onSetMessage(.init(message: message, mode: .reply))})
-//    Button("Copy", action: {})
-//    if message.reciepType == .sent{
-//        Button("Edit", action: {onSetMessage(.init(message: message, mode: .edit))})
-//    }
-//    Button("Pin", action: {onPin(message)})
-//    Button("Forward", action: {})
-//    Button("Remove", role: .destructive, action: {})
-//    Divider()
-//    Button("Select") {
-//        withAnimation(.easeInOut.delay(0.5)){
-//            onSelected(message)
-//            dialogMode = .messageSelecting
-//        }
-//    }
+    func setReaction(_ reaction: String, messageId: UUID){
+        guard let index = messages.firstIndex(where: {$0.id == messageId}) else {return}
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){
+            withAnimation(.easeInOut(duration: 0.2)){
+                self.messages[index].reaction = reaction
+            }
+        }
+    }
 }
 
 

@@ -18,6 +18,7 @@ struct Message: Codable, Identifiable, Equatable {
     var contentType: MessageContentType = .onlyText
     var audio: MessageAudio?
     var video: MessageVideo?
+    var reaction: String?
 }
 
 extension Message{

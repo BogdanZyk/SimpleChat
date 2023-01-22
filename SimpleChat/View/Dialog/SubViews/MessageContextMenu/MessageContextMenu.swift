@@ -38,8 +38,9 @@ extension MessageContextMenuView{
     
     @ViewBuilder
     private var content: some View{
-        EmojiReactionView {_ in
+        EmojiReactionView { reaction in
             dialogVM.highlightMessageAction(nil)
+            dialogVM.setReaction(reaction.title, messageId: message.id)
         }
         
         MessageView(message: message)
