@@ -8,15 +8,13 @@
 import SwiftUI
 
 struct CustomMenuView<Content: View>: View {
-    var width: CGFloat = 200
+    var width: CGFloat = 234
     @ViewBuilder var content: Content
     var body: some View {
-        VStack(spacing: 8){
+        VStack(spacing: 0){
             content
                 .font(.system(size: 16))
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal)
         .background{RoundedRectangle(cornerRadius: 12)
                 .fill(Material.ultraThickMaterial)
                 .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 0)
@@ -33,10 +31,30 @@ struct CustomMenuView_Previews: PreviewProvider {
                     
                 } label: {
                     Text("Button")
-                        .hCenter()
+                    
                 }
-                Divider().padding(.horizontal, -16)
+                .buttonStyle(CustomMenuButtonStyle(symbol: "trash", color: .black))
+                Divider()
             }
         }
+    }
+}
+
+
+struct CustomMenuButtonStyle: ButtonStyle {
+    let symbol: String
+    let color: Color
+
+    func makeBody(configuration: Configuration) -> some View {
+        HStack {
+            configuration.label
+            Spacer()
+            Image(systemName: symbol)
+        }
+        
+        .padding(.horizontal, 16)
+        .foregroundColor(color)
+        .frame(height: 44)
+        .background(.clear)
     }
 }

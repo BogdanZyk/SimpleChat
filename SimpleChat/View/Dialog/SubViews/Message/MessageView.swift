@@ -8,6 +8,8 @@
 import SwiftUI
 
 
+
+
 struct MessageView: View {
     @EnvironmentObject var audioManager: AudioManager
     @GestureState private var isDragging: Bool = false
@@ -15,11 +17,10 @@ struct MessageView: View {
     @State private var isSwipeFinished: Bool = false
     let message: Message
     var isSelected: Bool = false
-    @Binding var dialogMode: DialogMode
+    var dialogMode: DialogMode = .dialog
+    var onSelected: ((Message) -> Void)?
+    var onReplay: ((SelectedMessage) -> Void)?
     
-    let onSelected: (Message) -> Void
-    let onPin: (Message) -> Void
-    let onSetMessage: (SelectedMessage) -> Void
     var body: some View {
         
         HStack {
@@ -64,16 +65,10 @@ struct MessageView_Previews: PreviewProvider {
     static var previews: some View {
         VStack{
             MessageView(message: message,
-                        dialogMode: .constant(.dialog),
-                        onSelected: {_ in},
-                        onPin: {_ in},
-                        onSetMessage: {_ in})
+                        dialogMode: .dialog)
             MessageView(message: .init(id: UUID(), text: "text message", userId: "1", reciepType: .sent),
-                        dialogMode: .constant(.dialog),
-                        onSelected: {_ in},
-                        onPin: {_ in},
-                        onSetMessage: {_ in})
-            MessageView(message: .init(id: UUID(), text: "", userId: "1", reciepType: .sent, contentType: .video, video: .init(id: "12", url: URL(string: "https://firebasestorage.googleapis.com/v0/b/tiktokreels-443d9.appspot.com/o/food.mp4?alt=media&token=9713528e-07cd-4b04-af6c-6e6f4878983e")!, duration: 60)), dialogMode: .constant(.dialog), onSelected: {_ in}, onPin: {_ in}, onSetMessage: {_ in})
+                        dialogMode: .dialog)
+            MessageView(message: .init(id: UUID(), text: "", userId: "1", reciepType: .sent, contentType: .video, video: .init(id: "12", url: URL(string: "https://firebasestorage.googleapis.com/v0/b/tiktokreels-443d9.appspot.com/o/food.mp4?alt=media&token=9713528e-07cd-4b04-af6c-6e6f4878983e")!, duration: 60)), dialogMode: .dialog)
         }
         .padding()
         .environmentObject(AudioManager())
@@ -82,27 +77,6 @@ struct MessageView_Previews: PreviewProvider {
 }
 
 
-extension MessageView{
-    private var contextMenuView: some View{
-        Group{
-            Button("Reply", action: {onSetMessage(.init(message: message, mode: .reply))})
-            Button("Copy", action: {})
-            if message.reciepType == .sent{
-                Button("Edit", action: {onSetMessage(.init(message: message, mode: .edit))})
-            }
-            Button("Pin", action: {onPin(message)})
-            Button("Forward", action: {})
-            Button("Remove", role: .destructive, action: {})
-            Divider()
-            Button("Select") {
-                withAnimation(.easeInOut.delay(0.5)){
-                    onSelected(message)
-                    dialogMode = .messageSelecting
-                }
-            }
-        }
-    }
-}
 
 extension MessageView{
     private func onChanged(_ value: DragGesture.Value){
@@ -112,7 +86,7 @@ extension MessageView{
                         offset = value.translation.width
                 }
                 if (-value.translation.width >= 20){
-                    onSetMessage(.init(message: message, mode: .reply))
+                    onReplay?(.init(message: message, mode: .reply))
                     isSwipeFinished = true
                 }
             }
@@ -187,7 +161,7 @@ extension MessageView{
                 .imageScale(.large)
                 .foregroundColor(isSelected ? .blue : .secondary)
                 .onTapGesture {
-                    onSelected(message)
+                    onSelected?(message)
                 }
             Spacer()
         }

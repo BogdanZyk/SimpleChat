@@ -13,14 +13,18 @@ final class DialogViewModel: ObservableObject{
     @Published var messages: [Message] = []
     @Published var selectedMessages = [Message]()
     @Published var text: String = ""
+    
     @Published var pinnedMessage: Message?
-    @Published var messageForAction: SelectedMessage?
+    @Published var toolbarMessage: SelectedMessage?
     @Published var targetMessage: Message?
     @Published var highlightMessage: Message?
+    @Published var showHighlightMessage: Bool = false
+    
     @Published var isLoad: Bool = false
     @Published var isShowFirstMessage: Bool = false
     @Published var dialogMode: DialogMode = .dialog
     @Published var showCameraView: Bool = false
+    
     
     init(messages: [Message]? = nil){
         guard let messages = messages else {return}
@@ -83,9 +87,20 @@ extension DialogViewModel{
     
 }
 
-//MARK: - Selecting message login
+
+
+//MARK: - Message Context Action
+
+//MARK: - Selecting message logic
 
 extension DialogViewModel{
+    
+    func highlightMessageAction(_ message: Message?){
+        withAnimation {
+            highlightMessage = message != nil ? message : nil
+            showHighlightMessage = message != nil
+        }
+    }
     
     func isSelected(_ message: Message) -> Bool{
         selectedMessages.contains(where: {message.id == $0.id})
@@ -98,31 +113,56 @@ extension DialogViewModel{
             }else{
                 selectedMessages.append(message)
             }
+            dialogMode = .messageSelecting
         }
     }
-    
-}
-
-//MARK: - Replay and edit action
-extension DialogViewModel{
     
     func onSetActionMessage(_ message: SelectedMessage){
         withAnimation(.easeInOut(duration: 0.15)) {
-            messageForAction = message
+            toolbarMessage = message
         }
     }
-}
-
-//MARK: - Pin messsage
-
-extension DialogViewModel{
     
     func pinMessage(_ message: Message){
         withAnimation(.easeInOut(duration: 0.15)) {
             pinnedMessage = message
         }
     }
+    
+    func messageContextAction(_ type: MessageContextActionType, _ message: Message){
+        switch type {
+        case .replay:
+            onSetActionMessage(.init(message: message, mode: .reply))
+        case .copy:
+            print("copy")
+        case .pin:
+            pinMessage(message)
+        case .forward:
+            print("forward")
+        case .remove:
+            print("remove")
+        case .select:
+            selectMessage(message)
+        }
+    }
+    
+//    Button("Reply", action: {onSetMessage(.init(message: message, mode: .reply))})
+//    Button("Copy", action: {})
+//    if message.reciepType == .sent{
+//        Button("Edit", action: {onSetMessage(.init(message: message, mode: .edit))})
+//    }
+//    Button("Pin", action: {onPin(message)})
+//    Button("Forward", action: {})
+//    Button("Remove", role: .destructive, action: {})
+//    Divider()
+//    Button("Select") {
+//        withAnimation(.easeInOut.delay(0.5)){
+//            onSelected(message)
+//            dialogMode = .messageSelecting
+//        }
+//    }
 }
+
 
 struct SelectedMessage{
     

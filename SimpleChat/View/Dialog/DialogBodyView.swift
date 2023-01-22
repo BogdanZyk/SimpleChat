@@ -26,10 +26,9 @@ struct DialogBodyView: View {
                     MessageView(
                         message: message,
                         isSelected: dialogVM.isSelected(message),
-                        dialogMode: $dialogVM.dialogMode,
+                        dialogMode: dialogVM.dialogMode,
                         onSelected: dialogVM.selectMessage,
-                        onPin: dialogVM.pinMessage,
-                        onSetMessage: dialogVM.onSetActionMessage
+                        onReplay: dialogVM.onSetActionMessage
                     )
                     .disabled(isDisabledMessage)
                     .padding(.bottom, dialogVM.messages.last?.id == message.id ? 10 : 0)
@@ -37,12 +36,12 @@ struct DialogBodyView: View {
                         dialogVM.loadNextPageMessages(scrollView, message: message)
                         onAppearForScrollButton(message)
                     }
-                    #warning("FIX scroll bug")
+                    
                     .highPriorityGesture(LongPressGesture(minimumDuration: 0.2).onEnded({ _ in
-                        withAnimation {
-                            dialogVM.highlightMessage = message
-                        }
+                        dialogVM.highlightMessageAction(message)
+                        #warning("FIX scroll bug")
                     }))
+                   
 //                    .gesture(
 //                        LongPressGesture(minimumDuration: 1.0)
 //                            .updating($isUpdating, body: { (currentState, state, transaction) in
