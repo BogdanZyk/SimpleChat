@@ -15,10 +15,11 @@ struct DialogView: View {
     @EnvironmentObject var audioManager: AudioManager
     @StateObject private var dialogVM: DialogViewModel
     @State private var pinMessageTrigger: Int = 0
+    var chat: ChatMockModel
     
-    
-    init(messages: [Message]){
-        self._dialogVM = StateObject(wrappedValue: DialogViewModel(messages: messages))
+    init(chat: ChatMockModel){
+        self.chat = chat
+        self._dialogVM = StateObject(wrappedValue: DialogViewModel(messages: chat.messages))
     }
     
     var body: some View {
@@ -46,20 +47,17 @@ struct DialogView: View {
             .overlay(alignment: .topTrailing) {
                 pinnedVideoView
             }
-            
+        
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    if !cameraManager.showCameraView{
-                        navTitle
-                    }
+                    navTitle
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    if !cameraManager.showCameraView{
-                        trailingButtonView
-                    }
+                    trailingButtonView
                 }
             }
+            .navigationBarHidden(cameraManager.showCameraView)
             .overlay{
                 if dialogVM.showHighlightMessage && dialogVM.highlightMessage != nil{
                     Rectangle()
@@ -81,7 +79,7 @@ struct DialogView: View {
 struct DialogView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView{
-            DialogView(messages: Mocks.mockMassage)
+            DialogView(chat: Mocks.fetchMocksChats().first!)
                 .environmentObject(AudioManager())
                 .environmentObject(RecordManager())
                 .environmentObject(CameraManager())
@@ -98,7 +96,7 @@ extension DialogView{
             if dialogVM.dialogMode == .messageSelecting{
                 Text("Selected \(dialogVM.selectedMessages.count)")
             }else{
-                Text("User name")
+                Text(chat.chat.userUnfo.fullName)
             }
         }
         .lineLimit(1)
@@ -114,21 +112,11 @@ extension DialogView{
         }else{
             NavigationLink {
                 ZStack{
-                    Color.blue
-//                    VStack{
-//                        AudioPreviewView(mode: .message, audio: .init(id: "1", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
-//                        
-//                        AudioPreviewView(mode: .vocePreview, audio: .init(id: "2", url: URL(string: "https://muzati.net/music/0-0-1-20146-20")!, duration: 120, decibles: Array(repeating: 0.2, count: 50)))
-//                        
-//                        
-//                    }
-//                    .padding(.horizontal)
+                    Color.gray
                 }
                 
             } label: {
-                Circle()
-                    .fill(Color.blue.opacity(0.3))
-                    .frame(width: 38, height: 38)
+                UserAvatarView(image: chat.chat.userUnfo.avatarURl, size: 38)
             }
         }
     }

@@ -15,11 +15,13 @@ struct ChatView: View {
     @StateObject private var recordManager = RecordManager()
     @State private var searchText: String = ""
     var body: some View {
-        //NavigationView {
+        ZStack{
             List{
                 chatsSections
             }
-            
+            .refreshable {
+                //TODO
+            }
             .listStyle(.inset)
             .searchable(text: $searchText, prompt: "Search chats")
             .navigationBarTitleDisplayMode(.inline)
@@ -35,7 +37,17 @@ struct ChatView: View {
                 }
             }
             
-        //}
+            NavigationLink(isActive: $chatVM.showChat) {
+                if let chat = chatVM.selectedChat{
+                    DialogView(chat: chat)
+                        .environmentObject(audioManager)
+                        .environmentObject(recordManager)
+                        .environmentObject(cameraManager)
+                        .environmentObject(videoPinVM)
+                }
+                
+            } label: {}.labelsHidden()
+        }
         .environmentObject(audioManager)
         .environmentObject(recordManager)
         .environmentObject(cameraManager)
@@ -45,7 +57,9 @@ struct ChatView: View {
 
 struct ChatView_Previews: PreviewProvider {
     static var previews: some View {
-        ChatView()
+        NavigationView{
+            ChatView()
+        }
     }
 }
 
@@ -54,17 +68,15 @@ extension ChatView{
     private var chatsSections: some View{
         ForEach($chatVM.chats.sorted(by: {$0.chat.isPinned.wrappedValue && !$1.chat.isPinned.wrappedValue})){data in
             
-            NavigationLink {
-                DialogView(messages: data.messages.wrappedValue)
-                    .environmentObject(audioManager)
-                    .environmentObject(recordManager)
-                    .environmentObject(cameraManager)
-                    .environmentObject(videoPinVM)
-            } label: {
-                ChatRowView(chat: data.chat)
-                    .environmentObject(chatVM)
-            }
-            .listRowBackground(data.chat.isPinned.wrappedValue ? Color.gray.opacity(0.15) : .clear)
+            ChatRowView(chat: data.chat)
+                .environmentObject(chatVM)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    chatVM.selectedChat = data.wrappedValue
+                    chatVM.showChat.toggle()
+                }
+                .listRowInsets(.init(top: 10, leading: 8, bottom: 10, trailing: 8))
+                .listRowBackground(data.chat.isPinned.wrappedValue ? Color.gray.opacity(0.15) : .clear)
         }
     }
 }

@@ -61,7 +61,7 @@ struct DialogBodyView: View {
 struct DialogBodyView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView{
-            DialogView(messages: Mocks.mockMassage)
+            DialogView(chat: Mocks.fetchMocksChats().first!)
                 .environmentObject(AudioManager())
                 .environmentObject(RecordManager())
                 .environmentObject(CameraManager())

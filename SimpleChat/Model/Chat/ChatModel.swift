@@ -39,7 +39,8 @@ extension Chat{
 }
 
 
-//MARK: - For test not use for backend
+//MARK: - For test not use this model for backend!
+
 struct ChatMockModel: Identifiable{
     var id: String = UUID().uuidString
     var chat: Chat
@@ -49,6 +50,6 @@ struct ChatMockModel: Identifiable{
         self.chat = chat
         self.chat.id = self.id
         self.messages = messages
-        self.chat.lastMessage = self.messages.first
+        self.chat.lastMessage = self.messages.last
     }
 }

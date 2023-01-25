@@ -13,9 +13,7 @@ struct ChatRowView: View {
     @Binding var chat: Chat
     var body: some View {
         HStack(alignment: .top){
-            Circle()
-                .fill(Color.gray)
-                .frame(width: 50, height: 50)
+            UserAvatarView(image: chat.userUnfo.avatarURl, size: 50)
             VStack(alignment: .leading, spacing: 5){
                 HStack{
                     Text(chat.userUnfo.fullName)
@@ -49,15 +47,14 @@ struct ChatRowView: View {
         .contextMenuWithPreview {
             contextMenuContent
         } preview: {
-            //Group{
-                //if let messages = chatVM.chats.first(where: {$0.id == chat.id})?.messages{
-                GeometryReader { reader in
-                    DialogContextMenuPreview(messages: chatVM.chats.first(where: {$0.chat.id == chat.id})?.messages ?? [], namespace: namespace)
+            GeometryReader { reader in
+                if let chat = chatVM.chats.first(where: {$0.chat.id == chat.id}){
+                    DialogContextMenuPreview(chat: chat, namespace: namespace)
                         .frame(width: reader.size.width, height: reader.size.height)
                 }
-                .frame(width: getRect().width, height: getRect().height / 2)
-                //}
-           // }
+                
+            }
+            .frame(width: getRect().width, height: getRect().height / 2)
         }
     }
 }

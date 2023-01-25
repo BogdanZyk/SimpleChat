@@ -14,9 +14,11 @@ struct DialogContextMenuPreview: View {
     @StateObject private var audioManager = AudioManager()
     @StateObject private var recordManager = RecordManager()
     @StateObject private var dialogVM: DialogViewModel
+    let chat: ChatMockModel
     
-    init(messages: [Message], namespace: Namespace.ID){
-        self._dialogVM = StateObject(wrappedValue: DialogViewModel(messages: messages))
+    init(chat: ChatMockModel, namespace: Namespace.ID){
+        self.chat = chat
+        self._dialogVM = StateObject(wrappedValue: DialogViewModel(messages: chat.messages))
         self.namespace = namespace
     }
     
@@ -31,7 +33,7 @@ struct DialogContextMenuPreview: View {
 
 struct DialogContextMenuPreview_Previews: PreviewProvider {
     static var previews: some View {
-        DialogContextMenuPreview(messages: Mocks.mockMassage, namespace: Namespace().wrappedValue)
+        DialogContextMenuPreview(chat: Mocks.fetchMocksChats().first!, namespace: Namespace().wrappedValue)
     }
 }
 
@@ -39,8 +41,7 @@ extension DialogContextMenuPreview{
     private var header: some View{
         HStack{
             Spacer()
-            Circle()
-                .frame(width: 35, height: 35)
+            UserAvatarView(image: chat.chat.userUnfo.avatarURl, size: 35)
         }
         .overlay(alignment: .center) {
             Text("User name")

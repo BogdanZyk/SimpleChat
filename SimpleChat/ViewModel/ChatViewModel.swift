@@ -12,24 +12,13 @@ class ChatViewModel: ObservableObject{
     @Published var chats = [ChatMockModel]()
     
     @Published var arhivedChats = [ChatMockModel]()
-    
+    @Published var selectedChat: ChatMockModel?
+    @Published var showChat: Bool = false
     
     init(){
-        self.chats = fetchMocksChats()
+        self.chats = Mocks.fetchMocksChats()
     }
     
-    
-    
-    func fetchMocksChats() -> [ChatMockModel]{
-        
-        let users = ["Boris Aron", "Elena Gosh", "Erlan Yan", "Angela Hort"]
-        
-        let chats: [ChatMockModel] = users.map({
-            .init(chat: .init(userUnfo: .init(avatarURl: "", fullName: $0)), messages: Mocks.mockMassage)
-        })
-        
-        return chats
-    }
 }
 
 
