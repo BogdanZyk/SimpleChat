@@ -78,7 +78,8 @@ extension DialogBodyView{
             dialogMode: dialogVM.dialogMode,
             onSelected: dialogVM.selectMessage,
             onReplay: dialogVM.onSetActionMessage,
-            onLongPress: dialogVM.highlightMessageAction
+            onLongPress: dialogVM.highlightMessageAction,
+            onDoubleTap: {dialogVM.setReaction("👍", messageId: $0.id)}
         )
         .disabled(isDisabledMessage)
         .padding(.bottom, dialogVM.messages.last?.id == message.id ? 10 : 0)

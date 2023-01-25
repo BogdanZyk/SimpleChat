@@ -19,6 +19,7 @@ struct MessageView: View {
     var onSelected: ((Message) -> Void)?
     var onReplay: ((SelectedMessage) -> Void)?
     var onLongPress: ((Message) -> Void)?
+    var onDoubleTap: ((Message) -> Void)?
     @State private var isLongPress: Bool = false
     var body: some View {
         
@@ -42,32 +43,25 @@ struct MessageView: View {
             messageReplyButton
         }
         .offset(x: offset, y: 0)
-       // .background(Color.white.opacity(0.001))
+        .background(Color.white.opacity(0.001))
         .id(message.id)
         .anchorPreference(key: BoundsPreferece.self, value: .bounds, transform: { anchor in
             return [message.id : anchor]
         })
-        .matchedGeometryEffect(id: message.id, in: namespace)
-       // .scaleEffect(isLongPress ? 0.95 : 1)
-        .onTapGesture {}
+        //.matchedGeometryEffect(id: message.id, in: namespace)
+        .onTapGesture(count: 2) {
+            onDoubleTap?(message)
+        }
         .gesture(LongPressGesture(minimumDuration: 0.8)
-            .onChanged({ isPressed in
-                withAnimation {
-                    isLongPress = isPressed
-                }
-            })
             .onEnded({ _ in
                 onLongPress?(message)
-                withAnimation {
-                    isLongPress = false
-                }
         }))
 
-//        .gesture((DragGesture(minimumDistance: 10)
-//            .updating($isDragging, body: { (value, state, _) in
-//                state = true
-//                onChanged(value)
-//            }).onEnded(onEnded)))
+        .highPriorityGesture((DragGesture(minimumDistance: 10)
+            .updating($isDragging, body: { (value, state, _) in
+                state = true
+                onChanged(value)
+            }).onEnded(onEnded)))
         
     }
 }
@@ -104,7 +98,7 @@ extension MessageView{
         if value.translation.width < 0 && isDragging{
             DispatchQueue.main.async {
                 if (-value.translation.width < 50){
-                        offset = value.translation.width
+                    offset = value.translation.width * 0.1
                 }
                 if (-value.translation.width >= 20){
                     onReplay?(.init(message: message, mode: .reply))
@@ -196,8 +190,11 @@ extension MessageView{
         if let audio = message.audio?.convertToVoiceAudioModel(){
             VStack(alignment: .trailing, spacing: 0){
                 AudioPreviewView(mode: .message, audio: audio)
-                Text("\(message.date, formatter: Date.formatter)")
-                    .font(.system(size: 10))
+                HStack(alignment: .lastTextBaseline, spacing: 5) {
+                    MessageReactionEmojiView(reaction: message.reaction)
+                    Text("\(message.date, formatter: Date.formatter)")
+                        .font(.system(size: 10))
+                }
             }
         }
     }
@@ -231,7 +228,6 @@ extension MessageView{
                 .foregroundColor(.blue.opacity(0.5))
                 .imageScale(.large)
                 .transition(.scale)
-                .scaleEffect(isSwipeFinished ? 1.3 : 1)
                 .animation(.easeInOut, value: offset)
         }
     }
@@ -243,27 +239,7 @@ extension MessageView{
     
     @ViewBuilder
     private var reactionEmojiView: some View{
-
-            MessageReactionEmojiView(reaction: message.reaction)
-        
-        
-//        Text()
-//        .font(.system(size: 12))
-//
-//
-//        .overlay{
-//            //if card.showMatchigAnimation{
-//            Text("🔥")
-//                .font(.system(size: 16))
-//                .modifier(
-//                    ParticlesModifier(
-//                        show:.constant(true),
-//                        speed: Double.random(in: 30...50),
-//                        duration: 1,
-//                        particlesMaxCount: 8)
-//                )
-//            //}
-//        }
+        MessageReactionEmojiView(reaction: message.reaction)
     }
     
 }

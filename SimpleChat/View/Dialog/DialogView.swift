@@ -44,12 +44,7 @@ struct DialogView: View {
                 }
             }
             .overlay(alignment: .topTrailing) {
-                if videoPinVM.isDissAppearMessage && videoPinVM.focusedVideoMessage != nil{
-                    PinVideoMessageView()
-                        .padding(10)
-                        .transition(.move(edge: .trailing))
-                        .environmentObject(videoPinVM)
-                }
+                pinnedVideoView
             }
             
             .navigationBarTitleDisplayMode(.inline)
@@ -260,3 +255,19 @@ extension DialogView{
 }
 
 
+extension DialogView{
+    @ViewBuilder
+    private var pinnedVideoView: some View{
+        if videoPinVM.isDissAppearMessage && videoPinVM.focusedVideoMessage != nil{
+            PinVideoMessageView()
+                .padding(10)
+                .transition(.move(edge: .trailing))
+                .environmentObject(videoPinVM)
+                .onLongPressGesture{
+                    withAnimation {
+                        videoPinVM.remove()
+                    }
+                }
+        }
+    }
+}

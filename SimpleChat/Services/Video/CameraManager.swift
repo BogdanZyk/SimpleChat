@@ -24,8 +24,8 @@ final class CameraManager: NSObject, ObservableObject{
     @Published var finalURL: URL?
     @Published var isPermissions: Bool = false
     
-    private var videoSize = CGSize(width: 640, height: 480)
-    private var exportPreset = AVAssetExportPreset640x480
+    let renderSize = CGSize(width: 480, height: 480)
+    private var exportPreset = AVAssetExportPreset1280x720
     
     private var recordsURl = [URL]()
     
@@ -89,7 +89,7 @@ final class CameraManager: NSObject, ObservableObject{
         
     func startRecording(){
         //MARK: - Temporary URL for recording Video
-        let tempURL = NSTemporaryDirectory() + "\(Date()).mov"
+        let tempURL = NSTemporaryDirectory() + "\(Date().ISO8601Format()).mov"
         output.startRecording(to: URL(fileURLWithPath: tempURL), recordingDelegate: self)
         startTimer()
     }
@@ -171,6 +171,7 @@ extension CameraManager: AVCaptureFileOutputRecordingDelegate{
         
         if recordsURl.count != 0 && (stopInitiatorType == .user || stopInitiatorType == .auto){
             let assets = recordsURl.compactMap({AVURLAsset(url: $0)})
+            
             mergeVideos(assets: assets) {[weak self] exporter in
                 guard let self = self else {return}
                 exporter.exportAsynchronously {
@@ -191,7 +192,7 @@ extension CameraManager: AVCaptureFileOutputRecordingDelegate{
     }
     
     //merge videos assets in one video with format .mp4
-   private func mergeVideos(assets: [AVURLAsset], completion: @escaping (_ exporter: AVAssetExportSession) -> ()){
+    private func mergeVideos(assets: [AVURLAsset], completion: @escaping (_ exporter: AVAssetExportSession) -> ()){
         let composition = AVMutableComposition()
         var lastTime: CMTime = .zero
         
@@ -212,14 +213,14 @@ extension CameraManager: AVCaptureFileOutputRecordingDelegate{
             
             lastTime = CMTimeAdd(lastTime, asset.duration)
         }
-       
-       guard let exporter = AVAssetExportSession(asset: composition, presetName: exportPreset) else {return}
-       let tempUrl = URL(fileURLWithPath: NSTemporaryDirectory() + "\(Date()).mp4")
-       exporter.outputFileType = .mp4
-       exporter.shouldOptimizeForNetworkUse = true
-       exporter.outputURL = tempUrl
-       exporter.videoComposition = prepairVideoComposition(videoTrack, lastTime: lastTime)
-       completion(exporter)
+        
+        guard let exporter = AVAssetExportSession(asset: composition, presetName: exportPreset) else {return}
+        let tempUrl = URL(fileURLWithPath: NSTemporaryDirectory() + "\(Date().ISO8601Format()).mp4")
+        exporter.outputFileType = .mp4
+        exporter.shouldOptimizeForNetworkUse = true
+        exporter.outputURL = tempUrl
+        exporter.videoComposition = prepairVideoComposition(videoTrack, lastTime: lastTime)
+        completion(exporter)
     }
     
     // bringing back to original transform
@@ -228,7 +229,9 @@ extension CameraManager: AVCaptureFileOutputRecordingDelegate{
         //transform video
         var transform = CGAffineTransform.identity
         transform = transform.rotated(by: 90.degreesToRadians)
-        transform = transform.translatedBy(x: 0, y: -videoTrack.naturalSize.height)
+        let scaleFit = self.renderSize.width / videoTrack.naturalSize.height
+        transform = transform.scaledBy(x: scaleFit, y: scaleFit)
+        transform = transform.translatedBy(x: -renderSize.height, y: -videoTrack.naturalSize.height)
         layerInstructions.setTransform(transform, at: .zero)
         
         let instrictions = AVMutableVideoCompositionInstruction()
@@ -236,7 +239,7 @@ extension CameraManager: AVCaptureFileOutputRecordingDelegate{
         instrictions.layerInstructions = [layerInstructions]
         
         let videoComposition = AVMutableVideoComposition()
-        videoComposition.renderSize = .init(width: videoTrack.naturalSize.height, height: videoTrack.naturalSize.width)
+        videoComposition.renderSize = .init(width: renderSize.width, height: renderSize.height)
         videoComposition.instructions = [instrictions]
         //fps
         videoComposition.frameDuration = CMTimeMake(value: 1, timescale: 30)
@@ -249,13 +252,13 @@ extension CameraManager: AVCaptureFileOutputRecordingDelegate{
 extension CameraManager{
     
     
-    func switchCameraAndStart(){
+    func switchCameraAndStart(completion: @escaping () -> Void){
         stopRecording(for: .onSwitch)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             self.switchCamera()
             self.startRecording()
+            completion()
         }
-        
     }
     
    private func switchCamera() {
@@ -329,224 +332,6 @@ extension CameraManager{
 
 
 
-
-//struct VideoRecordingView: UIViewRepresentable {
-//
-//    @Binding var timeLeft: Int
-//    @Binding var onComplete: Bool
-//    @Binding var recording: Bool
-//
-//    func makeUIView(context: UIViewRepresentableContext<VideoRecordingView>) -> PreviewView {
-//        let recordingView = PreviewView()
-//
-//        recordingView.onComplete = {
-//            self.onComplete = true
-//        }
-//
-//        recordingView.onRecord = { timeLeft, totalShakes in
-//            self.timeLeft = timeLeft
-//            self.recording = true
-//        }
-//
-//        return recordingView
-//    }
-//
-//    func updateUIView(_ uiViewController: PreviewView, context: UIViewRepresentableContext<VideoRecordingView>) {
-//
-//    }
-//}
-//
-//
-//struct RecordingView: View {
-//    @State private var timer = 5
-//    @State private var onComplete = false
-//    @State private var recording = false
-//
-//    var body: some View {
-//        ZStack {
-//            VideoRecordingView(timeLeft: $timer, onComplete: $onComplete, recording: $recording)
-//            VStack {
-//                Button(action: {
-//                    self.recording.toggle()
-//                }, label: {
-//                    Text("Toggle Recording")
-//                })
-//                    .foregroundColor(.white)
-//                    .padding()
-//                Button(action: {
-//                    self.timer -= 1
-//                    print(self.timer)
-//                }, label: {
-//                    Text("Toggle timer")
-//                })
-//                    .foregroundColor(.white)
-//                    .padding()
-//                Button(action: {
-//                    self.onComplete.toggle()
-//                }, label: {
-//                    Text("Toggle completion")
-//                })
-//                    .foregroundColor(.white)
-//                    .padding()
-//            }
-//        }
-//    }
-//
-//}
-
-
-//extension PreviewView: AVCaptureFileOutputRecordingDelegate{
-//    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-//        didFinishRecordingTo?(outputFileURL)
-//        print(outputFileURL)
-//        resetRecording()
-//    }
-//}
-//
-//class PreviewView: UIView {
-//    private var captureSession: AVCaptureSession?
-//    private var shakeCountDown: Timer?
-//    let videoFileOutput = AVCaptureMovieFileOutput()
-//    var recordingDelegate: AVCaptureFileOutputRecordingDelegate!
-//    var recorded = 0
-//    var secondsToReachGoal = 60
-//
-//    var onRecord: ((Int, Int)->())?
-//    var onReset: (() -> ())?
-//    var onComplete: (() -> ())?
-//    var didFinishRecordingTo: ((URL) -> ())?
-//
-//    init() {
-//        super.init(frame: .zero)
-//
-//        var allowedAccess = false
-//        let blocker = DispatchGroup()
-//        blocker.enter()
-//        AVCaptureDevice.requestAccess(for: .video) { flag in
-//            allowedAccess = flag
-//            blocker.leave()
-//        }
-//        blocker.wait()
-//
-//        if !allowedAccess {
-//            print("!!! NO ACCESS TO CAMERA")
-//            return
-//        }
-//
-//        // setup session
-//        let session = AVCaptureSession()
-//        session.beginConfiguration()
-//
-//        let videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera,
-//                                                  for: .video, position: .front)
-//        guard videoDevice != nil, let videoDeviceInput = try? AVCaptureDeviceInput(device: videoDevice!), session.canAddInput(videoDeviceInput) else {
-//            print("!!! NO CAMERA DETECTED")
-//            return
-//        }
-//        session.addInput(videoDeviceInput)
-//        session.commitConfiguration()
-//        self.captureSession = session
-//    }
-//
-//    override class var layerClass: AnyClass {
-//        AVCaptureVideoPreviewLayer.self
-//    }
-//
-//    required init?(coder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
-//
-//    var videoPreviewLayer: AVCaptureVideoPreviewLayer {
-//        let layer = layer as! AVCaptureVideoPreviewLayer
-//        layer.videoGravity = .resizeAspectFill
-//        return layer
-//    }
-//
-//    override func didMoveToSuperview() {
-//        super.didMoveToSuperview()
-//        recordingDelegate = self
-//        startTimers()
-//        if nil != self.superview {
-//            self.videoPreviewLayer.session = self.captureSession
-//            self.videoPreviewLayer.videoGravity = .resizeAspect
-//            self.captureSession?.startRunning()
-//            self.startRecording()
-//        } else {
-//            self.captureSession?.stopRunning()
-//        }
-//    }
-//
-//    private func onTimerFires(){
-//        print("🟢 RECORDING \(videoFileOutput.isRecording)")
-//        secondsToReachGoal -= 1
-//        recorded += 1
-//        onRecord?(secondsToReachGoal, recorded)
-//        if(secondsToReachGoal <= 0){
-//            stopRecording()
-//            shakeCountDown?.invalidate()
-//            shakeCountDown = nil
-//            onComplete?()
-//        }
-//    }
-//
-//    func startTimers(){
-//        if shakeCountDown == nil {
-//            shakeCountDown = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] (timer) in
-//                self?.onTimerFires()
-//            }
-//        }
-//    }
-//
-//    func startRecording(){
-//        captureSession?.addOutput(videoFileOutput)
-//
-//        let filePath = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("\(UUID().uuidString).mov")
-//
-//        videoFileOutput.startRecording(to: filePath, recordingDelegate: recordingDelegate)
-//
-//    }
-//    func resetRecording(){
-//        print("resetRecording")
-//        stopRecording()
-//        shakeCountDown?.invalidate()
-//        shakeCountDown = nil
-//        //removeFile()
-//    }
-//
-//    func removeFile() {
-//        if let url = videoFileOutput.outputFileURL{
-//            do {
-//                try FileManager.default.removeItem(at: url)
-//                print("remove")
-//            } catch {
-//                print(error)
-//            }
-//        }
-//    }
-//
-//    func stopRecording(){
-//        videoFileOutput.stopRecording()
-//        print("🔴 RECORDING \(videoFileOutput.isRecording)")
-//    }
-//}
-//
-//
-//extension FileManager {
-//    func clearTmpDirectory() {
-//        do {
-//            let tmpDirURL = FileManager.default.temporaryDirectory
-//            let tmpDirectory = try contentsOfDirectory(atPath: tmpDirURL.path)
-//            try tmpDirectory.forEach { file in
-//                let fileUrl = tmpDirURL.appendingPathComponent(file)
-//                try removeItem(atPath: fileUrl.path)
-//            }
-//        } catch {
-//           //catch the error somehow
-//        }
-//    }
-//}
-
-
 extension BinaryInteger {
     var degreesToRadians: CGFloat { CGFloat(self) * .pi / 180 }
 }
@@ -555,3 +340,6 @@ extension FloatingPoint {
     var degreesToRadians: Self { self * .pi / 180 }
     var radiansToDegrees: Self { self * 180 / .pi }
 }
+
+
+

@@ -58,7 +58,6 @@ struct VideoMessageView: View {
                             showLoader = true
                         }
                     }
-                
                     .centerCropped()
                     .clipShape(Circle())
                     .contentShape(Circle())
@@ -95,11 +94,6 @@ struct VideoMessageView: View {
                 }
             }
         }
-        .onLongPressGesture{
-            withAnimation {
-                videoPinVM.remove()
-            }
-        }
         .onChange(of: isFocus) { newValue in
             isMute = !newValue
         }
@@ -121,7 +115,6 @@ struct VideoMessageView: View {
             withAnimation {
                 videoPinVM.isDissAppearMessage = false
             }
-            
         }
     }
 }
@@ -159,12 +152,16 @@ extension VideoMessageView{
                 .padding(.vertical, 2)
                 .background(Material.ultraThin, in: Capsule())
             Spacer()
-            Text("\(message.date, formatter: Date.formatter)")
-                .font(.system(size: 10))
-                .foregroundColor(.secondary)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 2)
-                .background(Material.ultraThin, in: Capsule())
+            HStack(alignment: .lastTextBaseline, spacing: 5) {
+                
+                MessageReactionEmojiView(reaction: message.reaction)
+                Text("\(message.date, formatter: Date.formatter)")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 2)
+            .background(Material.ultraThin, in: Capsule())
         }
         .offset(y: 20)
         .padding()

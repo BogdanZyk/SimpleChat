@@ -341,7 +341,7 @@
 			isa = PBXGroup;
 			children = (
 				5A93B3EE297AAB4D0082EC42 /* Mocks */,
-				5ABC320A294C83E700559B90 /* Extansions */,
+				5ABC320A294C83E700559B90 /* Extension */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -360,6 +360,7 @@
 		5ABC3204294C83A100559B90 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				5ACCEBD72955EED500711DB6 /* VideoPinViewModel.swift */,
 				5ABC3211294C847000559B90 /* DialogViewModel.swift */,
 				5A93B3F2297AB0330082EC42 /* ChatViewModel.swift */,
 			);
@@ -375,7 +376,7 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		5ABC320A294C83E700559B90 /* Extansions */ = {
+		5ABC320A294C83E700559B90 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
 				5ABC320B294C83F100559B90 /* Date.swift */,
@@ -383,7 +384,7 @@
 				5A5FA6DD295051F2008DD4A2 /* Int.swift */,
 				5A5FA6E72950827B008DD4A2 /* UIApplication.swift */,
 			);
-			path = Extansions;
+			path = Extension;
 			sourceTree = "<group>";
 		};
 		5ABC3215294C991300559B90 /* ViewModifiers */ = {
@@ -409,7 +410,6 @@
 			isa = PBXGroup;
 			children = (
 				5A5FA6F32951FCCF008DD4A2 /* CameraManager.swift */,
-				5ACCEBD72955EED500711DB6 /* VideoPinViewModel.swift */,
 			);
 			path = Video;
 			sourceTree = "<group>";
