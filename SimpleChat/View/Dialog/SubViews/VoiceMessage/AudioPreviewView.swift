@@ -11,6 +11,7 @@ struct AudioPreviewView: View {
     var mode: Mode = .message
     @EnvironmentObject var audioManager: AudioManager
     let audio: VoiceAudioModel
+    
     private var soundSamples: [AudioSimpleModel] {
         if let audio = audioManager.currentAudio, audio.id == self.audio.id{
             return audio.soundSamples

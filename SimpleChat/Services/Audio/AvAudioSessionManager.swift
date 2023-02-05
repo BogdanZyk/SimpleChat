@@ -38,29 +38,4 @@ final class AVAudioSessionManager{
             print("#configureAudioSessionToSpeaker Error \(error.localizedDescription)")
         }
     }
-
-    func configureAudioSessionToSpeaker(){
-        do {
-            try audioSession.overrideOutputAudioPort(.speaker)
-            try audioSession.setActive(true)
-            print("Successfully configured audio session (SPEAKER-Bottom).", "\nCurrent audio route: ",audioSession.currentRoute.outputs)
-        } catch let error as NSError {
-            print("#configureAudioSessionToSpeaker Error \(error.localizedDescription)")
-        }
-    }
-
-   func configureAudioSessionToEarSpeaker(){
-
-        let audioSession:AVAudioSession = AVAudioSession.sharedInstance()
-        do { ///Audio Session: Set on Speaker
-            try audioSession.overrideOutputAudioPort(AVAudioSession.PortOverride.none)
-            try audioSession.setActive(true)
-
-            print("Successfully configured audio session (EAR-Speaker).", "\nCurrent audio route: ",audioSession.currentRoute.outputs)
-        }
-        catch{
-            print("#configureAudioSessionToEarSpeaker Error \(error.localizedDescription)")
-        }
-    }
-    
 }

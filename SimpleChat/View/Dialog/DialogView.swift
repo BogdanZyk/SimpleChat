@@ -25,54 +25,55 @@ struct DialogView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             DialogBodyView(namespace: namespace, dialogVM: dialogVM, pinMessageTrigger: $pinMessageTrigger)
-                .padding(.bottom, 52)
                 .overlay{
                     if cameraManager.showCameraView{
                         CircleCameraRecorderView(show: $dialogVM.showCameraView)
                             .environmentObject(dialogVM)
                     }
                 }
-                bottomBarView
-                    .environmentObject(dialogVM)
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0, content: {
+            bottomBarView
+                .environmentObject(dialogVM)
+        })
+        .onTapGesture {
+            UIApplication.shared.endEditing()
+        }
+        .overlay(alignment: .top) {
+            VStack(spacing: 0){
+                currrentAudioBarComponent
+                pinMessageSection
             }
-            .onTapGesture {
-                UIApplication.shared.endEditing()
-            }
-            .overlay(alignment: .top) {
-                VStack(spacing: 0){
-                    currrentAudioBarComponent
-                    pinMessageSection
-                }
-            }
-            .overlay(alignment: .topTrailing) {
-                pinnedVideoView
-            }
+        }
+        .overlay(alignment: .topTrailing) {
+            pinnedVideoView
+        }
         
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    navTitle
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    trailingButtonView
-                }
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                navTitle
             }
-            .navigationBarHidden(cameraManager.showCameraView)
-            .overlay{
-                if dialogVM.showHighlightMessage && dialogVM.highlightMessage != nil{
-                    Rectangle()
-                        .fill(Material.ultraThinMaterial)
-                        .ignoresSafeArea()
-                        .onTapGesture {
-                            dialogVM.highlightMessageAction(nil)
-                        }
-                }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                trailingButtonView
             }
-            .overlayPreferenceValue(BoundsPreferece.self) { values in
-                if let highlightMessage = dialogVM.highlightMessage, let preferense = values.first(where: {$0.key == highlightMessage.id}), dialogVM.showHighlightMessage{
-                    MessageContextMenuView(namespace: namespace, dialogVM: dialogVM, preferense: preferense)
-                }
+        }
+        .navigationBarHidden(cameraManager.showCameraView)
+        .overlay{
+            if dialogVM.showHighlightMessage && dialogVM.highlightMessage != nil{
+                Rectangle()
+                    .fill(Material.ultraThinMaterial)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        dialogVM.highlightMessageAction(nil)
+                    }
             }
+        }
+        .overlayPreferenceValue(BoundsPreferece.self) { values in
+            if let highlightMessage = dialogVM.highlightMessage, let preferense = values.first(where: {$0.key == highlightMessage.id}), dialogVM.showHighlightMessage{
+                MessageContextMenuView(namespace: namespace, dialogVM: dialogVM, preferense: preferense)
+            }
+        }
     }
 }
 

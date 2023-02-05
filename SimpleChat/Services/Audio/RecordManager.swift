@@ -89,7 +89,6 @@ class RecordManager : NSObject, ObservableObject, AVAudioPlayerDelegate {
             self.returnedAudio  = .init(id: UUID().uuidString, url: url, duration: self.lastRecordTime, decibles: decibles)
                 self.recordState = .recordered
                 self.remainingDuration = 0
-               
         }
     }
 

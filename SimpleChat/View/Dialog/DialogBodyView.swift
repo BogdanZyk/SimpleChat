@@ -20,24 +20,20 @@ struct DialogBodyView: View {
     var isDisabledMessage: Bool = false
     var body: some View {
         ScrollViewReader { scrollView in
-            ReversedScrollView(.vertical, showsIndicators: true, contentSpacing: 4) {
-                
-                ForEach(dialogVM.messages) { message in
+            ScrollView {
+                LazyStack(.vertical, spacing: 4) {
                     
-                    //if message.id != dialogVM.highlightMessage?.id{
+                    ForEach(dialogVM.messages) { message in
                         messageView(message, scrollView: scrollView)
-                    //}
-                    
+                            .flippedUpsideDown()
+                       
+                    }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
             }
+            .flippedUpsideDown()
             .overlay(alignment: .bottomTrailing){
                 bottomScrollButton(scrollView)
-            }
-            .onAppear{
-                if let id = dialogVM.messages.last?.id {
-                    scrollView.scrollTo(id, anchor: .bottom)
-                }
             }
             .onChange(of: dialogVM.targetMessage) { message in
                 if let message = message {
@@ -82,14 +78,14 @@ extension DialogBodyView{
             onDoubleTap: {dialogVM.setReaction("👍", messageId: $0.id)}
         )
         .disabled(isDisabledMessage)
-        .padding(.bottom, dialogVM.messages.last?.id == message.id ? 10 : 0)
+        .padding(.bottom, dialogVM.messages.first?.id == message.id ? 10 : 0)
         .onAppear{
-            dialogVM.loadNextPageMessages(scrollView, message: message)
+            dialogVM.loadNextPageMessages(message: message)
             onAppearForScrollButton(message)
         }
     
         .onDisappear{
-            onDisapearForScrollButton(message)
+            onDisappearForScrollButton(message)
         }
     }
 }
@@ -99,15 +95,15 @@ extension DialogBodyView{
     
     
     private func onAppearForScrollButton(_ message: Message){
-        if dialogVM.messages.last?.id == message.id{
+        if dialogVM.messages.first?.id == message.id{
             withAnimation {
                 showBottomScrollButton = false
             }
         }
     }
     
-    private func onDisapearForScrollButton(_ message: Message){
-        if dialogVM.messages.last?.id == message.id{
+    private func onDisappearForScrollButton(_ message: Message){
+        if dialogVM.messages.first?.id == message.id{
             withAnimation {
                 showBottomScrollButton = true
             }
@@ -117,7 +113,7 @@ extension DialogBodyView{
     private func bottomScrollButton(_ scrollView: ScrollViewProxy) -> some View{
         
         Button {
-            if let lastMessageId = dialogVM.messages.last?.id{
+            if let lastMessageId = dialogVM.messages.first?.id{
                 withAnimation(.easeOut){
                     scrollView.scrollTo(lastMessageId, anchor: .bottom)
                 }
@@ -136,4 +132,13 @@ extension DialogBodyView{
         }
     }
     
+}
+
+
+extension View {
+    func flippedUpsideDown() -> some View {
+        self
+            .rotationEffect(.init(radians: .pi))
+            .scaleEffect(x: -1, y: 1, anchor: .center)
+    }
 }
